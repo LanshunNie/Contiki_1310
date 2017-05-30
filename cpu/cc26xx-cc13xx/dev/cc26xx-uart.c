@@ -64,6 +64,7 @@
 /*---------------------------------------------------------------------------*/
 static int (*input_handler)(unsigned char c);
 /*---------------------------------------------------------------------------*/
+
 static bool
 usable(void)
 {
@@ -375,7 +376,7 @@ cc26xx_uart_isr(void)
 
   /* Clear all UART interrupt flags */
   ti_lib_uart_int_clear(UART0_BASE, CC26XX_UART_INTERRUPT_ALL);
-
+ 
   if((flags & CC26XX_UART_RX_INTERRUPT_TRIGGERS) != 0) {
     /*
      * If this was a FIFO RX or an RX timeout, read all bytes available in the

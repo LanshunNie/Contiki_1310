@@ -86,6 +86,7 @@ static uint8_t rxbuf[RX_BUFSIZE];
 static uint16_t pkt_end;		/* SLIP_END tracker. */
 
 static void (* input_callback)(void) = NULL;
+
 /*---------------------------------------------------------------------------*/
 void
 slip_set_input_callback(void (*c)(void))
@@ -254,9 +255,12 @@ PROCESS_THREAD(slip_process, ev, data)
 
   rxbuf_init();
 
+
   while(1) {
     PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
     
+   
+
     slip_active = 1;
 
     /* Move packet from rxbuf to buffer provided by uIP. */
@@ -316,6 +320,7 @@ PROCESS_THREAD(slip_process, ev, data)
 int
 slip_input_byte(unsigned char c)
 {
+   
   switch(state) {
   case STATE_RUBBISH:
     if(c == SLIP_END) {

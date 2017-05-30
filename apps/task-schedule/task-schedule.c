@@ -109,8 +109,8 @@ task_schedule_init(void)
 /*---------------------------------------------------------------------------*/
 static int calculate_hash(void){
 
-  printf("node_id %x\n",node_id);
-  printf("hash schedule %d\n",node_id % HASH_SCHEDULE);
+  // printf("node_id %x\n",node_id);
+  // printf("hash schedule %d\n",node_id % HASH_SCHEDULE);
   return( node_id % HASH_SCHEDULE );
 
 }

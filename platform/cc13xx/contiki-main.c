@@ -109,7 +109,6 @@ main(void)
 
   #endif /* BURN_NODEID */
   
-  
   /*************************************************/
 
 
@@ -124,7 +123,6 @@ main(void)
   process_init(); 
 
   random_init(0x1234);
-
   
   /*set uart-input function*/
   //uart1_set_input(serial_line_input_byte);

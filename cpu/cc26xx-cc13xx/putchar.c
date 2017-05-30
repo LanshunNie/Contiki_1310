@@ -32,11 +32,33 @@
 #include "ti-lib.h"
 #include "contiki-conf.h"
 #include <string.h>
+
+#define SLIP_END     0300
 /*---------------------------------------------------------------------------*/
 int
 putchar(int c)
 {
+  #if ROOTNODE
+    static char debug_frame = 0;
+
+    if(!debug_frame) {
+      cc26xx_uart_write_byte(SLIP_END);//by huangxiaobing. in order to support tunslip6
+      cc26xx_uart_write_byte('\r');
+      debug_frame = 1;
+    }
+  #endif
+
   cc26xx_uart_write_byte(c);
+
+  #if ROOTNODE
+  
+    if(c == '\n') {
+      cc26xx_uart_write_byte(SLIP_END);//by huangxiaobing. in order to support tunslip6
+      debug_frame = 0;
+    };
+  #endif
+
+    
   return c;
 }
 /*---------------------------------------------------------------------------*/
@@ -48,7 +70,7 @@ puts(const char *str)
     return 0;
   }
   #if ROOTNODE
-  cc26xx_uart_write_byte(0300);//by huangxiaobing. in order to support tunslip6
+  cc26xx_uart_write_byte(SLIP_END);//by huangxiaobing. in order to support tunslip6
   #endif
 
   for(i = 0; i < strlen(str); i++) {
@@ -58,7 +80,7 @@ puts(const char *str)
   cc26xx_uart_write_byte('\n');
 
   #if ROOTNODE
-  cc26xx_uart_write_byte(0300);//by huangxiaobing. in order to support tunslip6
+  cc26xx_uart_write_byte(SLIP_END);//by huangxiaobing. in order to support tunslip6
   #endif
   /*
    * Wait for the line to go out. This is to prevent garbage when used between
@@ -66,6 +88,7 @@ puts(const char *str)
    */
   while(cc26xx_uart_busy() == UART_BUSY);
 
+  
   return i;
 }
 /*---------------------------------------------------------------------------*/

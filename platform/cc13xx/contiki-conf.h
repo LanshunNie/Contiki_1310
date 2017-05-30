@@ -487,7 +487,7 @@ typedef uint32_t rtimer_clock_t;
 /*------------------------------------------------*/
 /*-------------uart  configure -------------------*/
 #undef  ROOTNODE
-#define ROOTNODE  0
+#define ROOTNODE  1
 
 #ifndef HW_NEW_BIG
 #define HW_NEW_BIG 0

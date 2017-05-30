@@ -50,9 +50,7 @@
 #include "netsynch.h"
 #include "task-schedule.h"
 #endif
-// void led_toggle(uint32_t i);
-// void logic_test(uint32_t i);
-// static uint32_t logic=0;
+
 /*---------------------------define hit platform softclock-------------------------------------*/
 
 
@@ -204,15 +202,10 @@ soc_rtc_isr(void)
 
   now = ti_lib_aon_rtc_current_compare_value_get();
 
-  
- 
-
-
-  if(ti_lib_aon_rtc_event_get(AON_RTC_CH2)){// add by hit
+  if(ti_lib_aon_rtc_event_get(AON_RTC_CH2)){// add by hit cps
 
     HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH2;
 
-    // update_soft_time();
    
     /*********************************************/
 
@@ -270,8 +263,7 @@ soc_rtc_isr(void)
     if(get_active_flag() ==1){ 
           
       ;;//because of multiple shutdown that lead to etimer err time sequence
-      
-     
+  
     }else {         
 
       disable_etimer();    //etimer  off

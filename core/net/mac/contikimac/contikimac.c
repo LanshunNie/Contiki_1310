@@ -890,7 +890,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
   if(collisions > 0) {
     we_are_sending = 0;
     off();
-    PRINTF("contikimac: collisions before sending\n");
+    printf("contikimac: collisions before sending\n");
     contikimac_is_on = contikimac_was_on;
     return MAC_TX_COLLISION;
   }

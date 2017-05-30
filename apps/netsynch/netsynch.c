@@ -42,6 +42,8 @@
 #include "lib/random.h"
 #include "task-schedule.h"
 
+#include "dev/slip.h"
+
 #define DEBUG  0//DEBUG_PRINT
 #include "net/ip/uip-debug.h"
 #define MAX_PAYLOAD_LEN 120
@@ -108,6 +110,8 @@ static int  response=0;
 static uip_ipaddr_t concentrator_ipv6addr;
 static struct netsynch_msg rev_msg;
 static struct  ctimer send_netsync_ct;
+
+
 /*---------------------------------------------------------------------------*/
 PROCESS(netsynch_process, "Netsynch process");
 
@@ -463,6 +467,7 @@ prepare_mcast(void){
 static void
 tcpip_handler(void)
 {
+
   if(uip_newdata()) {
     struct netsynch_msg msg;
     uint8_t  non_frag_flag =0;
@@ -518,11 +523,11 @@ tcpip_handler(void)
     }
 #endif 
 
-  #if ROOTNODE | DEBUG 
+  #if ROOTNODE | DEBUG   
     printf("\n");
-    printf("receive time :%d,%d,%d,%d\n",msg.caltime.hour,msg.caltime.minute,msg.caltime.sec,msg.authority_level);   
+    printf("receive time :%d,%d,%d,%d\n",msg.caltime.hour,msg.caltime.minute,msg.caltime.sec,msg.authority_level);    
   #endif
-    printf("receive time :%d,%d,%d,%d\n",msg.caltime.hour,msg.caltime.minute,msg.caltime.sec,msg.authority_level);
+    //printf("receive time :%d,%d,%d,%d\n",msg.caltime.hour,msg.caltime.minute,msg.caltime.sec,msg.authority_level);
     netsynch_receiver(msg);
   }
 }
