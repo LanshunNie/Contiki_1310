@@ -48,5 +48,6 @@ netstack_init(void)
   NETSTACK_MAC.init();
   NETSTACK_NETWORK.init();
   NETSTACK_LLSEC.init();
+  
 }
 /*---------------------------------------------------------------------------*/

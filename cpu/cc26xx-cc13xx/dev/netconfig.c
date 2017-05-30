@@ -9,8 +9,8 @@
 #endif
 
 // void led_toggle(uint32_t i);
-// void logic_test(uint32_t i);
-// static uint32_t logic=0;
+void logic_test(uint32_t i);
+static uint32_t logic=0;
 // static uint32_t add_time=0;
 
 #if CC1310_CONF_LOWPOWER
@@ -101,6 +101,16 @@ void set_active_flag()
      //printf("active flag:%u\n",active_flag);
   #endif
  //  active_flag = 1;
+
+  // if(timenow.sec%30==0){
+     
+  //   active_flag =active_flag^1;
+  //   logic =logic^1;
+  //   logic_test(logic);
+  // }
+
+  //  active_flag = 1;
+
 }
 #endif
 

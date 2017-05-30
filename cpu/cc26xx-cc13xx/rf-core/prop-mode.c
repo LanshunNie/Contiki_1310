@@ -461,7 +461,7 @@ rx_on_prop(void)
     ENERGEST_ON(ENERGEST_TYPE_LISTEN);
   }
 
- // ti_lib_gpio_pin_write(BOARD_IO30,1);  
+  ti_lib_gpio_pin_write(BOARD_IO30,1);  
   return ret;
 }
 /*---------------------------------------------------------------------------*/
@@ -511,6 +511,8 @@ request(void)
 
   return LPM_MODE_MAX_SUPPORTED;
 }
+
+
 /*---------------------------------------------------------------------------*/
 LPM_MODULE(prop_lpm_module, request, NULL, NULL, LPM_DOMAIN_NONE);
 /*---------------------------------------------------------------------------*/
@@ -976,7 +978,7 @@ on(void)
 static int
 off(void)
 {
-  // ti_lib_gpio_pin_write(BOARD_IO30,0); 
+   ti_lib_gpio_pin_write(BOARD_IO30,0); 
   rfc_dataEntry_t *entry;
 
   /*

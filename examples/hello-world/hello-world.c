@@ -39,7 +39,7 @@
 
 #include "contiki.h"
 // #include "adc.h"
-#include "node-id.h"
+// #include "node-id.h"
 #include <stdio.h> /* For printf() */
 
 
@@ -55,25 +55,25 @@ PROCESS_THREAD(hello_world_process, ev, data)
 
   PROCESS_BEGIN();
   // //printf(" %x\n",get_voltage());
-  static struct etimer et;
-  etimer_set(&et,2*CLOCK_SECOND);
-  while(1)
-  {
+  // static struct etimer et;
+  // etimer_set(&et,4*CLOCK_SECOND);
+  // while(1)
+  // {
     
-     PROCESS_YIELD();
-     if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
-     {
+  //    PROCESS_YIELD();
+  //    if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
+  //    {
       printf("hello-world!\n");
      
 
-      printf("restart count %d\n",restart_count );
-  //    logic=logic^1;
-  //     led_toggle(logic); 
-  //     //printf(" %x\n",get_voltage());
-      etimer_set(&et,4*CLOCK_SECOND);
-     }
+  //     // printf("restart count %d\n",restart_count );
+  // //    logic=logic^1;
+  // //     led_toggle(logic); 
+  // //     //printf(" %x\n",get_voltage());
+  //     etimer_set(&et,4*CLOCK_SECOND);
+  //    }
 
-  }
+  // }
  
  PROCESS_END();
 

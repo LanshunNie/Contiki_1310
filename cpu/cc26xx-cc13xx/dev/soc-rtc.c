@@ -84,8 +84,24 @@ static rtimer_clock_t last_isr_time;
 
 
 /*---------------------------------------------------------------------------*/
+void logic_test(uint32_t i);
+static uint32_t logic=0;
+/*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*/
+void
+soc_rtc_schedule_one_shot(uint32_t channel, uint32_t ticks)
+{
+  if((channel != AON_RTC_CH0) && (channel != AON_RTC_CH1)) {
+    return;
+  }
+
+  /* Set the channel to fire a one-shot compare event at time==ticks */
+  ti_lib_aon_rtc_compare_value_set(channel, ticks);
+  ti_lib_aon_rtc_channel_enable(channel);
+
+}
+
 void
 soc_rtc_init(void)
 {
@@ -120,7 +136,7 @@ soc_rtc_init(void)
   
   next = ti_lib_aon_rtc_current_compare_value_get() + RTC_TIME;
 
-  /* Configure channel 1 to start generating clock ticks. First tick at 512 */
+  /* Configure channel 1 to start generating clock ticks. First tick at 1 sec */
   ti_lib_aon_rtc_compare_value_set(AON_RTC_CH2, next);
 
 
@@ -137,6 +153,7 @@ soc_rtc_init(void)
   if(!interrupts_disabled) {
     ti_lib_int_master_enable();
   }
+ 
 }
 /*---------------------------------------------------------------------------*/
 rtimer_clock_t
@@ -144,27 +161,15 @@ soc_rtc_get_next_trigger()
 {
   rtimer_clock_t ch1 = ti_lib_aon_rtc_compare_value_get(AON_RTC_CH1);
 
+ 
   if(HWREG(AON_RTC_BASE + AON_RTC_O_CHCTL) & AON_RTC_CHCTL_CH0_EN) {
     rtimer_clock_t ch0 = ti_lib_aon_rtc_compare_value_get(AON_RTC_CH0);
-
     return RTIMER_CLOCK_LT(ch0, ch1) ? ch0 : ch1;
   }
 
   return ch1;
 }
-/*---------------------------------------------------------------------------*/
-void
-soc_rtc_schedule_one_shot(uint32_t channel, uint32_t ticks)
-{
-  if((channel != AON_RTC_CH0) && (channel != AON_RTC_CH1)) {
-    return;
-  }
 
-  /* Set the channel to fire a one-shot compare event at time==ticks */
-  ti_lib_aon_rtc_compare_value_set(channel, ticks);
-  ti_lib_aon_rtc_channel_enable(channel);
-
-}
 
 void enable_etimer(){
   
@@ -283,8 +288,7 @@ soc_rtc_isr(void)
      
      /* Adjust the s/w tick counter irrespective of which event trigger this */
       clock_update();
-       // logic =logic^1;
-       // led_toggle(logic);   
+           
     /*
      * We need to keep ticking while we are awake, so we schedule the next
      * event on the next 512 tick boundary. If we drop to deep sleep before it

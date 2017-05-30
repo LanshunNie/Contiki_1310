@@ -83,12 +83,15 @@ main(void)
   
   board_init();
 
+  #if CC26XX_UART_CONF_ENABLE
+    cc26xx_uart_init();
+  #endif
+
   printf("Starting " CONTIKI_VERSION_STRING "\n");
   printf("supports cc13xx platform\n");
   printf("author HIT-CPSGroup\n");
 
   /**********************************************/
-  // #if BURN_NODEID
   #if 0
 
   restart_count_byte_burn(0);
@@ -143,6 +146,7 @@ main(void)
   
 
   netstack_init();
+  
   set_rf_params();
 #if NETSTACK_CONF_WITH_IPV6
   memcpy(&uip_lladdr.addr, &linkaddr_node_addr, sizeof(uip_lladdr.addr));
@@ -150,7 +154,7 @@ main(void)
   process_start(&tcpip_process, NULL);
 #endif /* NETSTACK_CONF_WITH_IPV6 */
 
-  /****************by xiaobing **************/
+ // ***************by xiaobing *************//
   #if CONTIKI_CONF_NETSYNCH
 
    netsynch_init();
@@ -164,7 +168,10 @@ main(void)
 
   #endif
 /******************************/
+  NETSTACK_RADIO.off();//the default state is off
+  
 
+/*****************************/  
   autostart_start(autostart_processes);
 
   watchdog_start();
@@ -178,7 +185,10 @@ main(void)
       watchdog_periodic();
     } while(r > 0);
     
-    // lpm_drop();
+  #if ROOTNODE
+    lpm_drop();
+  #endif
+    
    
   }
 

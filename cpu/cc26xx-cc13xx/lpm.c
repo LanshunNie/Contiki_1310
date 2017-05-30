@@ -80,6 +80,9 @@ LIST(modules_list);
 /*---------------------------------------------------------------------------*/
 /* Prototype of a function in clock.c. Called every time we come out of DS */
 void clock_update(void);
+void logic_test(uint32_t i);
+static uint32_t logic=0;
+
 /*---------------------------------------------------------------------------*/
 void
 lpm_shutdown(uint32_t wakeup_pin, uint32_t io_pull, uint32_t wake_on)
@@ -245,21 +248,22 @@ lpm_drop()
 
   uint32_t domains = LOCKABLE_DOMAINS;
 
-  if(RTIMER_CLOCK_LT(soc_rtc_get_next_trigger(),
+  /*if(RTIMER_CLOCK_LT(soc_rtc_get_next_trigger(),
                      RTIMER_NOW() + STANDBY_MIN_DURATION)) {
+   
     lpm_sleep();
     return;
-  }
+  }*/
 
   /* Collect max allowed PM permission from interested modules */
   for(module = list_head(modules_list); module != NULL;
-      module = module->next) {
-    if(module->request_max_pm) {
-      module_pm = module->request_max_pm();
-      if(module_pm < max_pm) {
-        max_pm = module_pm;
-      }
-    }
+      module = module->next) {   
+        if(module->request_max_pm) {
+          module_pm = module->request_max_pm();
+          if(module_pm < max_pm) {
+            max_pm = module_pm;
+          }
+        }
   }
 
   /* Check if any events fired during this process. Last chance to abort */
@@ -270,6 +274,7 @@ lpm_drop()
   /* Drop */
   if(max_pm == LPM_MODE_SLEEP) {
     lpm_sleep();
+   
   } else {
     /* Critical. Don't get interrupted! */
     ti_lib_int_master_disable();
@@ -303,6 +308,7 @@ lpm_drop()
      * variable as required by the lock. In the end the domains variable will
      * just hold whatever has not been cleared
      */
+    
     for(module = list_head(modules_list); module != NULL;
         module = module->next) {
       if(module->shutdown) {

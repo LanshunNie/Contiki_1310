@@ -40,7 +40,6 @@
  */
 
 #include "contiki-conf.h"
-#include "dev/leds.h"
 #include "dev/radio.h"
 #include "dev/watchdog.h"
 #include "lib/random.h"
@@ -462,7 +461,6 @@ powercycle(struct rtimer *t, void *ptr)
           packet_seen = 1;
 #if TEST_ERROR_WAKE            
           ++cca_count;
-          leds_toggle(LEDS_GREEN);
 #endif
           break;
         }
