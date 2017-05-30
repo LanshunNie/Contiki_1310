@@ -50,9 +50,9 @@
 #include "netsynch.h"
 #include "task-schedule.h"
 #endif
-void led_toggle(uint32_t i);
-void logic_test(uint32_t i);
-static uint32_t logic=0;
+// void led_toggle(uint32_t i);
+// void logic_test(uint32_t i);
+// static uint32_t logic=0;
 /*---------------------------define hit platform softclock-------------------------------------*/
 
 
@@ -176,7 +176,7 @@ void enable_etimer(){
   // /* Configure channel 1 to start generating clock ticks. First tick at 512 */
   ti_lib_aon_rtc_compare_value_set(AON_RTC_CH1, next);
   ti_lib_aon_rtc_channel_enable(AON_RTC_CH1);
-  // soc_rtc_schedule_one_shot(AON_RTC_CH1,COMPARE_INCREMENT);
+  
  
 
 }
@@ -204,6 +204,7 @@ soc_rtc_isr(void)
 
   now = ti_lib_aon_rtc_current_compare_value_get();
 
+  
  
 
 
@@ -212,8 +213,7 @@ soc_rtc_isr(void)
     HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH2;
 
     // update_soft_time();
-    // logic =logic^1;
-    // led_toggle(logic);
+   
     /*********************************************/
 
 #if !WAKEUP_NODE_DEV  
@@ -258,8 +258,9 @@ soc_rtc_isr(void)
       if(get_active_flag()!=active_flag_one_second_before){
         
          if(get_active_flag() ==1){
-           
+           enable_etimer();
            task_schedule_change();
+           
          }
       }   
 #endif
@@ -268,16 +269,13 @@ soc_rtc_isr(void)
 #if  (!ROOTNODE) & (!WAKEUP_NODE_DEV)
     if(get_active_flag() ==1){ 
           
+      ;;//because of multiple shutdown that lead to etimer err time sequence
       
-      enable_etimer();
-      //static rtimer_clock_t start; //
-      //start = RTIMER_NOW();  
-      //while(RTIMER_CLOCK_LT(RTIMER_NOW(),start+65536)){} //RTIMER_ARCH_SECOND / 3500=18
-
+     
     }else {         
 
       disable_etimer();    //etimer  off
-      // HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH1;
+  
    }
 #endif
     
@@ -293,8 +291,8 @@ soc_rtc_isr(void)
      
      /* Adjust the s/w tick counter irrespective of which event trigger this */
       clock_update();
-      logic=logic^1;
-      led_toggle(logic);    
+       // logic =logic^1;
+       // led_toggle(logic);   
     /*
      * We need to keep ticking while we are awake, so we schedule the next
      * event on the next 512 tick boundary. If we drop to deep sleep before it
@@ -311,6 +309,7 @@ soc_rtc_isr(void)
     ti_lib_aon_rtc_channel_disable(AON_RTC_CH0);
     HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH0;
     rtimer_run_next();
+    
   }
 
   // ENERGEST_OFF(ENERGEST_TYPE_IRQ);

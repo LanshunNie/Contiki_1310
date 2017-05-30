@@ -908,7 +908,7 @@ pending_packet(void)
 static int
 on(void)
 {
- ti_lib_gpio_pin_write(BOARD_IO26,1);  
+ // ti_lib_gpio_pin_write(BOARD_IO26,1);  
   /*
    * Request the HF XOSC as the source for the HF clock. Needed before we can
    * use the FS. This will only request, it will _not_ perform the switch.
@@ -1003,7 +1003,7 @@ off(void)
   entry = (rfc_dataEntry_t *)rx_buf_1;
   entry->status = DATA_ENTRY_STATUS_PENDING;
 
- ti_lib_gpio_pin_write(BOARD_IO26,0); 
+ // ti_lib_gpio_pin_write(BOARD_IO26,0); 
   return RF_CORE_CMD_OK;
 }
 /*---------------------------------------------------------------------------*/

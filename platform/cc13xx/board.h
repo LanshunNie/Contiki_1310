@@ -35,7 +35,7 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_LED          IOID_27
+#define BOARD_IOID_LED          IOID_30
 #define BOARD_LED              (1 << BOARD_IOID_LED)
 /** @} */
 /*---------------------------------------------------------------------------*/
@@ -45,8 +45,8 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_UART_RX        IOID_1
-#define BOARD_IOID_UART_TX        IOID_2
+#define BOARD_IOID_UART_RX        IOID_28
+#define BOARD_IOID_UART_TX        IOID_27
 #define BOARD_IOID_UART_CTS       IOID_UNUSED
 #define BOARD_IOID_UART_RTS       IOID_UNUSED
 #define BOARD_UART_RX             (1 << BOARD_IOID_UART_RX)
@@ -108,12 +108,10 @@
 #define BOARD_IOID26          IOID_26
 #define BOARD_IO26              (1 << BOARD_IOID26)
 
-#define BOARD_IOID28          IOID_28
-#define BOARD_IO28              (1 << BOARD_IOID28)
+
 #define BOARD_IOID29         IOID_29
 #define BOARD_IO29             (1 << BOARD_IOID29)
-#define BOARD_IOID30          IOID_30
-#define BOARD_IO30              (1 << BOARD_IOID30)
+
 
 /*---------------------------------------------------------------------------*/
 /**

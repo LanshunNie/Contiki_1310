@@ -439,12 +439,13 @@ powercycle(struct rtimer *t, void *ptr)
 #endif
 
     rdc_channel_check_interval_count ++;
-    //get_init_flag()==0 ;
+  //   //get_init_flag()==0 ;
   if(get_active_flag() || ( get_init_flag()==0 &&
      rdc_channel_check_interval_count >= rdc_channel_check_interval)){
     
    // printf("do cca \n");
 
+// if(get_active_flag()){
     rdc_channel_check_interval_count = 0;
     packet_seen = 0;
 
@@ -1175,12 +1176,12 @@ input_packet(void)
   /*  printf("cycle_start 0x%02x 0x%02x\n", cycle_start, cycle_start % CYCLE_TIME);*/
 
   if(packetbuf_totlen() > 0 && NETSTACK_FRAMER.parse() >= 0) {
-#if (!UIP_CONF_IPV6_ORPL_BITMAP) 
+
     if(packetbuf_datalen() > 0 &&
        (linkaddr_cmp(packetbuf_addr(PACKETBUF_ADDR_RECEIVER),
-                     &linkaddr_node_addr)||
-        packetbuf_holds_broadcast())) {
-#endif
+                     &linkaddr_node_addr)||orpl_bitmap_fwd(packetbuf_addr(PACKETBUF_ADDR_RECEIVER))||
+        packetbuf_holds_broadcast())) {//by huang
+
       /* This is a regular packet that is destined to us or to the
          broadcast address. */
 
@@ -1249,11 +1250,11 @@ input_packet(void)
         NETSTACK_MAC.input();
       }
       return;
-#if (!UIP_CONF_IPV6_ORPL_BITMAP)       
+    
     } else {
       PRINTDEBUG("contikimac: data not for us\n");
     }
-#endif
+
   } else {
     PRINTF("contikimac: failed to parse (%u)\n", packetbuf_totlen());
   }

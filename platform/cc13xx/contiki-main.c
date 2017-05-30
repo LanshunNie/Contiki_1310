@@ -152,7 +152,7 @@ main(void)
       watchdog_periodic();
     } while(r > 0);
     
-    lpm_drop();
+    // lpm_drop();
    
   }
 

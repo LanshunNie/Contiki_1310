@@ -68,7 +68,6 @@
 static volatile uint64_t count;
 /*---------------------------------------------------------------------------*/
 
-
 static void
 power_domain_on(void)
 {
@@ -140,6 +139,7 @@ update_clock_variable(void)
 
   /* Convert AON RTC ticks to clock tick counter */
   count = (aon_rtc_secs_now * CLOCK_SECOND) + (aon_rtc_ticks_now >> 9);
+
 }
 /*---------------------------------------------------------------------------*/
 CCIF clock_time_t

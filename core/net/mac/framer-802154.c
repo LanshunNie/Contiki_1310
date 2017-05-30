@@ -240,14 +240,18 @@ parse(void)
     
     if(frame.fcf.dest_addr_mode) {
       
-#if (!UIP_CONF_IPV6_ORPL_BITMAP) | ORPL_BITMAP_PANID_LIMIT
+
       if(frame.dest_pid != mac_src_pan_id &&
           frame.dest_pid != FRAME802154_BROADCASTPANDID) {
         /* Packet to another PAN */
         PRINTF("15.4: for another pan %u\n", frame.dest_pid);
         return FRAMER_FAILED;
       }
-#endif
+      if((orpl_bitmap_limit((linkaddr_t *)&frame.src_addr))){ //by huang
+
+        PRINTF("orpl_bitmap_limit fail\n");
+        return FRAMER_FAILED;
+      }
 
       if(!is_broadcast_addr(frame.fcf.dest_addr_mode, frame.dest_addr)) {
         packetbuf_set_addr(PACKETBUF_ADDR_RECEIVER, (linkaddr_t *)&frame.dest_addr);

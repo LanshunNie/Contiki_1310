@@ -42,7 +42,9 @@
 #include <stdio.h> /* For printf() */
 
 
-
+void led_toggle(uint32_t i);
+void logic_test(uint32_t i);
+static uint32_t logic=0;
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
 AUTOSTART_PROCESSES(&hello_world_process);
@@ -51,22 +53,23 @@ PROCESS_THREAD(hello_world_process, ev, data)
 {
 
   PROCESS_BEGIN();
-  //printf(" %x\n",get_voltage());
-  static struct etimer et;
-  etimer_set(&et,CLOCK_SECOND);
-  while(1)
-  {
+  // //printf(" %x\n",get_voltage());
+  // static struct etimer et;
+  // etimer_set(&et,CLOCK_SECOND/8);
+  // while(1)
+  // {
     
-     PROCESS_YIELD();
-     if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
-     {
-      //printf("dianya: \n");
-      printf("hello-world! \n");
-      //printf(" %x\n",get_voltage());
-      etimer_set(&et,CLOCK_SECOND);
-     }
+  //    PROCESS_YIELD();
+  //    if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
+  //    {
+      printf("hello-world!\n");
+  //    logic=logic^1;
+  //     led_toggle(logic); 
+  //     //printf(" %x\n",get_voltage());
+  //     etimer_set(&et,CLOCK_SECOND/8);
+  //    }
 
-  }
+  // }
  
  PROCESS_END();
 

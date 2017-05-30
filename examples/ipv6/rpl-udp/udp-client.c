@@ -51,7 +51,7 @@
 #include "net/ip/uip-debug.h"
 
 #ifndef PERIOD
-#define PERIOD  1
+#define PERIOD  5
 #endif
 
 #define START_INTERVAL		(10 * CLOCK_SECOND)
@@ -210,10 +210,10 @@ PROCESS_THREAD(udp_client_process, ev, data)
   }
   udp_bind(client_conn, UIP_HTONS(UDP_CLIENT_PORT)); 
 
- // PRINTF("Created a connection with the server ");
-//PRINT6ADDR(&client_conn->ripaddr);
- // PRINTF(" local/remote port %u/%u\n",
-	//UIP_HTONS(client_conn->lport), UIP_HTONS(client_conn->rport));
+ PRINTF("Created a connection with the server ");
+PRINT6ADDR(&client_conn->ripaddr);
+ PRINTF(" local/remote port %u/%u\n",
+	UIP_HTONS(client_conn->lport), UIP_HTONS(client_conn->rport));
 
 #if WITH_COMPOWER
   powertrace_sniff(POWERTRACE_ON);
