@@ -11,13 +11,13 @@
 // void led_toggle(uint32_t i);
 // void logic_test(uint32_t i);
 // static uint32_t logic=0;
+// static uint32_t add_time=0;
 
-// #if 1
 #if CC1310_CONF_LOWPOWER
 
 
 static volatile uint8_t  active_flag_one_second_before = 0;
-static volatile uint16_t  init_net_flag = 0;
+static volatile uint16_t  init_net_flag = 1;
 
 #if WAKEUP_NODE_DEV
 static volatile uint8_t  active_flag = 1;
@@ -44,6 +44,9 @@ void update_soft_time()
 {
   // logic=logic^1;
   // led_toggle(logic);
+  // add_time++;
+  // // printf("time %d\n",add_time);
+
   timenow.sec+=1;
   if( timenow.sec/60){ 
       ++timenow.minute;
@@ -79,7 +82,7 @@ void set_active_flag()
 {
   //   if(timenow.sec%4==0){
 
-  //       // active_flag=1;
+        // active_flag=1;
 
   //       active_flag=active_flag^1;
         
@@ -108,7 +111,7 @@ void set_active_flag()
     printf("schedule_bit [%d] = %d\n",index2,schedule_bit[index2] );
   }
 #endif
-  
+  init_net_flag=1;
   active_flag= init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
 
   #if !ROOTNODE

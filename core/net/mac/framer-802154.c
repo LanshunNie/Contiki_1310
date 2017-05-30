@@ -247,11 +247,7 @@ parse(void)
         PRINTF("15.4: for another pan %u\n", frame.dest_pid);
         return FRAMER_FAILED;
       }
-      if((orpl_bitmap_limit((linkaddr_t *)&frame.src_addr))){ //by huang
-
-        PRINTF("orpl_bitmap_limit fail\n");
-        return FRAMER_FAILED;
-      }
+      
 
       if(!is_broadcast_addr(frame.fcf.dest_addr_mode, frame.dest_addr)) {
         packetbuf_set_addr(PACKETBUF_ADDR_RECEIVER, (linkaddr_t *)&frame.dest_addr);

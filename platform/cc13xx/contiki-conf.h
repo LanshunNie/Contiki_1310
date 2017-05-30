@@ -58,11 +58,13 @@
 #endif /* NETSTACK_CONF_NETWORK */
 
 #ifndef NETSTACK_CONF_MAC
-#define NETSTACK_CONF_MAC     csma_driver
+// #define NETSTACK_CONF_MAC     csma_driver
+#define NETSTACK_CONF_MAC     nullmac_driver
 #endif
 
 #ifndef NETSTACK_CONF_RDC
 #define NETSTACK_CONF_RDC     contikimac_driver
+// #define NETSTACK_CONF_RDC     nullrdc_driver
 #endif
 
 /* Configure NullRDC for when it's selected */
@@ -73,9 +75,6 @@
 #define CONTIKIMAC_CONF_WITH_PHASE_OPTIMIZATION 0
 #define WITH_FAST_SLEEP                         1
 
-#ifndef NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE
-#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE      4// 8
-#endif
 
 #ifndef NETSTACK_CONF_FRAMER
 #define NETSTACK_CONF_FRAMER  framer_802154
@@ -94,11 +93,11 @@
 #define NULLRDC_CONF_SEND_802154_ACK              1
 
 #define CONTIKIMAC_CONF_CCA_CHECK_TIME            (RTIMER_ARCH_SECOND / 1600)
-#define CONTIKIMAC_CONF_CCA_SLEEP_TIME            (RTIMER_ARCH_SECOND / 180)
+#define CONTIKIMAC_CONF_CCA_SLEEP_TIME            (RTIMER_ARCH_SECOND / 238)
 #define CONTIKIMAC_CONF_LISTEN_TIME_AFTER_PACKET_DETECTED  (RTIMER_ARCH_SECOND / 20)
 #define CONTIKIMAC_CONF_SEND_SW_ACK               1
 #define CONTIKIMAC_CONF_AFTER_ACK_DETECTECT_WAIT_TIME (RTIMER_SECOND / 500)
-#define CONTIKIMAC_CONF_INTER_PACKET_INTERVAL     (RTIMER_SECOND / 333)
+#define CONTIKIMAC_CONF_INTER_PACKET_INTERVAL     (RTIMER_SECOND / 224)
 #else
 #define NETSTACK_CONF_RADIO        ieee_mode_driver
 
@@ -327,14 +326,32 @@ typedef uint32_t rtimer_clock_t;
 #define RTIMER_CLOCK_LT(a, b)     ((int32_t)((a) - (b)) < 0)
 /** @} */
 /*---------------------------------------------------------------------------*/
-/* board.h assumes that basic configuration is done */
+/*------------------------------------------------------*/
+/* simplify code config*/
 
-/***************************define our net config by zhangwei***********************************************/
-#define CC1310_CONF_LOWPOWER 1
-#define WAKEUP_NODE_DEV 0
-#define ROOTNODE 0
-#define CONTIKI_CONF_NETSYNCH 1
-#define SCHEDULE_SIZE 16
+/*no need probe , to save energy*/
+#undef RPL_CONF_WITH_PROBING
+#define RPL_CONF_WITH_PROBING      0  
+
+#ifndef RPL_MOP_DOWNWARD_STORING
+#define RPL_MOP_DOWNWARD_STORING   0
+#endif
+
+#if !RPL_MOP_DOWNWARD_STORING
+#undef UIP_CONF_MAX_ROUTES
+#define UIP_CONF_MAX_ROUTES   0
+#endif
+ 
+//ping
+#ifndef UIP_CONF_SUPPORT_ECHO    
+#define UIP_CONF_SUPPORT_ECHO  0
+#endif
+
+//if send icmpv6 error
+#ifndef UIP_CONF_SUPPORT_ICMP6_ERROR_OUTPUT
+#define UIP_CONF_SUPPORT_ICMP6_ERROR_OUTPUT	  0
+#endif
+/*-------------------------------------------------------*/
 
 /**********************************orpl by yangqiangqiang***************************************/
 /*-------------------------------------------------------*/
@@ -367,14 +384,120 @@ typedef uint32_t rtimer_clock_t;
 #define orpl_bitmap_limit(lladdr)  1
 #endif
 /*-------------------------------------------------------*/
+/*-------------------------------------------------------*/
+/* netstack encrypt config */
+
+#define NETSTACK_CONF_WITH_ENCRYPT  0
+
+#if NETSTACK_CONF_WITH_ENCRYPT
+#define NETSTACK_CONF_LLSEC noncoresec_driver
+#define NETSTACK_CONF_FRAMER  noncoresec_framer
+#ifndef LLSEC802154_CONF_SECURITY_LEVEL
+#define LLSEC802154_CONF_SECURITY_LEVEL   FRAME802154_SECURITY_LEVEL_MIC_32
+#endif /* LLSEC802154_CONF_SECURITY_LEVEL */
+#endif
+
+#ifndef AES_128_CONF   
+#define AES_128_CONF aes_128_driver
+#endif   
+/*-------------------------------------------------------*/
 
 #ifdef NETSTACK_CONF_RDC_CHANNEL_CHECK_INTERVAL
 #define NETSTACK_RDC_CHANNEL_CHECK_INTERVAL  NETSTACK_CONF_RDC_CHANNEL_CHECK_INTERVAL
 #else
 #define NETSTACK_RDC_CHANNEL_CHECK_INTERVAL   30
 #endif
-#define NETSTACK_RDC_CHANNEL_CHECK_RATE  8
+
+#define NETSTACK_RDC_CHANNEL_CHECK_RATE  4
+#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE      4// 8
+
 /*---------------------------------------------------------------------------*/
+/*------------time synch configure----------------*/
+
+#define CONTIKI_CONF_NETSYNCH  1
+#if CONTIKI_CONF_NETSYNCH
+#define SCHEDULE_SIZE 18
+#endif
+/*------------------------------------------------*/
+/**-------------low power configure ---------------*/
+#ifndef CC1310_CONF_LOWPOWER
+#define CC1310_CONF_LOWPOWER  1
+#endif
+
+#if CC1310_CONF_LOWPOWER
+/*no need probe */ 
+#undef RPL_CONF_WITH_PROBING
+#define RPL_CONF_WITH_PROBING      0   
+
+/* RPL does not use RPL's downwards routing */
+#undef RPL_CONF_MOP
+#define RPL_CONF_MOP RPL_MOP_NO_DOWNWARD_ROUTES
+
+/* RPL does not use routing entries */
+#undef UIP_CONF_MAX_ROUTES
+#define UIP_CONF_MAX_ROUTES  0
+
+#define NETSTACK_CONF_RDC_CHANNEL_CHECK_INTERVAL  60
+
+// conf if support change dio interval
+#ifndef RPL_CONF_CHANGE_DIO_INTERVAL
+#define RPL_CONF_CHANGE_DIO_INTERVAL  0
+#endif
+
+#undef  RPL_CONF_DIS_INTERVAL
+#define RPL_CONF_DIS_INTERVAL   (1*60)    // 300s
+
+#undef  RPL_CONF_MAX_DAG_PER_INSTANCE
+#define RPL_CONF_MAX_DAG_PER_INSTANCE   1
+
+#undef  UIP_CONF_SUPPORT_ECHO
+#define UIP_CONF_SUPPORT_ECHO  0
+
+#undef  UIP_CONF_SUPPORT_ICMP6_ERROR_OUTPUT
+#define UIP_CONF_SUPPORT_ICMP6_ERROR_OUTPUT	  0
+
+/** Period for uip-ds6 periodic task*/
+#ifndef UIP_DS6_CONF_PERIOD
+#define UIP_DS6_CONF_PERIOD   (CLOCK_SECOND)
+#endif
+
+//wake dev : complie example/ipv6/multicast-new root.c file
+#if 1
+#define WAKEUP_NODE_DEV_FLAG             0
+#define UNWAKEUP_NODE_DEV_FLAG           0
+#define CHECK_WAKEUP_DEV_FLAG            0
+
+#define WAKEUP_NODE_DEV   (WAKEUP_NODE_DEV_FLAG | UNWAKEUP_NODE_DEV_FLAG | CHECK_WAKEUP_DEV_FLAG)
+
+#define WAKEUP_NODE_RFCHANNEL  2    //4
+#if  WAKEUP_NODE_DEV
+#undef  CONTIKI_CONF_NETSYNCH
+#define CONTIKI_CONF_NETSYNCH  0
+#endif
+
+#if ((WAKEUP_NODE_DEV_FLAG & UNWAKEUP_NODE_DEV_FLAG)|(WAKEUP_NODE_DEV_FLAG & CHECK_WAKEUP_DEV_FLAG)| \
+    (UNWAKEUP_NODE_DEV_FLAG & CHECK_WAKEUP_DEV_FLAG))
+#error you only can select one from WAKEUP_NODE_DEV_FLAG , UNWAKEUP_NODE_DEV_FLAG and CHECK_WAKEUP_DEV_FLAG or unselect.
+#endif
+
+#endif /*1 */
+
+#endif /* CC1310_CONF_LOWPOWER */
+
+/*------------------------------------------------*/
+/*-------------uart  configure -------------------*/
+#undef  ROOTNODE
+#define ROOTNODE  0
+
+#ifndef HW_NEW_BIG
+#define HW_NEW_BIG 0
+#endif 
+
+
+
+#define HEAT_METER 1 // baud rate 2400
+/*------------------------------------------------*/
+
 #include "board.h"
 #include "hitlib.h"
 

@@ -35,7 +35,7 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_LED          IOID_30
+#define BOARD_IOID_LED          IOID_25
 #define BOARD_LED              (1 << BOARD_IOID_LED)
 /** @} */
 /*---------------------------------------------------------------------------*/
@@ -111,7 +111,8 @@
 
 #define BOARD_IOID29         IOID_29
 #define BOARD_IO29             (1 << BOARD_IOID29)
-
+#define BOARD_IOID30         IOID_30
+#define BOARD_IO30             (1 << BOARD_IOID30)
 
 /*---------------------------------------------------------------------------*/
 /**

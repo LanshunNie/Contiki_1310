@@ -78,7 +78,10 @@ configure_unused_pins(void)
   ti_lib_gpio_pin_write(BOARD_LED,0);
   ti_lib_ioc_pin_type_gpio_output(BOARD_IOID26);
   ti_lib_gpio_pin_write(BOARD_IO26,0);
-  ti_lib_ioc_pin_type_gpio_output(BOARD_IOID25); 
+
+  ti_lib_ioc_pin_type_gpio_output(BOARD_IOID30);
+  ti_lib_gpio_pin_write(BOARD_IO30,0);
+  
   
 }
 

@@ -46,8 +46,8 @@
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 
-#define UDP_CLIENT_PORT	8765
-#define UDP_SERVER_PORT	5678
+#define UDP_CLIENT_PORT 8765
+#define UDP_SERVER_PORT 5678
 
 #define UDP_EXAMPLE_ID  190
 
@@ -108,11 +108,11 @@ tcpip_handler(void)
             break; 
          }       
       } 
-      printf("totle app_duplicate:%u\n", app_duplicate);  
+      // printf("totle app_duplicate:%u\n", app_duplicate);  
       printf("addr :%2x, send count: %u ,receive count: %u,duplicate count: %u\n",
       node_array[i].addr, uip_htons(count), node_array[i].upcount,node_array[i].duplicate_count);
      
-      printf("addr :%2x, node rank: %u\n",node_array[i].addr,node_rank);
+      // printf("addr :%2x, node rank: %u\n",node_array[i].addr,node_rank);
 
 #if SERVER_REPLY
     PRINTF("DATA sending reply\n");
@@ -138,7 +138,7 @@ print_local_addresses(void)
       PRINTF("\n");
       // hack to make address "final" 
       if (state == ADDR_TENTATIVE) {
-	uip_ds6_if.addr_list[i].state = ADDR_PREFERRED;
+  uip_ds6_if.addr_list[i].state = ADDR_PREFERRED;
       }
     }
   }

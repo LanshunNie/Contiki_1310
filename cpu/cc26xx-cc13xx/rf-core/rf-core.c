@@ -480,7 +480,9 @@ PROCESS_THREAD(rf_core_process, ev, data)
         packetbuf_set_datalen(len);
            
         NETSTACK_RDC.input();
+        // printf("radio input\n");
         // packet_input_test(len);//test
+        // printf("bao %d\n",len);
        
       }
       

@@ -51,13 +51,13 @@
 #include "net/ip/uip-debug.h"
 
 #ifndef PERIOD
-#define PERIOD  5
+#define PERIOD  1
 #endif
 
-#define START_INTERVAL		(10 * CLOCK_SECOND)
-#define SEND_INTERVAL		(PERIOD * CLOCK_SECOND)
+#define START_INTERVAL    (10 * CLOCK_SECOND)
+#define SEND_INTERVAL   (PERIOD * CLOCK_SECOND)
 #define SEND_TIME   (random_rand() % (SEND_INTERVAL))
-#define MAX_PAYLOAD_LEN		30
+#define MAX_PAYLOAD_LEN   30
 
 static struct uip_udp_conn *client_conn;
 static uip_ipaddr_t server_ipaddr;
@@ -117,8 +117,9 @@ send_packet(void *ptr)
   seq_id++;
   id=uip_htons(seq_id);
   rpl_rank_t curr_rank = dag->rank;
-  PRINTF("DATA send to %d '%d'\n",
-         server_ipaddr.u8[sizeof(server_ipaddr.u8) - 1], seq_id);
+  PRINTF("DATA send to '%d'\n", seq_id);
+  // PRINTF("DATA send to %d '%d'\n",
+  //        server_ipaddr.u8[sizeof(server_ipaddr.u8) - 1], seq_id);
   memcpy(buf,&id,sizeof(seq_id));
   pos+= sizeof(seq_id);
   memcpy(buf+pos,&curr_rank, sizeof(curr_rank));
@@ -147,7 +148,7 @@ print_local_addresses(void)
       PRINTF("\n");
       // hack to make address "final" 
       if (state == ADDR_TENTATIVE) {
-	uip_ds6_if.addr_list[i].state = ADDR_PREFERRED;
+  uip_ds6_if.addr_list[i].state = ADDR_PREFERRED;
       }
     }
   }
@@ -210,10 +211,10 @@ PROCESS_THREAD(udp_client_process, ev, data)
   }
   udp_bind(client_conn, UIP_HTONS(UDP_CLIENT_PORT)); 
 
- PRINTF("Created a connection with the server ");
-PRINT6ADDR(&client_conn->ripaddr);
- PRINTF(" local/remote port %u/%u\n",
-	UIP_HTONS(client_conn->lport), UIP_HTONS(client_conn->rport));
+ // PRINTF("Created a connection with the server ");
+//PRINT6ADDR(&client_conn->ripaddr);
+ // PRINTF(" local/remote port %u/%u\n",
+  //UIP_HTONS(client_conn->lport), UIP_HTONS(client_conn->rport));
 
 #if WITH_COMPOWER
   powertrace_sniff(POWERTRACE_ON);

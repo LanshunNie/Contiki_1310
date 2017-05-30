@@ -154,7 +154,7 @@ static const uint8_t magic[] = { 0x53, 0x6E, 0x69, 0x66 };
 #ifdef PROP_MODE_CONF_RSSI_THRESHOLD
 #define PROP_MODE_RSSI_THRESHOLD PROP_MODE_CONF_RSSI_THRESHOLD
 #else
-#define PROP_MODE_RSSI_THRESHOLD  0xA6
+#define PROP_MODE_RSSI_THRESHOLD  0xA6//0xB0==>-80 0xAB==>-85 0xA6==>-90
 #endif
 
 static int8_t rssi_threshold = PROP_MODE_RSSI_THRESHOLD;
@@ -461,7 +461,7 @@ rx_on_prop(void)
     ENERGEST_ON(ENERGEST_TYPE_LISTEN);
   }
 
-
+ ti_lib_gpio_pin_write(BOARD_IO30,1);  
   return ret;
 }
 /*---------------------------------------------------------------------------*/
@@ -745,13 +745,14 @@ transmit(unsigned short transmit_len)
   if(was_off) {
     off();
   }
-
+  // printf("radio send\n");
    return ret;
 }
 /*---------------------------------------------------------------------------*/
 static int
 send(const void *payload, unsigned short payload_len)
 {
+  
   prepare(payload, payload_len);
   return transmit(payload_len);
 }
@@ -854,7 +855,7 @@ channel_clear(void)
     
     start = RTIMER_NOW();  
     
-    while(RTIMER_CLOCK_LT(RTIMER_NOW(),start+17)){} //RTIMER_ARCH_SECOND / 3500=18
+    while(RTIMER_CLOCK_LT(RTIMER_NOW(),start+18)){} //RTIMER_ARCH_SECOND / 3500=18
   
   }
 
@@ -908,7 +909,7 @@ pending_packet(void)
 static int
 on(void)
 {
- // ti_lib_gpio_pin_write(BOARD_IO26,1);  
+
   /*
    * Request the HF XOSC as the source for the HF clock. Needed before we can
    * use the FS. This will only request, it will _not_ perform the switch.
@@ -975,7 +976,7 @@ on(void)
 static int
 off(void)
 {
- 
+  ti_lib_gpio_pin_write(BOARD_IO30,0); 
   rfc_dataEntry_t *entry;
 
   /*
@@ -1003,7 +1004,7 @@ off(void)
   entry = (rfc_dataEntry_t *)rx_buf_1;
   entry->status = DATA_ENTRY_STATUS_PENDING;
 
- // ti_lib_gpio_pin_write(BOARD_IO26,0); 
+
   return RF_CORE_CMD_OK;
 }
 /*---------------------------------------------------------------------------*/

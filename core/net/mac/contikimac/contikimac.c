@@ -53,7 +53,7 @@
 #include "sys/rtimer.h"
 #include "clock.h"
 #include <string.h>
-
+#include "ti-lib.h"
 //#if CONTIKI_TARGET_TRXEB1120
 //#include "cc1120.h"
 //#endif
@@ -525,10 +525,7 @@ powercycle(struct rtimer *t, void *ptr)
           break;
         }
         
-        //if(!packet_is_for_us()){
-          //powercycle_turn_radio_off();
-          //break;
-        //} 
+       
 
         schedule_powercycle(t, CCA_CHECK_TIME + CCA_SLEEP_TIME);
         PT_YIELD(&pt);
@@ -696,6 +693,8 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
       int ret = NETSTACK_RADIO.transmit(transmit_len);
 #else
       NETSTACK_RADIO.transmit(transmit_len);
+
+
 #endif
 
 #if RDC_CONF_HARDWARE_ACK
@@ -760,10 +759,12 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 
 // inactive don't send packet ,just return mac_tx_ok ;
 #if CC1310_CONF_LOWPOWER 
- if(get_active_flag()== 0 ||get_idle_time()<= 10)
+ if(get_active_flag()== 0 ||get_idle_time()<= 10){
+   printf("mac 763\n");
    return MAC_TX_OK;
+ }
 #endif
-
+  
   /* Exit if RDC and radio were explicitly turned off */
    if(!contikimac_is_on && !contikimac_keep_radio_on) {
     PRINTF("contikimac: radio is turned off\n");
@@ -933,6 +934,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
       int ret = NETSTACK_RADIO.transmit(transmit_len);
 #else
       NETSTACK_RADIO.transmit(transmit_len);
+
 #endif
 
 #if RDC_CONF_HARDWARE_ACK
@@ -948,21 +950,24 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
         }
       } else if (ret == RADIO_TX_NOACK) {
       } else if (ret == RADIO_TX_COLLISION) {
-          PRINTF("contikimac: collisions while sending\n");
+          printf("contikimac: collisions while sending1\n");
           collisions++;
       }
       wt = RTIMER_NOW();
       while(RTIMER_CLOCK_LT(RTIMER_NOW(), wt + INTER_PACKET_INTERVAL)) { }
 #else /* RDC_CONF_HARDWARE_ACK */
      /* Wait for the ACK packet */
+
       wt = RTIMER_NOW();
       while(RTIMER_CLOCK_LT(RTIMER_NOW(), wt + INTER_PACKET_INTERVAL)) { }
 
+      
       if(!is_broadcast && (NETSTACK_RADIO.receiving_packet() ||
                            NETSTACK_RADIO.pending_packet() ||
                            NETSTACK_RADIO.channel_clear() == 0)) {
         uint8_t ack_len = ACK_LEN; 
         uint8_t ackbuf[ack_len];
+
         wt = RTIMER_NOW();
         while(RTIMER_CLOCK_LT(RTIMER_NOW(), wt + AFTER_ACK_DETECTECT_WAIT_TIME)) { }
 
@@ -974,12 +979,14 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #endif
           break;
         } else {
-          PRINTF("contikimac: collisions while sending\n");
+          printf("contikimac: collisions while sending2\n");
           collisions++;
         }
       }
 #endif /* RDC_CONF_HARDWARE_ACK */
     }
+
+
   }
 
   off();
@@ -1017,10 +1024,10 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #if TEST_NOACK  
     mac_noack_count ++;
 #endif
-  //  printf("MAC_TX_NOACK\n");
+   printf("MAC_TX_NOACK\n");
   } else {
     ret = MAC_TX_OK;
- //   printf("MAC_TX_OK\n");
+   // printf("MAC_TX_OK\n");
   }
 
 #if WITH_PHASE_OPTIMIZATION
@@ -1164,9 +1171,9 @@ input_packet(void)
   original_dataptr = packetbuf_dataptr();
 #endif
 
-  if(!we_are_receiving_burst) {
-    off();
-  }
+  // if(!we_are_receiving_burst) { by huang xiaobing
+  //   off();
+  // }
 
   if(packetbuf_datalen() <= ACK_LEN) {
     /* Ignore ack packets */
@@ -1202,7 +1209,7 @@ input_packet(void)
       duplicate = mac_sequence_is_duplicate();
       if(duplicate) {
         /* Drop the packet. */
-        PRINTF("contikimac: Drop duplicate\n");
+        printf("contikimac: Drop duplicate\n");
       } else {
         mac_sequence_register_seqno();
       }
@@ -1248,6 +1255,8 @@ input_packet(void)
 
       if(!duplicate) {
         NETSTACK_MAC.input();
+
+        PRINTDEBUG("contikimac input\n");
       }
       return;
     

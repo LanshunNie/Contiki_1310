@@ -522,7 +522,7 @@ tcpip_handler(void)
     printf("\n");
     printf("receive time :%d,%d,%d,%d\n",msg.caltime.hour,msg.caltime.minute,msg.caltime.sec,msg.authority_level);   
   #endif
-    //printf("receive time :%d,%d,%d,%d\n",msg.caltime.hour,msg.caltime.minute,msg.caltime.sec,msg.authority_level);
+    printf("receive time :%d,%d,%d,%d\n",msg.caltime.hour,msg.caltime.minute,msg.caltime.sec,msg.authority_level);
     netsynch_receiver(msg);
   }
 }
