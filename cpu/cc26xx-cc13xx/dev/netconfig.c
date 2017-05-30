@@ -2,7 +2,7 @@
 #include "contiki-conf.h"
 #include "dev/netconfig.h"
 #include "stdio.h"
-
+#include "node-id.h"
 #if CONTIKI_CONF_NETSYNCH
 #include "netsynch.h"
 #include "task-schedule.h"
@@ -98,7 +98,7 @@ void set_active_flag()
   active_flag= init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
 
   #if !ROOTNODE
-      printf("active flag:%u\n",active_flag);
+     //printf("active flag:%u\n",active_flag);
   #endif
  //  active_flag = 1;
 }

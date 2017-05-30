@@ -9,6 +9,7 @@
 #include "lib/sensors.h"
 #include "lpm.h"
 //Net Setting
+#include "node-id.h"
 #include "ieee-addr.h"
 #include "contiki-net.h"
 #include "net/netstack.h"
@@ -22,9 +23,9 @@
 
  // #include "adc.h"
 
-  #if ROOTNODE
-    #include "correct_time.h"
-  #endif
+#if ROOTNODE
+  #include "correct_time.h"
+#endif
  
 #endif
 
@@ -56,6 +57,10 @@ set_rf_params(void)
 
   /* Populate linkaddr_node_addr. Maintain endianness */
   memcpy(&linkaddr_node_addr, &ext_addr[8 - LINKADDR_SIZE], LINKADDR_SIZE);
+
+  /****************set node-id**********************/
+  node_id_burn(short_addr);
+  printf("node_id: %x\n",node_id);
 
   NETSTACK_RADIO.set_value(RADIO_PARAM_PAN_ID, IEEE802154_PANID);
   NETSTACK_RADIO.set_value(RADIO_PARAM_16BIT_ADDR, short_addr);
@@ -116,6 +121,15 @@ main(void)
   printf("%s\n", NETSTACK_MAC.name);
   printf(" RDC: ");
   printf("%s\n", NETSTACK_RDC.name);
+  
+
+  netstack_init();
+  set_rf_params();
+#if NETSTACK_CONF_WITH_IPV6
+  memcpy(&uip_lladdr.addr, &linkaddr_node_addr, sizeof(uip_lladdr.addr));
+  queuebuf_init();
+  process_start(&tcpip_process, NULL);
+#endif /* NETSTACK_CONF_WITH_IPV6 */
 
   /****************by xiaobing **************/
   #if CONTIKI_CONF_NETSYNCH
@@ -131,14 +145,6 @@ main(void)
 
   #endif
 /******************************/
-
-  netstack_init();
-  set_rf_params();
-#if NETSTACK_CONF_WITH_IPV6
-  memcpy(&uip_lladdr.addr, &linkaddr_node_addr, sizeof(uip_lladdr.addr));
-  queuebuf_init();
-  process_start(&tcpip_process, NULL);
-#endif /* NETSTACK_CONF_WITH_IPV6 */
 
   autostart_start(autostart_processes);
 

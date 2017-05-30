@@ -25,7 +25,7 @@
 #include "net/ip/uip-udp-packet.h"
 #include "net/linkaddr.h"
 
-//#include "node_function.h"
+#include "node_function.h"
 #include "net/netstack.h"
 
 #include "netsynch.h"

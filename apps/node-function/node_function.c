@@ -8,7 +8,6 @@
 #include "net/ip/uip.h"
 #include "net/ipv6/uip-ds6.h"
 #include "net/rpl/rpl.h"
-// #include "cc1120.h"
 // #include "adc.h"
 #include "contikimac.h"
 
@@ -21,7 +20,6 @@
 #else
 #define PRINTF(...)
 #endif
-
 // static uint64_t last_cpu      = 0;
 // static uint64_t last_lpm      = 0;
 // static uint64_t last_transmit = 0;
@@ -164,7 +162,7 @@ void get_system_monitor_msg(uint8_t array[],int length)
   array[INDEX_TIME_DIFF]        = netsynch_get_offset();
 
   array[INDEX_RESTART_COUNT] = restart_count;
-
+  
   struct netsync_cal_s *cal_info = get_autocal_info();
 
   memcpy(array+INDEX_AUTOCAL_INTERVAL,&(cal_info->autocal_interval) ,4);

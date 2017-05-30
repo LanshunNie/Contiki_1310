@@ -154,7 +154,7 @@ static const uint8_t magic[] = { 0x53, 0x6E, 0x69, 0x66 };
 #ifdef PROP_MODE_CONF_RSSI_THRESHOLD
 #define PROP_MODE_RSSI_THRESHOLD PROP_MODE_CONF_RSSI_THRESHOLD
 #else
-#define PROP_MODE_RSSI_THRESHOLD  0xB0//0xA6
+#define PROP_MODE_RSSI_THRESHOLD  0xA6//0xB0
 #endif
 
 static int8_t rssi_threshold = PROP_MODE_RSSI_THRESHOLD;

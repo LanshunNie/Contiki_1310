@@ -34,10 +34,18 @@
 
 #ifndef NODE_ID_H_
 #define NODE_ID_H_
+#include <inttypes.h>
+
+#define LENGTH_OF_METER_READ_CMD  30
+
+
+uint8_t  cmd_read_meter[LENGTH_OF_METER_READ_CMD];
+uint16_t restart_count;
 
 void node_id_restore(void);
 void node_id_burn(unsigned short node_id);
 
 extern unsigned short node_id;
+
 
 #endif /* NODE_ID_H_ */

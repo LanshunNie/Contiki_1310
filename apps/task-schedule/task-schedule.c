@@ -21,7 +21,7 @@
 #include "contiki.h"
 #include "lib/list.h"
 #include "net/netstack.h"
-//#include "node-id.h"
+#include "node-id.h"
 #include "net/rpl/rpl.h"
 #include "netsynch.h"
 #include "contiki-net.h"
@@ -37,7 +37,6 @@
 
 LIST(task_schedule_list);
 
-unsigned short node_id = 1;////////////// by xiaobing
 static char initialized;
 static struct ctimer reset_timer;
 
@@ -109,8 +108,10 @@ task_schedule_init(void)
 }
 /*---------------------------------------------------------------------------*/
 static int calculate_hash(void){
-  
-  return( UIP_HTONS(node_id) % HASH_SCHEDULE );
+
+  printf("node_id %x\n",node_id);
+  printf("hash schedule %d\n",node_id % HASH_SCHEDULE);
+  return( node_id % HASH_SCHEDULE );
 
 }
 /*---------------------------------------------------------------------------*/
@@ -150,7 +151,7 @@ static clock_time_t get_Start_Time(void){
             
       start_time = guard_time + start_index * TIME_SLOAT * 2 + calculate_hash()*time_interval() * 2 + (random_rand() % ( 2 * time_interval()) ) * get_rank();
 
-      return CLOCK_SECOND;
+      
 #if ROOTNODE
 
       last_idel_time = get_idle_time();
