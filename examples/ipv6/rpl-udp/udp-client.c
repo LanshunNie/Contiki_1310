@@ -187,9 +187,9 @@ set_global_address(void)
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(udp_client_process, ev, data)
 {
-  // static struct etimer periodic;
-  // static struct ctimer backoff_timer;
-  static struct task_schedule read_data_ts;
+  static struct etimer periodic;
+  static struct ctimer backoff_timer;
+  
 #if WITH_COMPOWER
   static int print = 0;
 #endif
@@ -222,31 +222,31 @@ PROCESS_THREAD(udp_client_process, ev, data)
   powertrace_sniff(POWERTRACE_ON);
 #endif
 
-  // etimer_set(&periodic, SEND_INTERVAL);
+   etimer_set(&periodic, SEND_INTERVAL);
 
-   task_schedule_set(&read_data_ts,MUST_TASK,TASK_READY,TASK_PERIOD_DEFAULT,send_packet,NULL);
+  
 
   while(1) {
     PROCESS_YIELD();
     if(ev == tcpip_event) {
       tcpip_handler();
     }
-// if(ev == PROCESS_EVENT_TIMER) {
+ if(ev == PROCESS_EVENT_TIMER) {
 
-//     if(data==&periodic) {
-//       etimer_reset(&periodic);
-//       ctimer_set(&backoff_timer, SEND_TIME, send_packet, NULL);          
-// #if WITH_COMPOWER
-//       if (print == 0) {
-//   powertrace_print("#P");
-//       }
-//       if (++print == 3) {
-//   print = 0;
-//       }
-// #endif
+     if(data==&periodic) {
+      etimer_reset(&periodic);
+      ctimer_set(&backoff_timer, SEND_TIME, send_packet, NULL);          
+ #if WITH_COMPOWER
+      if (print == 0) {
+   			powertrace_print("#P");
+       }
+       if (++print == 3) {
+  print = 0;
+      }
+ #endif
 
-//     }
-// }
+    }
+ }
   }
 
   PROCESS_END();

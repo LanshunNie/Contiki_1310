@@ -337,7 +337,7 @@ httpd_simple_get_script(const char *name)
 
 #endif /* WEBSERVER */
 /*---------------------------------------------------------------------------*/
-#if 0
+#if 1
 static void
 print_local_addresses(void)
 {
@@ -349,9 +349,9 @@ print_local_addresses(void)
     state = uip_ds6_if.addr_list[i].state;
     if(uip_ds6_if.addr_list[i].isused &&
        (state == ADDR_TENTATIVE || state == ADDR_PREFERRED)) {
-      //PRINTA(" ");
+      PRINTA(" ");
       uip_debug_ipaddr_print(&uip_ds6_if.addr_list[i].ipaddr);
-      //PRINTA("\n");
+      PRINTA("\n");
     }
   }
 }
@@ -420,7 +420,7 @@ set_prefix_64(uip_ipaddr_t *prefix_64)
   
   if(dag != NULL) {
     rpl_set_prefix(dag, &prefix, 64);
-    PRINTA("a new RPL dag\n");
+    printf("a new RPL dag\n");
   }
 }
 
@@ -536,9 +536,9 @@ PROCESS_THREAD(border_router_process, ev, data)
   NETSTACK_MAC.off(1);
    //NETSTACK_MAC.off(0);
 
-//#if DEBUG || 1
- // print_local_addresses();
-//#endif
+  #if DEBUG || 1
+   print_local_addresses();
+  #endif
   
   server_conn = udp_new(NULL, UIP_HTONS(UDP_CLIENT_PORT), NULL);
   if(server_conn == NULL) {
@@ -546,26 +546,20 @@ PROCESS_THREAD(border_router_process, ev, data)
   }
   udp_bind(server_conn, UIP_HTONS(UDP_SERVER_PORT));
   
-  etimer_set(&et, CLOCK_SECOND);
+  
   while(1) {
     PROCESS_YIELD();
-    //  if(ev == tcpip_event) {
+     if(ev == tcpip_event) {
 
 
 
       
-    //   tcpip_handler_border();
+      tcpip_handler_border();
       
-    //   // printf("over\n");
+      // printf("over\n");
 
-    // }
+    }
 
-    if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
-     {
-
-      printf("over");
-      etimer_set(&et,CLOCK_SECOND);
-     }
    
     // else if (ev == sensors_event ) {//&& data == &button_sensor
     //   rpl_repair_root(RPL_DEFAULT_INSTANCE);
