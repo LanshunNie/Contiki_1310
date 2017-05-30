@@ -109,7 +109,7 @@ void set_active_flag()
   //   logic_test(logic);
   // }
 
-  //  active_flag = 1;
+    active_flag = 0;
 
 }
 #endif

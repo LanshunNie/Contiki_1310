@@ -185,7 +185,7 @@ main(void)
       watchdog_periodic();
     } while(r > 0);
     
-  #if ROOTNODE
+  #if !ROOTNODE
     lpm_drop();
   #endif
     

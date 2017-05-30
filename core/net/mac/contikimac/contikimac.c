@@ -53,9 +53,6 @@
 #include "clock.h"
 #include <string.h>
 #include "ti-lib.h"
-//#if CONTIKI_TARGET_TRXEB1120
-//#include "cc1120.h"
-//#endif
 
 #if UIP_CONF_IPV6_ORPL_BITMAP
 #include "net/orpl-bitmap/orpl-bitmap.h"
