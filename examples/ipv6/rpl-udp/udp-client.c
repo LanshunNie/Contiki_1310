@@ -40,7 +40,8 @@
 #endif
 #include <stdio.h>
 #include <string.h>
-#include "dev/leds.h"
+
+#include "task-schedule.h"
 
 #define UDP_CLIENT_PORT 8765
 #define UDP_SERVER_PORT 5678
@@ -126,7 +127,7 @@ send_packet(void *ptr)
   pos+= sizeof(curr_rank);
   uip_udp_packet_sendto(client_conn, buf, pos,
                         &server_ipaddr, UIP_HTONS(UDP_SERVER_PORT));
-  leds_toggle(LEDS_GREEN); 
+  
   PRINT6ADDR(&server_ipaddr);
   PRINTF("\n");
 }
@@ -186,8 +187,9 @@ set_global_address(void)
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(udp_client_process, ev, data)
 {
-  static struct etimer periodic;
-  static struct ctimer backoff_timer;
+  // static struct etimer periodic;
+  // static struct ctimer backoff_timer;
+  static struct task_schedule read_data_ts;
 #if WITH_COMPOWER
   static int print = 0;
 #endif
@@ -220,28 +222,31 @@ PROCESS_THREAD(udp_client_process, ev, data)
   powertrace_sniff(POWERTRACE_ON);
 #endif
 
-  etimer_set(&periodic, SEND_INTERVAL);
+  // etimer_set(&periodic, SEND_INTERVAL);
+
+   task_schedule_set(&read_data_ts,MUST_TASK,TASK_READY,TASK_PERIOD_DEFAULT,send_packet,NULL);
+
   while(1) {
     PROCESS_YIELD();
     if(ev == tcpip_event) {
       tcpip_handler();
     }
-if(ev == PROCESS_EVENT_TIMER) {
+// if(ev == PROCESS_EVENT_TIMER) {
 
-    if(data==&periodic) {
-      etimer_reset(&periodic);
-      ctimer_set(&backoff_timer, SEND_TIME, send_packet, NULL);          
-#if WITH_COMPOWER
-      if (print == 0) {
-  powertrace_print("#P");
-      }
-      if (++print == 3) {
-  print = 0;
-      }
-#endif
+//     if(data==&periodic) {
+//       etimer_reset(&periodic);
+//       ctimer_set(&backoff_timer, SEND_TIME, send_packet, NULL);          
+// #if WITH_COMPOWER
+//       if (print == 0) {
+//   powertrace_print("#P");
+//       }
+//       if (++print == 3) {
+//   print = 0;
+//       }
+// #endif
 
-    }
-}
+//     }
+// }
   }
 
   PROCESS_END();

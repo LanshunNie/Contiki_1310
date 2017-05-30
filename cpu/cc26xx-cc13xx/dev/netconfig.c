@@ -80,11 +80,11 @@ uint16_t get_init_flag(){
 // void set_active_flag(int hour,int minute,int second_s)
 void set_active_flag()
 {
-  //   if(timenow.sec%4==0){
+    if(timenow.sec%20==0){
 
         // active_flag=1;
 
-  //       active_flag=active_flag^1;
+        // active_flag=active_flag^1;
         
   //   //     // printf("%d  ",days);
   //   //     // printf(" %d",timenow.hour);
@@ -93,7 +93,7 @@ void set_active_flag()
   // //  //active_flag=0;
   //   //     logic=logic^1;
   //   //     led_toggle(logic);
-  //   }
+    }
   
     
 //   calendar_time  cal_time_now;
@@ -112,12 +112,12 @@ void set_active_flag()
   }
 #endif
   init_net_flag=1;
-  active_flag= init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
+  // active_flag= init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
 
   #if !ROOTNODE
 //  printf("active flag:%u\n",active_flag);
   #endif
- // active_flag = 1;
+ active_flag = 1;
 }
 #endif
 

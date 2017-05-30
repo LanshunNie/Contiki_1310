@@ -30,7 +30,7 @@
 /*---------------------------------------------------------------------------*/
 #include "cc26xx-uart.h"
 #include "ti-lib.h"
-
+#include "contiki-conf.h"
 #include <string.h>
 /*---------------------------------------------------------------------------*/
 int
@@ -47,11 +47,19 @@ puts(const char *str)
   if(str == NULL) {
     return 0;
   }
+  #if ROOTNODE
+  cc26xx_uart_write_byte(0300);//by huangxiaobing. in order to support tunslip6
+  #endif
+
   for(i = 0; i < strlen(str); i++) {
     cc26xx_uart_write_byte(str[i]);
   }
+
   cc26xx_uart_write_byte('\n');
 
+  #if ROOTNODE
+  cc26xx_uart_write_byte(0300);//by huangxiaobing. in order to support tunslip6
+  #endif
   /*
    * Wait for the line to go out. This is to prevent garbage when used between
    * UART on/off cycles

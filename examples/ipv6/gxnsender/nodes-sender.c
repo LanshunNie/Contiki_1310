@@ -37,8 +37,6 @@
 #include "simple-udp.h"
 #include <stdlib.h>
 
-
-#include "dev/leds.h"
  
 #include "net/ip/uip-debug.h"
 #include <stdio.h>
@@ -126,8 +124,7 @@ static void sendCmd(void *p)
     int i;
     
     uint8_t* cmd = (uint8_t *)(p);
-    
-   // leds_toggle(LEDS_GREEN);   
+
 
     for(i=0;i< cmd[1];i++)
     {
@@ -148,7 +145,7 @@ static void send_read_meter_cmd(void *p)
     // print_cmd_array();
    //   printf("cmd[0] is: %x",cmd_read_meter[0]);
 
-   // leds_toggle(LEDS_GREEN);   
+  
 
    if(cmd_read_meter[0] != 0xFF)
    {
@@ -216,7 +213,8 @@ tcpip_handler(void)
   if(uip_newdata()) 
   {
    // printf("1010101010\n");
-  // leds_toggle(LEDS_GREEN); 
+ 
+
     uip_udp_received_data_preprocess();
     appdata_length = (unsigned char)((char *)uip_appdata)[0];
     char *appdata = (char *)malloc((appdata_length +1) * sizeof(char));
@@ -244,7 +242,8 @@ tcpip_handler(void)
         ctl_content_length = (unsigned char) appdata[1];
         if( bitmap_contain_node(appdata_length - 2 - ctl_content_length,appdata + 2))
         {
-       //  leds_toggle(LEDS_ALL);
+      
+
       //    printf("receive upload\n");   
           msg_handler(appdata+34,ctl_content_length);
 
@@ -381,7 +380,8 @@ PROCESS_THREAD(udp_client_process, ev, data)
     if (ev==serial_line_event_message2)
     {
 
-    //  leds_toggle(LEDS_GREEN);   
+    
+    
       memset(ack_buffer,0,MAX_PAYLOAD_LEN);
       data_length =(int)((char *)data)[0];
      // data_length = (unsigned char)((char *)data)[0];

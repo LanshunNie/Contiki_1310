@@ -173,7 +173,7 @@
  */
 /* Don't let contiki-default-conf.h decide if we are an IPv6 build */
 #ifndef NETSTACK_CONF_WITH_IPV6
-#define NETSTACK_CONF_WITH_IPV6              0
+#define NETSTACK_CONF_WITH_IPV6              1
 #endif
 
 #if NETSTACK_CONF_WITH_IPV6
@@ -184,9 +184,9 @@
 #define UIP_CONF_LLH_LEN                     0
 
 /* The size of the uIP main buffer */
-#ifndef UIP_CONF_BUFFER_SIZE
-#define UIP_CONF_BUFFER_SIZE              1000
-#endif
+// #ifndef UIP_CONF_BUFFER_SIZE
+// #define UIP_CONF_BUFFER_SIZE              1000
+// #endif
 
 /* ND and Routing */
 #ifndef UIP_CONF_ROUTER
@@ -487,7 +487,7 @@ typedef uint32_t rtimer_clock_t;
 /*------------------------------------------------*/
 /*-------------uart  configure -------------------*/
 #undef  ROOTNODE
-#define ROOTNODE  0
+#define ROOTNODE  1
 
 #ifndef HW_NEW_BIG
 #define HW_NEW_BIG 0

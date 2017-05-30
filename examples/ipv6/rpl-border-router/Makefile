@@ -5,7 +5,9 @@ CONTIKI=../../..
 
 #linker optimizations
 SMALL=1
-APPS += netsynch task-schedule correct-time
+APPS += udp-fragment
+
+APPS += netsynch task-schedule node-function wake correct-time
 
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 PROJECT_SOURCEFILES += slip-bridge.c

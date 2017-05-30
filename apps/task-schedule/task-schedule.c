@@ -117,6 +117,8 @@ static int calculate_hash(void){
 
 static clock_time_t get_Start_Time(void){
 
+    
+
     if(initialized) {
 
       struct task_schedule *t;

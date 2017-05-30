@@ -11,7 +11,7 @@ endif
 
 APPS += udp-fragment
 
-APPS += netsynch task-schedule node-function
+APPS += netsynch task-schedule correct-time node-function
 
 all: $(CONTIKI_PROJECT)
 MODULES += core/net/ipv6/multicast

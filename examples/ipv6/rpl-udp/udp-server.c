@@ -39,7 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "dev/leds.h"
+
 
 #define DEBUG DEBUG_PRINT
 #include "net/ip/uip-debug.h"
@@ -218,7 +218,7 @@ PROCESS_THREAD(udp_server_process, ev, data)
     PROCESS_YIELD();
     if(ev == tcpip_event) {
       tcpip_handler();
-      leds_toggle(LEDS_GREEN);
+      
     } /*else if (ev == sensors_event && data == &button_sensor) {
       PRINTF("Initiaing global repair\n");
       rpl_repair_root(RPL_DEFAULT_INSTANCE);

@@ -47,7 +47,7 @@
 #include <string.h> /* for memcpy() */
 
 #include "lib/ringbuf.h"
-//#include "dev/leds.h"
+#include <stdio.h>
 
 #ifdef SERIAL_LINE_CONF_BUFSIZE
 #define BUFSIZE SERIAL_LINE_CONF_BUFSIZE
@@ -261,7 +261,8 @@ while(1)
 {
     /* Fill application buffer until newline or empty */
     int c = ringbuf_get(&rxbuf);
-   //  printf("process 0 char is %c\n", c);
+    // printf("%c\n", (uint8_t)c);
+    // printf("process 0 char is %c\n", c);
    // rtimer_set();
     if(c == -1) 
     {

@@ -41,7 +41,6 @@
 #include "net/ip/uip.h"
 #include "net/ipv6/uip-ds6.h"
 #include "net/rpl/rpl.h"
-#include "dev/leds.h"
 #include "net/netstack.h"
 #include "dev/slip.h"
  
@@ -55,7 +54,7 @@
 #include <ctype.h>
 #include "net/ipv6/multicast/uip-mcast6.h"
 #define UIP_MCAST6_CONF_ENGINE UIP_MCAST6_ENGINE_SCF
-#define DEBUG DEBUG_NONE
+#define DEBUG DEBUG_FULL
 #include "net/ip/uip-debug.h"
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
@@ -96,6 +95,9 @@ static struct ctimer ct1;
 
 static int multicast_send_flag = 1;
 static struct task_schedule root_task_ts;
+
+/***************************************************/
+
 /*--------------------------------------------------------*/
 
 PROCESS(border_router_process, "Border router process");
@@ -370,7 +372,8 @@ multicast_send(void * p)
     uip_udp_packet_send(mcast_conn, buffer, buffered_data_length + 1);
 
     sent_to_pan();
-    leds_toggle(LEDS_ALL);
+
+
   }
 }
 
@@ -400,11 +403,12 @@ request_prefix(void)
   slip_send();
   uip_len = 0;
 }
+
 /*---------------------------------------------------------------------------*/
 void
 set_prefix_64(uip_ipaddr_t *prefix_64)
 {
-  
+  // printf("set_prefix_64\n");
   rpl_dag_t *dag;
   uip_ipaddr_t ipaddr;
   memcpy(&prefix, prefix_64, 16);
@@ -413,9 +417,10 @@ set_prefix_64(uip_ipaddr_t *prefix_64)
   uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
   dag = rpl_set_root(RPL_DEFAULT_INSTANCE, &ipaddr);
+  
   if(dag != NULL) {
     rpl_set_prefix(dag, &prefix, 64);
-    printf("a new RPL dag\n");
+    PRINTA("a new RPL dag\n");
   }
 }
 
@@ -430,10 +435,12 @@ tcpip_handler_border(void)
 
   if(uip_newdata()) {
     buffered_data_length = (unsigned char) ((char *)uip_appdata)[0];
-    leds_toggle(LEDS_ALL);
+   
+
+
     // printf("DATA recv  from " );
     // printf("DATA recv  from %d" ,buffered_data_length);
-    // leds_toggle(LEDS_ALL);
+
 
     uip_ip6addr(&server_ipaddr, 0xaaaa,0,0,0,0,0,0,0x0002); 
     //sprintf(buf, "Hello %d", seq_id);//封装在buffer里
@@ -445,7 +452,7 @@ tcpip_handler_border(void)
       memcpy(buffer, (char *)uip_appdata, buffered_data_length + 1);
 
        // multicast_send(NULL);
-       // leds_toggle(LEDS_ALL);
+
        // sent_to_pan();
        // multicast_send_flag = 0;
         // msg_handler(buffer+2,buffered_data_length-1);
@@ -458,7 +465,8 @@ tcpip_handler_border(void)
         }
       // printf("ready send\n");
        // task_schedule_set(&root_task_ts,TEMP_TASK,TASK_READY,TASK_PERIOD_DEFAULT,multicast_send,NULL);
-         // leds_toggle(LEDS_ALL);
+
+
            // multicast_send_flag = 0;
        }
        
@@ -518,6 +526,7 @@ PROCESS_THREAD(border_router_process, ev, data)
   {
     etimer_set(&et, CLOCK_SECOND);
     request_prefix();
+
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
   }
   prepare_mcast();
@@ -536,18 +545,28 @@ PROCESS_THREAD(border_router_process, ev, data)
     PROCESS_EXIT();
   }
   udp_bind(server_conn, UIP_HTONS(UDP_SERVER_PORT));
-
+  
+  etimer_set(&et, CLOCK_SECOND);
   while(1) {
     PROCESS_YIELD();
-     if(ev == tcpip_event) {
+    //  if(ev == tcpip_event) {
 
-      // leds_toggle(LEDS_ALL);
 
-      tcpip_handler_border();
 
-      // printf("over\n");
+      
+    //   tcpip_handler_border();
+      
+    //   // printf("over\n");
 
-    }
+    // }
+
+    if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
+     {
+
+      printf("over");
+      etimer_set(&et,CLOCK_SECOND);
+     }
+   
     // else if (ev == sensors_event ) {//&& data == &button_sensor
     //   rpl_repair_root(RPL_DEFAULT_INSTANCE);
     // }

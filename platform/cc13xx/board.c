@@ -94,8 +94,8 @@ void led_toggle(uint32_t i){
 
 void logic_test(uint32_t i){
 
-  ti_lib_ioc_pin_type_gpio_output(BOARD_IOID26);
-  ti_lib_gpio_pin_write(BOARD_IO26,i);
+  ti_lib_ioc_pin_type_gpio_output(BOARD_IOID30);
+  ti_lib_gpio_pin_write(BOARD_IO30,i);
 
 }
 /*---------------------------------------------------------------------------*/
