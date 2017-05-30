@@ -14,7 +14,6 @@
 #include "contiki-net.h"
 #include "net/netstack.h"
 #include "rf-core/rf-core.h"
-#include "flashdata.h"
 
 //**********************************//
 #if CONTIKI_CONF_NETSYNCH
@@ -88,16 +87,38 @@ main(void)
   printf("supports cc13xx platform\n");
   printf("author HIT-CPSGroup\n");
 
+  /**********************************************/
+  // #if BURN_NODEID
+  #if 0
+
+  restart_count_byte_burn(0);
+  normalbyte_rfchannel_burn(ABNORMAL,0); //ABNORMAL
+  normalbyte_rfchannel_restore();
+  cmd_bytes_burn();
+  restore_meter_cmd();
+  print_cmd_array();
+  
+  #else 
+  normalbyte_rfchannel_burn(1,2);
+  normalbyte_rfchannel_restore();
+
+  restart_count_byte_restore();
+  restart_count++;
+  restart_count_byte_burn(restart_count);
+  printf("restart count %d\n",restart_count );
+
+  #endif /* BURN_NODEID */
+  
+  
+  /*************************************************/
+
+
   ti_lib_int_master_enable(); 
 
   soc_rtc_init();
 
   rtimer_init();
-  /**********************************************/
-
-   // write_to_flash();
-  /*************************************************/
-
+  
   watchdog_init();
   
   process_init(); 

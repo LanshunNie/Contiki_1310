@@ -34,13 +34,31 @@
 
 #ifndef NODE_ID_H_
 #define NODE_ID_H_
+
+#if 1
 #include <inttypes.h>
+
+#define NORMAL   0x01
+#define ABNORMAL 0x00
 
 #define LENGTH_OF_METER_READ_CMD  30
 
+uint8_t channel_byte;  
 
+uint16_t restart_count;  
+uint16_t normal_byte;
 uint8_t  cmd_read_meter[LENGTH_OF_METER_READ_CMD];
-uint16_t restart_count;
+
+void normalbyte_rfchannel_burn(uint8_t normalbyte , uint8_t rfchannel);
+void normalbyte_rfchannel_restore(void);
+
+void restart_count_byte_burn(unsigned short val);
+void restart_count_byte_restore(void);
+
+int cmd_bytes_burn();
+void restore_meter_cmd(void);
+void print_cmd_array(void);
+#endif
 
 void node_id_restore(void);
 void node_id_burn(unsigned short node_id);

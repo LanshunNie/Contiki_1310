@@ -1,8 +1,9 @@
 #ifndef NETCONFIG_H_
 #define NETCONFIG_H_
 
+#include "contiki-conf.h"
+#include "clock.h"
 /************************define hit softtime*************************************/
-
 
 #if CC1310_CONF_LOWPOWER
 

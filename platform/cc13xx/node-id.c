@@ -41,6 +41,21 @@
 
 #include "node-id.h"
 #include <stdio.h>
+#include "flashdata.h"
+#include "netconfig.h"
+
+/*define relative address for store information*/
+#define RESTART_COUNT_ADDR SECTOR_TO_ERASE_START_ADDR
+#define RESTART_COUNT_ADDR_LEN  2
+
+#define NORMALBYTE_RFCHANNEL_ADDR (SECTOR_TO_ERASE_START_ADDR+RESTART_COUNT_ADDR_LEN)
+#define NORMALBYTE_RFCHANNEL_ADDR_LEN 3
+
+#define CMD_ADDR (NORMALBYTE_RFCHANNEL_ADDR+NORMALBYTE_RFCHANNEL_ADDR_LEN)
+#define CMD_ADDR_LEN 30
+
+/*end define relative address*/
+
 
 #define DEBUG 0
 #if DEBUG
@@ -49,7 +64,7 @@
 #define PRINTF(...)
 #endif
 
-unsigned short node_id = 1;
+unsigned short node_id = 0;
 
 /*---------------------------------------------------------------------------*/
 void
@@ -72,14 +87,27 @@ node_id_burn(unsigned short id)
 *  
 */
 
-void normalbyte_rfchannel_burn(uint16_t normalbyte , uint8_t rfchannel)
+void normalbyte_rfchannel_burn(uint8_t normalbyte , uint8_t rfchannel)
 {
-
+  uint8_t rf_data[NORMALBYTE_RFCHANNEL_ADDR_LEN];
+  PRINTF("write normalbyte-- %x to flash\n", normalbyte);
+  PRINTF("write channel byte-- %x to flash\n", rfchannel);
+  rf_data[0] = normalbyte;
+  rf_data[1] = rfchannel;
+  rf_data[2] = 0xff;
+  write_to_flash(rf_data,NORMALBYTE_RFCHANNEL_ADDR,NORMALBYTE_RFCHANNEL_ADDR_LEN);
    
    
 }
 void normalbyte_rfchannel_restore(void)
 {
+  uint8_t normalbyte_restore[2];
+  read_flash(NORMALBYTE_RFCHANNEL_ADDR,normalbyte_restore,2);
+  normal_byte = normalbyte_restore[0];
+  channel_byte = normalbyte_restore[1];
+  set_init_flag(normal_byte);
+  printf("normalbyte restore :%x\n",normal_byte);
+  printf("channel_byte restore %x\n",channel_byte);
     
 }
 
@@ -90,16 +118,26 @@ void normalbyte_rfchannel_restore(void)
 
 void restore_meter_cmd(void)
 {
+  read_flash(CMD_ADDR,cmd_read_meter,CMD_ADDR_LEN);
   
+}
+
+void print_cmd_array(void)
+{
+   uint8_t length = cmd_read_meter[0];
+   for(int i=0;i<length;i++){
+
+      PRINTF("%02x,",cmd_read_meter[i+1]);
+   }
 
 }
 
-
-int cmd_bytes_burn(uint8_t *array)
+int cmd_bytes_burn()
 {
-    
-    
-    return 0;
+   uint8_t cmd_data[CMD_ADDR_LEN]={0x05,0x10,0x5B,0xFE,0x59,0x16};
+   PRINTF("write cmd_meter_data,len %d\n",CMD_ADDR_LEN);
+   write_to_flash(cmd_data,CMD_ADDR,CMD_ADDR_LEN);  
+   return 0;
 }
 
 
@@ -110,12 +148,19 @@ int cmd_bytes_burn(uint8_t *array)
 
 void restart_count_byte_burn(unsigned short val)
 {
-    
-   
+   uint8_t restart_data[RESTART_COUNT_ADDR_LEN];
+   restart_data[0] = val & 0xff;
+   restart_data[1] = val >> 8;
+   PRINTF("write restartcount byte-- %x to flash\n", val);
+   write_to_flash(restart_data,RESTART_COUNT_ADDR,RESTART_COUNT_ADDR_LEN);
+
 }
 void restart_count_byte_restore(void)
 {
     
-    
+   uint8_t read_data[RESTART_COUNT_ADDR_LEN];
+   read_flash(RESTART_COUNT_ADDR,read_data,RESTART_COUNT_ADDR_LEN);
   
+   restart_count=read_data[1]<<8|read_data[0]; 
+   PRINTF("restart count restore %x\n",restart_count);
 }

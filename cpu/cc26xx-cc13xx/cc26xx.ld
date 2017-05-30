@@ -36,10 +36,10 @@ ENTRY(ResetISR)
 MEMORY
 {
     /* Flash Size 128 KB minus the CCA area below (88 bytes) */
-    FLASH (RX) : ORIGIN = 0x00000000, LENGTH = 0x0001F000
+    FLASH (RX) : ORIGIN = 0x00000000, LENGTH = 0x0001E000
     
     /*Hit Customer Configuration Area @author XiaoBing  Huang */
-    FLASH_DATA (RX) : ORIGIN = 0x0001F000, LENGTH = 0xFA8
+    FLASH_DATA (RX) : ORIGIN = 0x0001E000, LENGTH = 0x1000
     /*
      * Customer Configuration Area and Bootloader Backdoor configuration
      * in flash, up to 88 bytes
