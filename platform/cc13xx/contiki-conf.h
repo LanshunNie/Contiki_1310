@@ -58,8 +58,8 @@
 #endif /* NETSTACK_CONF_NETWORK */
 
 #ifndef NETSTACK_CONF_MAC
-// #define NETSTACK_CONF_MAC     csma_driver
-#define NETSTACK_CONF_MAC     nullmac_driver
+#define NETSTACK_CONF_MAC     csma_driver
+// #define NETSTACK_CONF_MAC     nullmac_driver
 #endif
 
 #ifndef NETSTACK_CONF_RDC
@@ -97,7 +97,7 @@
 #define CONTIKIMAC_CONF_LISTEN_TIME_AFTER_PACKET_DETECTED  (RTIMER_ARCH_SECOND / 20)
 #define CONTIKIMAC_CONF_SEND_SW_ACK               1
 #define CONTIKIMAC_CONF_AFTER_ACK_DETECTECT_WAIT_TIME (RTIMER_SECOND / 500)
-#define CONTIKIMAC_CONF_INTER_PACKET_INTERVAL     (RTIMER_SECOND / 224)
+#define CONTIKIMAC_CONF_INTER_PACKET_INTERVAL     (RTIMER_SECOND / 230)//<=>4.87ms
 #else
 #define NETSTACK_CONF_RADIO        ieee_mode_driver
 

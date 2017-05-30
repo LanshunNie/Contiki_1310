@@ -154,7 +154,7 @@ static const uint8_t magic[] = { 0x53, 0x6E, 0x69, 0x66 };
 #ifdef PROP_MODE_CONF_RSSI_THRESHOLD
 #define PROP_MODE_RSSI_THRESHOLD PROP_MODE_CONF_RSSI_THRESHOLD
 #else
-#define PROP_MODE_RSSI_THRESHOLD  0xA6//0xB0==>-80 0xAB==>-85 0xA6==>-90
+#define PROP_MODE_RSSI_THRESHOLD  0xB0//0xA6
 #endif
 
 static int8_t rssi_threshold = PROP_MODE_RSSI_THRESHOLD;
@@ -461,7 +461,7 @@ rx_on_prop(void)
     ENERGEST_ON(ENERGEST_TYPE_LISTEN);
   }
 
- ti_lib_gpio_pin_write(BOARD_IO30,1);  
+ // ti_lib_gpio_pin_write(BOARD_IO30,1);  
   return ret;
 }
 /*---------------------------------------------------------------------------*/
@@ -662,7 +662,7 @@ transmit(unsigned short transmit_len)
       return RADIO_TX_ERR;
     }
   }
-
+// ti_lib_gpio_pin_write(BOARD_IO30,1);  
   /*
    * Prepare the .15.4g PHY header
    * MS=0, Length MSBits=0, DW and CRC configurable
@@ -976,7 +976,7 @@ on(void)
 static int
 off(void)
 {
-  ti_lib_gpio_pin_write(BOARD_IO30,0); 
+  // ti_lib_gpio_pin_write(BOARD_IO30,0); 
   rfc_dataEntry_t *entry;
 
   /*

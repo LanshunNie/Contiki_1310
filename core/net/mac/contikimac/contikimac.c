@@ -760,7 +760,6 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 // inactive don't send packet ,just return mac_tx_ok ;
 #if CC1310_CONF_LOWPOWER 
  if(get_active_flag()== 0 ||get_idle_time()<= 10){
-   printf("mac 763\n");
    return MAC_TX_OK;
  }
 #endif
@@ -933,6 +932,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #if RDC_CONF_HARDWARE_ACK
       int ret = NETSTACK_RADIO.transmit(transmit_len);
 #else
+
       NETSTACK_RADIO.transmit(transmit_len);
 
 #endif
@@ -950,18 +950,17 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
         }
       } else if (ret == RADIO_TX_NOACK) {
       } else if (ret == RADIO_TX_COLLISION) {
-          printf("contikimac: collisions while sending1\n");
+          PRINTF("contikimac: collisions while sending1\n");
           collisions++;
       }
       wt = RTIMER_NOW();
       while(RTIMER_CLOCK_LT(RTIMER_NOW(), wt + INTER_PACKET_INTERVAL)) { }
 #else /* RDC_CONF_HARDWARE_ACK */
      /* Wait for the ACK packet */
-
       wt = RTIMER_NOW();
       while(RTIMER_CLOCK_LT(RTIMER_NOW(), wt + INTER_PACKET_INTERVAL)) { }
 
-      
+     
       if(!is_broadcast && (NETSTACK_RADIO.receiving_packet() ||
                            NETSTACK_RADIO.pending_packet() ||
                            NETSTACK_RADIO.channel_clear() == 0)) {
@@ -979,7 +978,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #endif
           break;
         } else {
-          printf("contikimac: collisions while sending2\n");
+          PRINTF("contikimac: collisions while sending2\n");
           collisions++;
         }
       }
@@ -1209,7 +1208,7 @@ input_packet(void)
       duplicate = mac_sequence_is_duplicate();
       if(duplicate) {
         /* Drop the packet. */
-        printf("contikimac: Drop duplicate\n");
+        PRINTF("contikimac: Drop duplicate\n");
       } else {
         mac_sequence_register_seqno();
       }

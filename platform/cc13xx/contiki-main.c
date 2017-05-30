@@ -99,6 +99,9 @@ main(void)
 
   random_init(0x1234);
 
+  // #if CC26XX_UART_CONF_ENABLE
+  //   cc26xx_uart_init();
+  // #endif
   /*set uart-input function*/
   // uart1_set_input(serial_line_input_byte);
   serial_line_init();

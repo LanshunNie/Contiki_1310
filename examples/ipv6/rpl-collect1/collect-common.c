@@ -101,16 +101,25 @@ collect_common_recv(const linkaddr_t *originator, uint8_t seqno, uint8_t hops,
     printf(" %u", data);
   }
   printf("\n");
-  
+  // leds_blink();
 }
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(collect_common_process, ev, data)
 {
   static struct etimer period_timer, wait_timer;
+  //,addtimer;
   PROCESS_BEGIN();
 
   collect_common_net_init();
+  // etimer_set(&addtimer,CLOCK_SECOND*60);
+  // if(ev == PROCESS_EVENT_TIMER &&data == &addtimer) 
+  // {
+  //    #ifdef PERIOD
+  //    #undef PERIOD
+  //    #endif
 
+  //    #define PERIOD 1800
+  // }
   /* Send a packet every 60-62 seconds. */
   etimer_set(&period_timer, CLOCK_SECOND * PERIOD);
   while(1) {
@@ -122,7 +131,7 @@ PROCESS_THREAD(collect_common_process, ev, data)
          strncmp(line, "gw", 2) == 0) {
         collect_common_set_sink();
       } else if(strncmp(line, "net", 3) == 0) {
-        collect_common_net_print();
+        //collect_common_net_print();
       } else if(strncmp(line, "time ", 5) == 0) {
         unsigned long tmp;
         line += 6;
@@ -161,7 +170,6 @@ PROCESS_THREAD(collect_common_process, ev, data)
         if(send_active) {
           /* Time to send the data */
           collect_common_send();
-       
         }
       }
     }

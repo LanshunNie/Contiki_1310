@@ -35,7 +35,7 @@
 #include "net/linkaddr.h"
 
 #include "net/netstack.h"
-//#include "dev/button-sensor.h"
+// #include "dev/button-sensor.h"
 #include "dev/serial-line.h"
 #if CONTIKI_TARGET_Z1
 #include "dev/uart0.h"
@@ -101,8 +101,6 @@ tcpip_handler(void)
   uint8_t hops;
 
   if(uip_newdata()) {
-    uip_udp_received_data_preprocess();
-
     appdata = (uint8_t *)uip_appdata;
     sender.u8[0] = UIP_IP_BUF->srcipaddr.u8[15];
     sender.u8[1] = UIP_IP_BUF->srcipaddr.u8[14];
@@ -142,13 +140,13 @@ PROCESS_THREAD(udp_server_process, ev, data)
 
   PROCESS_PAUSE();
 
- // SENSORS_ACTIVATE(button_sensor);
+  //SENSORS_ACTIVATE(button_sensor);
 
   PRINTF("UDP server started\n");
 
 #if UIP_CONF_ROUTER
-//  uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 1);
-  uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr); 
+  uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 1);
+  /* uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr); */
   uip_ds6_addr_add(&ipaddr, 0, ADDR_MANUAL);
   root_if = uip_ds6_addr_lookup(&ipaddr);
   if(root_if != NULL) {
@@ -166,7 +164,7 @@ PROCESS_THREAD(udp_server_process, ev, data)
 
   /* The data sink runs with a 100% duty cycle in order to ensure high
      packet reception rates. */
-  NETSTACK_RDC.off(1);
+  // NETSTACK_RDC.off(1);
 
   server_conn = udp_new(NULL, UIP_HTONS(UDP_CLIENT_PORT), NULL);
   udp_bind(server_conn, UIP_HTONS(UDP_SERVER_PORT));
@@ -180,12 +178,10 @@ PROCESS_THREAD(udp_server_process, ev, data)
     PROCESS_YIELD();
     if(ev == tcpip_event) {
       tcpip_handler();
-
-    } 
-    /*else if (ev == sensors_event && data == &button_sensor) {
+    } /*else if (ev == sensors_event && data == &button_sensor) {
       PRINTF("Initiaing global repair\n");
       rpl_repair_root(RPL_DEFAULT_INSTANCE);
-    } */
+    }*/
   }
 
   PROCESS_END();
