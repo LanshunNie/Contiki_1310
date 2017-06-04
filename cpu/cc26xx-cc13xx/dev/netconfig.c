@@ -8,9 +8,8 @@
 #include "task-schedule.h"
 #endif
 
-// void led_toggle(uint32_t i);
-void logic_test(uint32_t i);
-static uint32_t logic=0;
+// void logic_test(uint32_t i);
+// static uint32_t logic=0;
 // static uint32_t add_time=0;
 
 #if CC1310_CONF_LOWPOWER
@@ -98,9 +97,9 @@ void set_active_flag()
   active_flag= init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
 
   #if !ROOTNODE
-     //printf("active flag:%u\n",active_flag);
+     // printf("active flag:%u\n",active_flag);
   #endif
- //  active_flag = 1;
+  active_flag = 1;
 
   // if(timenow.sec%30==0){
      
@@ -109,7 +108,6 @@ void set_active_flag()
   //   logic_test(logic);
   // }
 
-    active_flag = 0;
 
 }
 #endif

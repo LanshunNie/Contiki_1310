@@ -8,10 +8,12 @@
 #include "net/ip/uip.h"
 #include "net/ipv6/uip-ds6.h"
 #include "net/rpl/rpl.h"
-// #include "adc.h"
+#include "bat-voltage.h"
 #include "contikimac.h"
 
 #include "netsync-auto-calibrate.h"
+//provide reboot service
+#include "dev/watchdog.h"
 
 #define DEBUG 0
 #if DEBUG 
@@ -57,7 +59,7 @@ void get_system_monitor_msg(uint8_t array[],int length)
    uint16_t rtmetric;
    uint16_t beacon_interval;
    uint16_t num_neighbors;
-   uint16_t temp_votlage=0;
+   uint32_t temp_votlage = 0;
    rpl_parent_t *preferred_parent;
    rpl_dag_t *dag;
 
@@ -146,8 +148,8 @@ void get_system_monitor_msg(uint8_t array[],int length)
   array[INDEX_PARENTRSSI]       = 0; 
   array[INDEX_PARENTRSSI+1]     = 0;;
 
-  // temp_votlage=get_voltage();
-  array[INDEX_ADCVOLTAGE]       = (temp_votlage>>8)&0xff; 
+  temp_votlage = (uint32_t)get_voltage();
+  array[INDEX_ADCVOLTAGE]       = (temp_votlage>>8)&0xff; //directly show the value of voltage
   array[INDEX_ADCVOLTAGE+1]     = temp_votlage&0xff;
 
   array[INDEX_BEACON_INTERVAL]  = (beacon_interval>>8) & 0xff;         
@@ -339,12 +341,12 @@ int MeterCommandBurn()
 /*reset or initialization instruction*/
 void NodeReboot(void *p)
 {
-   // WDTCTL = 0;  //0xDEAD
+   watchdog_reboot();
 }
 void NodeReset(void *p)
 {
-  // normalbyte_rfchannel_burn(ABNORMAL,0);  //   hui  fu dao xing dao 0
-  // NodeReboot(NULL);
+  normalbyte_rfchannel_burn(ABNORMAL,0);  //   reset to channel 0
+  NodeReboot(NULL);
 }
 
 

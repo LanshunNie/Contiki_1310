@@ -80,8 +80,6 @@ LIST(modules_list);
 /*---------------------------------------------------------------------------*/
 /* Prototype of a function in clock.c. Called every time we come out of DS */
 void clock_update(void);
-void logic_test(uint32_t i);
-static uint32_t logic=0;
 
 /*---------------------------------------------------------------------------*/
 void
@@ -248,13 +246,14 @@ lpm_drop()
 
   uint32_t domains = LOCKABLE_DOMAINS;
 
-  /*if(RTIMER_CLOCK_LT(soc_rtc_get_next_trigger(),
-                     RTIMER_NOW() + STANDBY_MIN_DURATION)) {
-   
-    lpm_sleep();
-    return;
-  }*/
-
+  if(get_active_flag() ==1){//by huangxiaobing
+    if(RTIMER_CLOCK_LT(soc_rtc_get_next_trigger(),
+                       RTIMER_NOW() + STANDBY_MIN_DURATION)) {   
+      lpm_sleep();
+      return;
+    }
+  }
+    
   /* Collect max allowed PM permission from interested modules */
   for(module = list_head(modules_list); module != NULL;
       module = module->next) {   
@@ -285,7 +284,7 @@ lpm_drop()
      */
     next_event = etimer_next_expiration_time();
 
-    if(get_active_flag() ==1){ //by huang
+    if(get_active_flag() ==1){ //by huangxiaobing
       if(next_event) {
           next_event = next_event - clock_time();
           soc_rtc_schedule_one_shot(AON_RTC_CH1, soc_rtc_last_isr_time() +

@@ -35,7 +35,7 @@
 #include "net/linkaddr.h"
 
 #include "net/netstack.h"
-//#include "dev/button-sensor.h"
+
 #include "dev/serial-line.h"
 #if CONTIKI_TARGET_Z1
 #include "dev/uart0.h"

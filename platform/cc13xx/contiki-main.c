@@ -20,8 +20,6 @@
 #include "netsynch.h"
 #include "task-schedule.h"
 
- // #include "adc.h"
-
 #if ROOTNODE
   #include "correct_time.h"
 #endif
@@ -145,7 +143,7 @@ main(void)
   printf("%s\n", NETSTACK_RDC.name);
   
 
-  netstack_init();
+  // netstack_init();
   
   set_rf_params();
 #if NETSTACK_CONF_WITH_IPV6
