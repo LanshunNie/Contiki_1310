@@ -45,6 +45,8 @@
 #define DOT_15_4G_H_
 /*---------------------------------------------------------------------------*/
 #include "contiki-conf.h"
+
+#include "driverlib/rf_mailbox.h"
 /*---------------------------------------------------------------------------*/
 /* IEEE 802.15.4g frequency band identifiers (Table 68f) */
 #define DOT_15_4G_FREQUENCY_BAND_169  0 /* 169.400–169.475 (Europe) - 169 MHz band */
@@ -61,13 +63,13 @@
 #define DOT_15_4G_FREQUENCY_BAND_950  11 /* 950–958 (Japan) - 950 MHz band */
 #define DOT_15_4G_FREQUENCY_BAND_1427 12 /* 1427–1518 (US and Canada, non-contiguous) - 1427 MHz band */
 #define DOT_15_4G_FREQUENCY_BAND_2450 13 /* 2400–2483.5 2450 MHz band */
-#define DOT_15_4G_FREQUENCY_BAND_433  14 /* 433–434.8 (China) - 433 MHz band */
+#define DOT_15_4G_FREQUENCY_BAND_433 14 /* 433–434 (China) - 433 MHz band */
 /*---------------------------------------------------------------------------*/
 /* Default band selection to band 4 - 863MHz */
 #ifdef DOT_15_4G_CONF_FREQUENCY_BAND_ID
 #define DOT_15_4G_FREQUENCY_BAND_ID DOT_15_4G_CONF_FREQUENCY_BAND_ID
 #else
-#define DOT_15_4G_FREQUENCY_BAND_ID DOT_15_4G_FREQUENCY_BAND_433
+#define DOT_15_4G_FREQUENCY_BAND_ID DOT_15_4G_FREQUENCY_BAND_863
 #endif
 /*---------------------------------------------------------------------------*/
 /*
@@ -82,6 +84,8 @@
 #define DOT_15_4G_CHANNEL_SPACING    200
 #define DOT_15_4G_CHAN0_FREQUENCY 470200
 #define PROP_MODE_CONF_LO_DIVIDER   0x0A
+#define SMARTRF_SETTINGS_CONF_BAND_OVERRIDES HW32_ARRAY_OVERRIDE(0x405C,1), \
+                                             (uint32_t)0x18000280,
 
 #elif DOT_15_4G_FREQUENCY_BAND_ID==DOT_15_4G_FREQUENCY_BAND_780
 #define DOT_15_4G_CHANNEL_MAX         38
@@ -114,14 +118,15 @@
 #define PROP_MODE_CONF_LO_DIVIDER   0x05
 
 #elif DOT_15_4G_FREQUENCY_BAND_ID==DOT_15_4G_FREQUENCY_BAND_433
-#define DOT_15_4G_CHANNEL_MAX        4
-#define DOT_15_4G_CHANNEL_SPACING    500
-#define DOT_15_4G_CHAN0_FREQUENCY 433300
+#define DOT_15_4G_CHANNEL_MAX        10
+#define DOT_15_4G_CHANNEL_SPACING    200
+#define DOT_15_4G_CHAN0_FREQUENCY 433000
 #define PROP_MODE_CONF_LO_DIVIDER   0x0A
-
+                                             
 #else
 #error The selected frequency band is not supported
 #endif
+
 /*---------------------------------------------------------------------------*/
 #endif /* DOT_15_4G_H_ */
 /*---------------------------------------------------------------------------*/

@@ -1,12 +1,12 @@
 /*******************************************************************************
 *  Filename:       rom_crypto.c
-*  Revised:        2015-06-10 19:22:27 +0200 (Wed, 10 Jun 2015)
-*  Revision:       43869
+*  Revised:        2016-06-30 09:21:03 +0200 (Thu, 30 Jun 2016)
+*  Revision:       46799
 *
 *  Description:    This is the implementation for the API to the AES, ECC and
 *                  SHA256 functions built into ROM on the CC26xx.
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,8 @@ aes_ecb_decrypt_t aes_ecb_decrypt= (aes_ecb_decrypt_t)(0x10018ac5);
 //*****************************************************************************
 // AES_ECB_EncryptData
 //*****************************************************************************
-void AES_ECB_EncryptData(uint8_t *text, uint16_t textLen, uint8_t *aesKey)
+void
+AES_ECB_EncryptData(uint8_t *text, uint16_t textLen, uint8_t *aesKey)
 {
   aes_ecb_encrypt(text, textLen, aesKey);
 }
@@ -60,7 +61,8 @@ void AES_ECB_EncryptData(uint8_t *text, uint16_t textLen, uint8_t *aesKey)
 //*****************************************************************************
 // AES_ECB_DecryptData
 //*****************************************************************************
-void AES_ECB_DecryptData(uint8_t *text, uint16_t textLen, uint8_t *aesKey)
+void
+AES_ECB_DecryptData(uint8_t *text, uint16_t textLen, uint8_t *aesKey)
 {
   aes_ecb_decrypt(text, textLen, aesKey);
 }
@@ -79,10 +81,11 @@ aes_ccm_decrypt_t aes_ccm_decrypt= (aes_ccm_decrypt_t)(0x10018a35);
 //*****************************************************************************
 // AES_CCM_EncryptData
 //*****************************************************************************
-int8_t AES_CCM_EncryptData(uint8_t encryptFlag, uint8_t MACLen, uint8_t *nonce,
-                           uint8_t *plainText, uint16_t textLen,
-                           uint8_t *addDataBuf, uint16_t addBufLen,
-                           uint8_t *aesKey, uint8_t *MAC, uint8_t ccmLVal)
+int8_t
+AES_CCM_EncryptData(uint8_t encryptFlag, uint8_t MACLen, uint8_t *nonce,
+                    uint8_t *plainText, uint16_t textLen,
+                    uint8_t *addDataBuf, uint16_t addBufLen,
+                    uint8_t *aesKey, uint8_t *MAC, uint8_t ccmLVal)
 {
   return aes_ccm_encrypt(encryptFlag, MACLen, nonce, plainText, textLen,
                          addDataBuf, addBufLen, aesKey, MAC, ccmLVal);
@@ -91,10 +94,11 @@ int8_t AES_CCM_EncryptData(uint8_t encryptFlag, uint8_t MACLen, uint8_t *nonce,
 //*****************************************************************************
 // AES_CCM_DecryptData
 //*****************************************************************************
-int8_t AES_CCM_DecryptData(uint8_t decryptFlag, uint8_t MACLen, uint8_t *nonce,
-                           uint8_t *cipherText, uint16_t textLen,
-                           uint8_t *addDataBuf, uint16_t addBufLen,
-                           uint8_t *aesKey, uint8_t *MAC, uint8_t ccmLVal)
+int8_t
+AES_CCM_DecryptData(uint8_t decryptFlag, uint8_t MACLen, uint8_t *nonce,
+                    uint8_t *cipherText, uint16_t textLen,
+                    uint8_t *addDataBuf, uint16_t addBufLen,
+                    uint8_t *aesKey, uint8_t *MAC, uint8_t ccmLVal)
 {
   return aes_ccm_decrypt(decryptFlag, MACLen, nonce, cipherText, textLen,
                          addDataBuf, addBufLen, aesKey, MAC, ccmLVal);
@@ -113,9 +117,10 @@ aes_ctr_decrypt_t aes_ctr_decrypt= (aes_ctr_decrypt_t)(0x10017771);
 //*****************************************************************************
 // AES_CTR_EncryptData
 //*****************************************************************************
-uint8_t AES_CTR_EncryptData(uint8_t *plainText, uint16_t textLen,
-                            uint8_t *aesKey, uint8_t *nonce,
-                            uint8_t *initVector)
+uint8_t
+AES_CTR_EncryptData(uint8_t *plainText, uint16_t textLen,
+                    uint8_t *aesKey, uint8_t *nonce,
+                    uint8_t *initVector)
 {
   return aes_ctr_encrypt(plainText, textLen, aesKey, nonce, initVector);
 }
@@ -123,9 +128,10 @@ uint8_t AES_CTR_EncryptData(uint8_t *plainText, uint16_t textLen,
 //*****************************************************************************
 // AES_CTR_DecryptData
 //*****************************************************************************
-uint8_t AES_CTR_DecryptData(uint8_t *cipherText, uint16_t textLen,
-                            uint8_t *aesKey, uint8_t *nonce,
-                            uint8_t *initVector)
+uint8_t
+AES_CTR_DecryptData(uint8_t *cipherText, uint16_t textLen,
+                    uint8_t *aesKey, uint8_t *nonce,
+                    uint8_t *initVector)
 {
   return aes_ctr_decrypt(cipherText, textLen, aesKey, nonce, initVector);
 }
@@ -157,7 +163,8 @@ uint8_t AES_CTR_DecryptData(uint8_t *cipherText, uint16_t textLen,
 //*****************************************************************************
 // ECC_initialize
 //*****************************************************************************
-void ECC_initialize(uint32_t *pWorkzone)
+void
+ECC_initialize(uint32_t *pWorkzone)
 {
   // Initialize curve parameters
   //data_p  = (uint32_t *)PARAM_P;
@@ -202,8 +209,9 @@ ecdh_computeSharedSecret_t ecdh_computeSharedSecret = (ecdh_computeSharedSecret_
 //*****************************************************************************
 // ECC_generateKey
 //*****************************************************************************
-uint8_t ECC_generateKey(uint32_t *randString, uint32_t *privateKey,
-                        uint32_t *publicKey_x, uint32_t *publicKey_y)
+uint8_t
+ECC_generateKey(uint32_t *randString, uint32_t *privateKey,
+                uint32_t *publicKey_x, uint32_t *publicKey_y)
 {
   return (uint8_t)ecc_generatekey((uint32_t*)randString, (uint32_t*)privateKey,
                                   (uint32_t*)publicKey_x, (uint32_t*)publicKey_y);
@@ -213,8 +221,9 @@ uint8_t ECC_generateKey(uint32_t *randString, uint32_t *privateKey,
 //*****************************************************************************
 // ECC_ECDSA_sign
 //*****************************************************************************
-uint8_t ECC_ECDSA_sign(uint32_t *secretKey, uint32_t *text, uint32_t *randString,
-                       uint32_t *sign1, uint32_t *sign2)
+uint8_t
+ECC_ECDSA_sign(uint32_t *secretKey, uint32_t *text, uint32_t *randString,
+               uint32_t *sign1, uint32_t *sign2)
 {
   return (uint8_t)ecc_ecdsa_sign((uint32_t*)secretKey, (uint32_t*)text, (uint32_t*)randString,
                              (uint32_t*)sign1, (uint32_t*)sign2);
@@ -223,8 +232,9 @@ uint8_t ECC_ECDSA_sign(uint32_t *secretKey, uint32_t *text, uint32_t *randString
 //*****************************************************************************
 // ECC_ECDSA_verify
 //*****************************************************************************
-uint8_t ECC_ECDSA_verify(uint32_t *publicKey_x, uint32_t *publicKey_y,
-                         uint32_t *text, uint32_t *sign1, uint32_t *sign2)
+uint8_t
+ECC_ECDSA_verify(uint32_t *publicKey_x, uint32_t *publicKey_y,
+                 uint32_t *text, uint32_t *sign1, uint32_t *sign2)
 {
   return (uint8_t)ecc_ecdsa_verify((uint32_t*)publicKey_x, (uint32_t*)publicKey_y, (uint32_t*)text,
                               (uint32_t*)sign1, (uint32_t*)sign2);
@@ -233,9 +243,10 @@ uint8_t ECC_ECDSA_verify(uint32_t *publicKey_x, uint32_t *publicKey_y,
 //*****************************************************************************
 // ECC_ECDH_computeSharedSecret
 //*****************************************************************************
-uint8_t ECC_ECDH_computeSharedSecret(uint32_t *privateKey, uint32_t *publicKey_x,
-                                     uint32_t *publicKey_y, uint32_t *sharedSecret_x,
-                                     uint32_t *sharedSecret_y)
+uint8_t
+ECC_ECDH_computeSharedSecret(uint32_t *privateKey, uint32_t *publicKey_x,
+                             uint32_t *publicKey_y, uint32_t *sharedSecret_x,
+                             uint32_t *sharedSecret_y)
 {
   return (uint8_t)ecdh_computeSharedSecret((uint32_t*)privateKey, (uint32_t*)publicKey_x,
                                  (uint32_t*)publicKey_y, (uint32_t*)sharedSecret_x,
@@ -260,8 +271,9 @@ sha256_final_t sha256_output = (sha256_final_t)(0x10018089);
 //*****************************************************************************
 // SHA256_runFullAlgorithm
 //*****************************************************************************
-uint8_t SHA256_runFullAlgorithm(SHA256_memory_t *memory, uint8_t *pBufIn,
-                                uint32_t bufLen, uint8_t *pBufOut)
+uint8_t
+SHA256_runFullAlgorithm(SHA256_memory_t *memory, uint8_t *pBufIn,
+                        uint32_t bufLen, uint8_t *pBufOut)
 {
   return (uint8_t)sha256_runfullalg(memory, pBufOut, pBufIn, bufLen);
 }
@@ -269,7 +281,8 @@ uint8_t SHA256_runFullAlgorithm(SHA256_memory_t *memory, uint8_t *pBufIn,
 //*****************************************************************************
 // SHA256_initialize
 //*****************************************************************************
-uint8_t SHA256_initialize(SHA256_memory_t *memory)
+uint8_t
+SHA256_initialize(SHA256_memory_t *memory)
 {
   return (uint8_t)sha256_initialize(memory);
 }
@@ -277,7 +290,8 @@ uint8_t SHA256_initialize(SHA256_memory_t *memory)
 //*****************************************************************************
 // SHA256_execute
 //*****************************************************************************
-uint8_t SHA256_execute(SHA256_memory_t *memory, uint8_t *pBufIn, uint32_t bufLen)
+uint8_t
+SHA256_execute(SHA256_memory_t *memory, uint8_t *pBufIn, uint32_t bufLen)
 {
   return (uint8_t)sha256_execute(memory,pBufIn, bufLen);
 }
@@ -285,7 +299,8 @@ uint8_t SHA256_execute(SHA256_memory_t *memory, uint8_t *pBufIn, uint32_t bufLen
 //*****************************************************************************
 // SHA256_output
 //*****************************************************************************
-uint8_t SHA256_output(SHA256_memory_t *memory, uint8_t *pBufOut)
+uint8_t
+SHA256_output(SHA256_memory_t *memory, uint8_t *pBufOut)
 {
   return (uint8_t)sha256_output(memory, pBufOut);
 }

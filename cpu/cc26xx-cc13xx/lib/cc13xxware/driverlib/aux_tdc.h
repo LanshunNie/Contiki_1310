@@ -1,11 +1,11 @@
 /******************************************************************************
 *  Filename:       aux_tdc.h
-*  Revised:        2015-07-16 12:12:04 +0200 (Thu, 16 Jul 2015)
-*  Revision:       44151
+*  Revised:        2016-06-30 09:21:03 +0200 (Thu, 30 Jun 2016)
+*  Revision:       46799
 *
 *  Description:    Defines and prototypes for the AUX Time-to-Digital Converter
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -240,7 +240,7 @@ extern "C"
 static bool
 AUXTDCBaseValid(uint32_t ui32Base)
 {
-    return(ui32Base == AUX_TDCIF_BASE);
+    return(ui32Base == AUX_TDC_BASE);
 }
 #endif
 

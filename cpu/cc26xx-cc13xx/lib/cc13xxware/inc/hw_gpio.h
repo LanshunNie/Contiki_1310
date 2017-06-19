@@ -1,9 +1,9 @@
 /******************************************************************************
 *  Filename:       hw_gpio_h
-*  Revised:        2015-02-10 21:34:21 +0100 (Tue, 10 Feb 2015)
-*  Revision:       42642
+*  Revised:        2016-03-14 09:20:59 +0100 (Mon, 14 Mar 2016)
+*  Revision:       45924
 *
-* Copyright (c) 2015, Texas Instruments Incorporated
+* Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without

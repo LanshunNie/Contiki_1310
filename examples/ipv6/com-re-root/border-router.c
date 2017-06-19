@@ -406,14 +406,14 @@ static void
 tcpip_handler_border(void)
 {
 
-   // printf("sssssssssssssssssssssssssssd\n");
+   printf("sssssssssssssssssssssssssssd\n");
 
   if(uip_newdata()) {
     buffered_data_length = (unsigned char) ((char *)uip_appdata)[0];
     // leds_toggle(LEDS_ALL);
     // printf("DATA recv  from " );
-    // printf("DATA recv  from %d" ,buffered_data_length);
-    // leds_toggle(LEDS_ALL);
+    printf("DATA recv  from %d" ,buffered_data_length);
+    
 
 
     uip_ip6addr(&server_ipaddr, 0xaaaa,0,0,0,0,0,0,0x0002); 

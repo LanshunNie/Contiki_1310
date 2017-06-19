@@ -1,11 +1,11 @@
 /******************************************************************************
 *  Filename:       osc.c
-*  Revised:        2015-06-19 19:26:38 +0200 (Fri, 19 Jun 2015)
-*  Revision:       44012
+*  Revised:        2016-07-07 19:12:02 +0200 (Thu, 07 Jul 2016)
+*  Revision:       46848
 *
 *  Description:    Driver for setting up the system Oscillators
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@
 
 #include <inc/hw_types.h>
 #include <inc/hw_ccfg.h>
+#include <inc/hw_fcfg1.h>
 #include <driverlib/aon_batmon.h>
 #include <driverlib/aon_rtc.h>
 #include <driverlib/osc.h>
@@ -53,8 +54,22 @@
     #define OSCClockSourceSet               NOROM_OSCClockSourceSet
     #undef  OSCClockSourceGet
     #define OSCClockSourceGet               NOROM_OSCClockSourceGet
-    #undef  OSCInterfaceEnable
-    #define OSCInterfaceEnable              NOROM_OSCInterfaceEnable
+    #undef  OSCHF_GetStartupTime
+    #define OSCHF_GetStartupTime            NOROM_OSCHF_GetStartupTime
+    #undef  OSCHF_TurnOnXosc
+    #define OSCHF_TurnOnXosc                NOROM_OSCHF_TurnOnXosc
+    #undef  OSCHF_AttemptToSwitchToXosc
+    #define OSCHF_AttemptToSwitchToXosc     NOROM_OSCHF_AttemptToSwitchToXosc
+    #undef  OSCHF_SwitchToRcOscTurnOffXosc
+    #define OSCHF_SwitchToRcOscTurnOffXosc  NOROM_OSCHF_SwitchToRcOscTurnOffXosc
+    #undef  OSCHF_DebugGetCrystalAmplitude
+    #define OSCHF_DebugGetCrystalAmplitude  NOROM_OSCHF_DebugGetCrystalAmplitude
+    #undef  OSCHF_DebugGetExpectedAverageCrystalAmplitude
+    #define OSCHF_DebugGetExpectedAverageCrystalAmplitude NOROM_OSCHF_DebugGetExpectedAverageCrystalAmplitude
+    #undef  OSC_HPOSCRelativeFrequencyOffsetGet
+    #define OSC_HPOSCRelativeFrequencyOffsetGet NOROM_OSC_HPOSCRelativeFrequencyOffsetGet
+    #undef  OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert
+    #define OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert NOROM_OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert
 #endif
 
 //*****************************************************************************
@@ -76,9 +91,10 @@ typedef struct {
 
 static OscHfGlobals_t oscHfGlobals;
 
+
 //*****************************************************************************
 //
-//!  Configure the oscillator input to the a source clock.
+//  Configure the oscillator input to the a source clock.
 //
 //*****************************************************************************
 void
@@ -137,7 +153,7 @@ OSCClockSourceSet(uint32_t ui32SrcClk, uint32_t ui32Osc)
 
 //*****************************************************************************
 //
-//!  Get the source clock settings
+//  Get the source clock settings
 //
 //*****************************************************************************
 uint32_t
@@ -168,30 +184,6 @@ OSCClockSourceGet(uint32_t ui32SrcClk)
     }
     return (ui32ClockSource);
 }
-
-//*****************************************************************************
-//
-//! Enable System CPU access to the OSC_DIG module
-//
-//*****************************************************************************
-void
-OSCInterfaceEnable(void)
-{
-    //
-    // Force power on AUX to ensure CPU has access
-    //
-    AONWUCAuxWakeupEvent(AONWUC_AUX_WAKEUP);
-    while(!(AONWUCPowerStatusGet() & AONWUC_AUX_POWER_ON))
-    { }
-
-    //
-    // Enable the AUX domain OSC clock and wait for it to be ready
-    //
-    AUXWUCClockEnable(AUX_WUC_OSCCTRL_CLOCK);
-    while(AUXWUCClockStatus(AUX_WUC_OSCCTRL_CLOCK) != AUX_WUC_CLOCK_READY)
-    { }
-}
-
 
 //*****************************************************************************
 //
@@ -313,4 +305,146 @@ OSCHF_SwitchToRcOscTurnOffXosc( void )
 
    oscHfGlobals.timeXoscOff_CV  = AONRTCCurrentCompareValueGet();
    oscHfGlobals.tempXoscOff     = AONBatMonTemperatureGetDegC();
+}
+
+//*****************************************************************************
+//
+// Calculate the temperature dependent relative frequency offset of HPOSC
+//
+//*****************************************************************************
+int32_t
+OSC_HPOSCRelativeFrequencyOffsetGet( int32_t tempDegC )
+{
+   // Estimate HPOSC frequency, using temperature and curve fitting parameters
+   uint32_t fitParams = HWREG(FCFG1_BASE + FCFG1_O_FREQ_OFFSET);
+   // Extract the P0,P1,P2 params, and sign extend them via shifting up/down
+   int32_t paramP0 = ((((int32_t) fitParams) << (32 - FCFG1_FREQ_OFFSET_HPOSC_COMP_P0_W - FCFG1_FREQ_OFFSET_HPOSC_COMP_P0_S))
+                                             >> (32 - FCFG1_FREQ_OFFSET_HPOSC_COMP_P0_W));
+   int32_t paramP1 = ((((int32_t) fitParams) << (32 - FCFG1_FREQ_OFFSET_HPOSC_COMP_P1_W - FCFG1_FREQ_OFFSET_HPOSC_COMP_P1_S))
+                                             >> (32 - FCFG1_FREQ_OFFSET_HPOSC_COMP_P1_W));
+   int32_t paramP2 = ((((int32_t) fitParams) << (32 - FCFG1_FREQ_OFFSET_HPOSC_COMP_P2_W - FCFG1_FREQ_OFFSET_HPOSC_COMP_P2_S))
+                                             >> (32 - FCFG1_FREQ_OFFSET_HPOSC_COMP_P2_W));
+   int32_t paramP3 = ((((int32_t) HWREG(FCFG1_BASE + FCFG1_O_MISC_CONF_2))
+                                             << (32 - FCFG1_MISC_CONF_2_HPOSC_COMP_P3_W - FCFG1_MISC_CONF_2_HPOSC_COMP_P3_S))
+                                             >> (32 - FCFG1_MISC_CONF_2_HPOSC_COMP_P3_W));
+
+   // Now we can find the HPOSC freq offset, given as a signed variable d, expressed by:
+   //
+   //    F_HPOSC = F_nom * (1 + d/(2^22))    , where: F_HPOSC = HPOSC frequency
+   //                                                 F_nom = nominal clock source frequency (e.g. 48.000 MHz)
+   //                                                 d = describes relative freq offset
+
+   // We can estimate the d variable, using temperature compensation parameters:
+   //
+   //    d = P0 + P1*(t - T0) + P2*(t - T0)^2 + P3*(t - T0)^3, where: P0,P1,P2,P3 are curve fitting parameters from FCFG1
+   //                                                 t = current temperature (from temp sensor) in deg C
+   //                                                 T0 = 27 deg C (fixed temperature constant)
+   int32_t tempDelta = (tempDegC - 27);
+   int32_t tempDeltaX2 = tempDelta * tempDelta;
+   int32_t d = paramP0 + ((tempDelta*paramP1)>>3) + ((tempDeltaX2*paramP2)>>10) + ((tempDeltaX2*tempDelta*paramP3)>>18);
+
+   return ( d );
+}
+
+//*****************************************************************************
+//
+// Converts the relative frequency offset of HPOSC to the RF Core parameter format.
+//
+//*****************************************************************************
+int16_t
+OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert( int32_t HPOSC_RelFreqOffset )
+{
+   // The input argument, hereby referred to simply as "d", describes the frequency offset
+   // of the HPOSC relative to the nominal frequency in this way:
+   //
+   //    F_HPOSC = F_nom * (1 + d/(2^22))
+   //
+   // But for use by the radio, to compensate the frequency error, we need to find the
+   // frequency offset "rfcFreqOffset" defined in the following format:
+   //
+   //    F_nom = F_HPOSC * (1 + rfCoreFreqOffset/(2^22))
+   //
+   // To derive "rfCoreFreqOffset" from "d" we combine the two above equations and get:
+   //
+   //    (1 + rfCoreFreqOffset/(2^22)) = (1 + d/(2^22))^-1
+   //
+   // Which can be rewritten into:
+   //
+   //    rfCoreFreqOffset = -d*(2^22) / ((2^22) + d)
+   //
+   //               = -d * [ 1 / (1 + d/(2^22)) ]
+   //
+   // To avoid doing a 64-bit division due to the (1 + d/(2^22))^-1 expression,
+   // we can use Taylor series (Maclaurin series) to approximate it:
+   //
+   //       1 / (1 - x) ~= 1 + x + x^2 + x^3 + x^4 + ... etc      (Maclaurin series)
+   //
+   // In our case, we have x = - d/(2^22), and we only include up to the first
+   // order term of the series, as the second order term ((d^2)/(2^44)) is very small:
+   //
+   //       freqError ~= -d + d^2/(2^22)   (+ small approximation error)
+   //
+   // The approximation error is negligible for our use.
+
+   int32_t rfCoreFreqOffset = -HPOSC_RelFreqOffset + (( HPOSC_RelFreqOffset * HPOSC_RelFreqOffset ) >> 22 );
+
+   return ( rfCoreFreqOffset );
+}
+
+//*****************************************************************************
+//
+// Get crystal amplitude (assuming crystal is running).
+//
+//*****************************************************************************
+uint32_t
+OSCHF_DebugGetCrystalAmplitude( void )
+{
+   uint32_t oscCfgRegCopy  ;
+   uint32_t startTime      ;
+   uint32_t deltaTime      ;
+   uint32_t ampValue       ;
+
+   //
+   // The specified method is as follows:
+   // 1. Set minimum interval between oscillator amplitude calibrations.
+   //    (Done by setting PER_M=0 and PER_E=1)
+   // 2. Wait approximately 4 milliseconds in order to measure over a
+   //    moderately large number of calibrations.
+   // 3. Read out the crystal amplitude value from the peek detector.
+   // 4. Restore original oscillator amplitude calibrations interval.
+   // 5. Return crystal amplitude value converted to millivolt.
+   //
+   oscCfgRegCopy = HWREG( AON_WUC_BASE + AON_WUC_O_OSCCFG );
+   HWREG( AON_WUC_BASE + AON_WUC_O_OSCCFG ) = ( 1 << AON_WUC_OSCCFG_PER_E_S );
+   startTime = AONRTCCurrentCompareValueGet();
+   do {
+      deltaTime = AONRTCCurrentCompareValueGet() - startTime;
+   } while ( deltaTime < ((uint32_t)( 0.004 * FACTOR_SEC_TO_COMP_VAL_FORMAT )));
+   ampValue = ( HWREG( AUX_DDI0_OSC_BASE + DDI_0_OSC_O_STAT1 ) &
+      DDI_0_OSC_STAT1_HPM_UPDATE_AMP_M ) >>
+      DDI_0_OSC_STAT1_HPM_UPDATE_AMP_S ;
+   HWREG( AON_WUC_BASE + AON_WUC_O_OSCCFG ) = oscCfgRegCopy;
+
+   return ( ampValue * 15 );
+}
+
+//*****************************************************************************
+//
+// Get the expected average crystal amplitude.
+//
+//*****************************************************************************
+uint32_t
+OSCHF_DebugGetExpectedAverageCrystalAmplitude( void )
+{
+   uint32_t ampCompTh1    ;
+   uint32_t highThreshold ;
+   uint32_t lowThreshold  ;
+
+   ampCompTh1 = HWREG( AUX_DDI0_OSC_BASE + DDI_0_OSC_O_AMPCOMPTH1 );
+   highThreshold = ( ampCompTh1 & DDI_0_OSC_AMPCOMPTH1_HPMRAMP3_HTH_M ) >>
+                                  DDI_0_OSC_AMPCOMPTH1_HPMRAMP3_HTH_S ;
+   lowThreshold  = ( ampCompTh1 & DDI_0_OSC_AMPCOMPTH1_HPMRAMP3_LTH_M ) >>
+                                  DDI_0_OSC_AMPCOMPTH1_HPMRAMP3_LTH_S ;
+
+   return ((( highThreshold + lowThreshold ) * 15 ) >> 1 );
 }

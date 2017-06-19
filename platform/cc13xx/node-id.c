@@ -150,7 +150,8 @@ void restart_count_byte_burn(unsigned short val)
 {
    uint8_t restart_data[RESTART_COUNT_ADDR_LEN];
    restart_data[0] = val & 0xff;
-   restart_data[1] = val >> 8;
+   // restart_data[1] = val >> 8;
+   restart_data[1] = 0;
    PRINTF("write restartcount byte-- %x to flash\n", val);
    write_to_flash(restart_data,RESTART_COUNT_ADDR,RESTART_COUNT_ADDR_LEN);
 
@@ -161,6 +162,7 @@ void restart_count_byte_restore(void)
    uint8_t read_data[RESTART_COUNT_ADDR_LEN];
    read_flash(RESTART_COUNT_ADDR,read_data,RESTART_COUNT_ADDR_LEN);
   
-   restart_count=read_data[1]<<8|read_data[0]; 
+   // restart_count=read_data[1]<<8|read_data[0]; 
+   restart_count = read_data[0]; 
    PRINTF("restart count restore %x\n",restart_count);
 }

@@ -271,6 +271,7 @@ static uint32_t cca_sum = 0;
 
 #if TEST_NOACK
 static uint16_t mac_noack_count = 0;
+static uint16_t mac_ack_collision=0;
 #endif
 
 #define DEBUG 0
@@ -975,6 +976,9 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
         } else {
           PRINTF("contikimac: collisions while sending2\n");
           collisions++;
+          #if TEST_NOACK
+            mac_ack_collision++;
+          #endif
         }
       }
 #endif /* RDC_CONF_HARDWARE_ACK */
@@ -1041,6 +1045,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 
 #if TEST_NOACK
    printf("mac_noack_count:%u\n",mac_noack_count);
+   printf("mac_ack_collision:%u\n",mac_ack_collision);
 #endif
 
   return ret;

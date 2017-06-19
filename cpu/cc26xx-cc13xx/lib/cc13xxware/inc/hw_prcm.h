@@ -1,9 +1,9 @@
 /******************************************************************************
 *  Filename:       hw_prcm_h
-*  Revised:        2015-03-20 14:55:11 +0100 (Fri, 20 Mar 2015)
-*  Revision:       43061
+*  Revised:        2016-05-20 20:32:53 +0200 (Fri, 20 May 2016)
+*  Revision:       46429
 *
-* Copyright (c) 2015, Texas Instruments Incorporated
+* Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -127,7 +127,7 @@
 // I2S Clock Gate For Deep Sleep Mode
 #define PRCM_O_I2SCLKGDS                                            0x0000008C
 
-// CPU Clock Division Factor
+// Internal
 #define PRCM_O_CPUCLKDIV                                            0x000000B8
 
 // I2S Clock Control
@@ -208,11 +208,11 @@
 // Selected RFC Mode
 #define PRCM_O_RFCMODESEL                                           0x000001D0
 
+// Power Profiler Register
+#define PRCM_O_PWRPROFSTAT                                          0x000001E0
+
 // Memory Retention Control
 #define PRCM_O_RAMRETEN                                             0x00000224
-
-// CONFIG SIZE For SRAM
-#define PRCM_O_RAMHWOPT                                             0x00000250
 
 //*****************************************************************************
 //
@@ -229,6 +229,7 @@
 // DIV8                     Divide by 8
 // DIV2                     Divide by 2
 // DIV1                     Divide by 1
+#define PRCM_INFRCLKDIVR_RATIO_W                                             2
 #define PRCM_INFRCLKDIVR_RATIO_M                                    0x00000003
 #define PRCM_INFRCLKDIVR_RATIO_S                                             0
 #define PRCM_INFRCLKDIVR_RATIO_DIV32                                0x00000003
@@ -251,6 +252,7 @@
 // DIV8                     Divide by 8
 // DIV2                     Divide by 2
 // DIV1                     Divide by 1
+#define PRCM_INFRCLKDIVS_RATIO_W                                             2
 #define PRCM_INFRCLKDIVS_RATIO_M                                    0x00000003
 #define PRCM_INFRCLKDIVS_RATIO_S                                             0
 #define PRCM_INFRCLKDIVS_RATIO_DIV32                                0x00000003
@@ -273,6 +275,7 @@
 // DIV8                     Divide by 8
 // DIV2                     Divide by 2
 // DIV1                     Divide by 1
+#define PRCM_INFRCLKDIVDS_RATIO_W                                            2
 #define PRCM_INFRCLKDIVDS_RATIO_M                                   0x00000003
 #define PRCM_INFRCLKDIVDS_RATIO_S                                            0
 #define PRCM_INFRCLKDIVDS_RATIO_DIV32                               0x00000003
@@ -388,7 +391,6 @@
 // - I2SMCLKDIV
 // - I2SBCLKDIV
 // - I2SWCLKDIV
-// - RAMHWOPT
 #define PRCM_CLKLOADCTL_LOAD                                        0x00000001
 #define PRCM_CLKLOADCTL_LOAD_BITN                                            0
 #define PRCM_CLKLOADCTL_LOAD_M                                      0x00000001
@@ -423,6 +425,7 @@
 // 11: Enable clock
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+#define PRCM_VIMSCLKG_CLK_EN_W                                               2
 #define PRCM_VIMSCLKG_CLK_EN_M                                      0x00000003
 #define PRCM_VIMSCLKG_CLK_EN_S                                               0
 
@@ -619,6 +622,7 @@
 // GPT2                     Enable clock for GPT2
 // GPT1                     Enable clock for GPT1
 // GPT0                     Enable clock for GPT0
+#define PRCM_GPTCLKGR_CLK_EN_W                                               4
 #define PRCM_GPTCLKGR_CLK_EN_M                                      0x0000000F
 #define PRCM_GPTCLKGR_CLK_EN_S                                               0
 #define PRCM_GPTCLKGR_CLK_EN_GPT3                                   0x00000008
@@ -645,6 +649,7 @@
 // GPT2                     Enable clock for GPT2
 // GPT1                     Enable clock for GPT1
 // GPT0                     Enable clock for GPT0
+#define PRCM_GPTCLKGS_CLK_EN_W                                               4
 #define PRCM_GPTCLKGS_CLK_EN_M                                      0x0000000F
 #define PRCM_GPTCLKGS_CLK_EN_S                                               0
 #define PRCM_GPTCLKGS_CLK_EN_GPT3                                   0x00000008
@@ -671,6 +676,7 @@
 // GPT2                     Enable clock for GPT2
 // GPT1                     Enable clock for GPT1
 // GPT0                     Enable clock for GPT0
+#define PRCM_GPTCLKGDS_CLK_EN_W                                              4
 #define PRCM_GPTCLKGDS_CLK_EN_M                                     0x0000000F
 #define PRCM_GPTCLKGDS_CLK_EN_S                                              0
 #define PRCM_GPTCLKGDS_CLK_EN_GPT3                                  0x00000008
@@ -795,6 +801,7 @@
 // ENUMs:
 // SSI1                     Enable clock for SSI1
 // SSI0                     Enable clock for SSI0
+#define PRCM_SSICLKGR_CLK_EN_W                                               2
 #define PRCM_SSICLKGR_CLK_EN_M                                      0x00000003
 #define PRCM_SSICLKGR_CLK_EN_S                                               0
 #define PRCM_SSICLKGR_CLK_EN_SSI1                                   0x00000002
@@ -815,6 +822,7 @@
 // ENUMs:
 // SSI1                     Enable clock for SSI1
 // SSI0                     Enable clock for SSI0
+#define PRCM_SSICLKGS_CLK_EN_W                                               2
 #define PRCM_SSICLKGS_CLK_EN_M                                      0x00000003
 #define PRCM_SSICLKGS_CLK_EN_S                                               0
 #define PRCM_SSICLKGS_CLK_EN_SSI1                                   0x00000002
@@ -835,6 +843,7 @@
 // ENUMs:
 // SSI1                     Enable clock for SSI1
 // SSI0                     Enable clock for SSI0
+#define PRCM_SSICLKGDS_CLK_EN_W                                              2
 #define PRCM_SSICLKGDS_CLK_EN_M                                     0x00000003
 #define PRCM_SSICLKGDS_CLK_EN_S                                              0
 #define PRCM_SSICLKGDS_CLK_EN_SSI1                                  0x00000002
@@ -949,6 +958,7 @@
 // DIV4                     Divide by 4
 // DIV2                     Divide by 2
 // DIV1                     Divide by 1
+#define PRCM_GPTCLKDIV_RATIO_W                                               4
 #define PRCM_GPTCLKDIV_RATIO_M                                      0x0000000F
 #define PRCM_GPTCLKDIV_RATIO_S                                               0
 #define PRCM_GPTCLKDIV_RATIO_DIV256                                 0x00000008
@@ -993,6 +1003,7 @@
 // 3: Reserved/Undefined
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+#define PRCM_I2SCLKCTL_WCLK_PHASE_W                                          2
 #define PRCM_I2SCLKCTL_WCLK_PHASE_M                                 0x00000006
 #define PRCM_I2SCLKCTL_WCLK_PHASE_S                                          1
 
@@ -1027,6 +1038,7 @@
 // the high phase.
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+#define PRCM_I2SMCLKDIV_MDIV_W                                              10
 #define PRCM_I2SMCLKDIV_MDIV_M                                      0x000003FF
 #define PRCM_I2SMCLKDIV_MDIV_S                                               0
 
@@ -1051,6 +1063,7 @@
 // clock is one MCUCLK period longer than the low phase.
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+#define PRCM_I2SBCLKDIV_BDIV_W                                              10
 #define PRCM_I2SBCLKDIV_BDIV_M                                      0x000003FF
 #define PRCM_I2SBCLKDIV_BDIV_S                                               0
 
@@ -1082,6 +1095,7 @@
 // WCLK = MCUCLK / (BDIV*(WDIV[7:0] + WDIV[15:8]) [Hz]
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+#define PRCM_I2SWCLKDIV_WDIV_W                                              16
 #define PRCM_I2SWCLKDIV_WDIV_M                                      0x0000FFFF
 #define PRCM_I2SWCLKDIV_WDIV_S                                               0
 
@@ -1500,6 +1514,7 @@
 // MODE2                    Select Mode 2
 // MODE1                    Select Mode 1
 // MODE0                    Select Mode 0
+#define PRCM_RFCMODESEL_CURR_W                                               3
 #define PRCM_RFCMODESEL_CURR_M                                      0x00000007
 #define PRCM_RFCMODESEL_CURR_S                                               0
 #define PRCM_RFCMODESEL_CURR_MODE7                                  0x00000007
@@ -1510,6 +1525,20 @@
 #define PRCM_RFCMODESEL_CURR_MODE2                                  0x00000002
 #define PRCM_RFCMODESEL_CURR_MODE1                                  0x00000001
 #define PRCM_RFCMODESEL_CURR_MODE0                                  0x00000000
+
+//*****************************************************************************
+//
+// Register: PRCM_O_PWRPROFSTAT
+//
+//*****************************************************************************
+// Field:   [7:0] VALUE
+//
+// SW can use these bits to timestamp the application. These bits are also
+// available through the testtap and can thus be used by the emulator to
+// profile in real time.
+#define PRCM_PWRPROFSTAT_VALUE_W                                             8
+#define PRCM_PWRPROFSTAT_VALUE_M                                    0x000000FF
+#define PRCM_PWRPROFSTAT_VALUE_S                                             0
 
 //*****************************************************************************
 //
@@ -1544,28 +1573,9 @@
 // or SPILT mode.
 // 10: Illegal mode
 // 11: No restrictions
+#define PRCM_RAMRETEN_VIMS_W                                                 2
 #define PRCM_RAMRETEN_VIMS_M                                        0x00000003
 #define PRCM_RAMRETEN_VIMS_S                                                 0
-
-//*****************************************************************************
-//
-// Register: PRCM_O_RAMHWOPT
-//
-//*****************************************************************************
-// Field:   [1:0] SIZE
-//
-// Show status for device RAM configuration
-// ENUMs:
-// 20K                      Configured to 20k RAM
-// 16K                      Configured to 16k RAM
-// 10K                      Configured to 10k RAM
-// 4K                       Configured to 4k RAM
-#define PRCM_RAMHWOPT_SIZE_M                                        0x00000003
-#define PRCM_RAMHWOPT_SIZE_S                                                 0
-#define PRCM_RAMHWOPT_SIZE_20K                                      0x00000003
-#define PRCM_RAMHWOPT_SIZE_16K                                      0x00000002
-#define PRCM_RAMHWOPT_SIZE_10K                                      0x00000001
-#define PRCM_RAMHWOPT_SIZE_4K                                       0x00000000
 
 
 #endif // __PRCM__

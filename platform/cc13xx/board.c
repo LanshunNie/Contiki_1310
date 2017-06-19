@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (c) 2015, Texas Instruments Incorporated - http://www.ti.com/
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,23 +29,22 @@
  */
 /*---------------------------------------------------------------------------*/
 /**
- * \addtogroup sensortag-common-peripherals
+ * \addtogroup launchpad-peripherals
  * @{
  *
  * \file
- *  Board-initialisation for the Srf06EB with a CC13xx/CC26xx EM.
+ *  LaunchPad-specific board initialisation driver
  */
 /*---------------------------------------------------------------------------*/
 #include "contiki-conf.h"
-#include "ti-lib.h"
+
 #include "lpm.h"
-#include "prcm.h"
-#include "hw_sysctl.h"
+#include "ti-lib.h"
 
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 
- #include <stdio.h>
 #define DEBUG 0
 #if DEBUG
 #define PRINTF(...) printf(__VA_ARGS__)
@@ -58,8 +57,8 @@ wakeup_handler(void)
 {
   /* Turn on the PERIPH PD */
   ti_lib_prcm_power_domain_on(PRCM_DOMAIN_PERIPH);
-  while((ti_lib_prcm_power_domain_status(PRCM_DOMAIN_PERIPH)
-        != PRCM_DOMAIN_POWER_ON));
+  while(ti_lib_prcm_power_domain_status(PRCM_DOMAIN_PERIPH)
+        != PRCM_DOMAIN_POWER_ON);
 }
 /*---------------------------------------------------------------------------*/
 /*
@@ -73,37 +72,34 @@ LPM_MODULE(srf_module, NULL, NULL, wakeup_handler, LPM_DOMAIN_NONE);
 static void
 configure_unused_pins(void)
 {
- 
-  ti_lib_ioc_pin_type_gpio_output(BOARD_IOID_LED);
-  ti_lib_gpio_pin_write(BOARD_LED,0);
-  ti_lib_ioc_pin_type_gpio_output(BOARD_IOID26);
-  ti_lib_gpio_pin_write(BOARD_IO26,0);
+  uint32_t pins[] = BOARD_UNUSED_PINS;
 
-  ti_lib_ioc_pin_type_gpio_output(BOARD_IOID30);
-  ti_lib_gpio_pin_write(BOARD_IO30,0);
-  
-  
+  uint32_t *pin;
+
+  for(pin = pins; *pin != IOID_UNUSED; pin++) {
+    ti_lib_ioc_pin_type_gpio_input(*pin);
+    ti_lib_ioc_io_port_pull_set(*pin, IOC_IOPULL_DOWN);
+  }
 }
-
+/*--------------------------------------------------------------------------*/
 void led_toggle(uint32_t i){
 
-  ti_lib_ioc_pin_type_gpio_output(BOARD_IOID_LED);
-  ti_lib_gpio_pin_write(BOARD_LED,i);
-  
+  ti_lib_gpio_write_dio(BOARD_IOID_LED,i);
 }
-
+/*--------------------------------------------------------------------------*/
 void logic_test(uint32_t i){
 
-  ti_lib_ioc_pin_type_gpio_output(BOARD_IOID30);
-  ti_lib_gpio_pin_write(BOARD_IO30,i);
-
+  ti_lib_gpio_write_dio(BOARD_IOID_LED,i);
 }
+
 /*---------------------------------------------------------------------------*/
 void
 board_init()
 {
-  uint8_t int_disabled = ti_lib_int_master_disable();
-  /* Turn on PERIPH PDs */
+  /* Disable global interrupts */
+  bool int_disabled = ti_lib_int_master_disable();
+
+  /* Turn on relevant PDs */
   wakeup_handler();
 
   /* Enable GPIO peripheral */
@@ -113,14 +109,24 @@ board_init()
   ti_lib_prcm_load_set();
   while(!ti_lib_prcm_load_get());
 
+  /* Make sure the external flash is in the lower power mode */
+ // ext_flash_init();
+
   lpm_register_module(&srf_module);
 
+  /* For unsupported peripherals, select a default pin configuration */
   configure_unused_pins();
+
+  /* Initialise the RF switch if present */
+  //rf_switch_init();
 
   /* Re-enable interrupt if initially enabled. */
   if(!int_disabled) {
     ti_lib_int_master_enable();
   }
+
+  ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_LED);
+
   PRINTF("We are using " BOARD_STRING "\n");
 }
 /*---------------------------------------------------------------------------*/

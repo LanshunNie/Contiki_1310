@@ -1,12 +1,12 @@
 /******************************************************************************
 *  Filename:       cpu.c
-*  Revised:        2015-06-19 18:40:31 +0200 (Fri, 19 Jun 2015)
-*  Revision:       44009
+*  Revised:        2016-06-30 09:21:03 +0200 (Thu, 30 Jun 2016)
+*  Revision:       46799
 *
 *  Description:    Instruction wrappers for special CPU instructions needed by
 *                  the drivers.
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@
 //! Disable all external interrupts
 //
 //*****************************************************************************
-#if defined(__IAR_SYSTEMS_ICC__) || defined(DOXYGEN)
+#if defined(__IAR_SYSTEMS_ICC__)
 uint32_t
 CPUcpsid(void)
 {
@@ -92,7 +92,7 @@ CPUcpsid(void)
     cpsid   i;
     bx      lr
 }
-#elif defined(__TI_COMPILER_VERSION__)
+#elif defined(__TI_COMPILER_VERSION__) || defined(DOXYGEN)
 uint32_t
 CPUcpsid(void)
 {
@@ -141,7 +141,7 @@ CPUcpsid(void)
 //! Get the current interrupt state
 //
 //*****************************************************************************
-#if defined(__IAR_SYSTEMS_ICC__) || defined(DOXYGEN)
+#if defined(__IAR_SYSTEMS_ICC__)
 uint32_t
 CPUprimask(void)
 {
@@ -168,7 +168,7 @@ CPUprimask(void)
     mrs     r0, PRIMASK;
     bx      lr
 }
-#elif defined(__TI_COMPILER_VERSION__)
+#elif defined(__TI_COMPILER_VERSION__) || defined(DOXYGEN)
 uint32_t
 CPUprimask(void)
 {
@@ -215,7 +215,7 @@ CPUprimask(void)
 //! Enable all external interrupts
 //
 //*****************************************************************************
-#if defined(__IAR_SYSTEMS_ICC__) || defined(DOXYGEN)
+#if defined(__IAR_SYSTEMS_ICC__)
 uint32_t
 CPUcpsie(void)
 {
@@ -244,7 +244,7 @@ CPUcpsie(void)
     cpsie   i;
     bx      lr
 }
-#elif defined(__TI_COMPILER_VERSION__)
+#elif defined(__TI_COMPILER_VERSION__) || defined(DOXYGEN)
 uint32_t
 CPUcpsie(void)
 {
@@ -293,7 +293,7 @@ CPUcpsie(void)
 //! Get the interrupt priority disable level
 //
 //*****************************************************************************
-#if defined(__IAR_SYSTEMS_ICC__) || defined(DOXYGEN)
+#if defined(__IAR_SYSTEMS_ICC__)
 uint32_t
 CPUbasepriGet(void)
 {
@@ -320,7 +320,7 @@ CPUbasepriGet(void)
     mrs     r0, BASEPRI;
     bx      lr
 }
-#elif defined(__TI_COMPILER_VERSION__)
+#elif defined(__TI_COMPILER_VERSION__) || defined(DOXYGEN)
 uint32_t
 CPUbasepriGet(void)
 {
@@ -361,13 +361,12 @@ CPUbasepriGet(void)
     return(ui32Ret);
 }
 #endif
-
 //*****************************************************************************
 //
 //! Provide a small delay
 //
 //*****************************************************************************
-#if defined(__IAR_SYSTEMS_ICC__) || defined(DOXYGEN)
+#if defined(__IAR_SYSTEMS_ICC__)
 void
 CPUdelay(uint32_t ui32Count)
 {
@@ -393,7 +392,7 @@ CPUdel
     bne     CPUdel;
     bx      lr;
 }
-#elif defined(__TI_COMPILER_VERSION__)
+#elif defined(__TI_COMPILER_VERSION__) || defined(DOXYGEN)
 //
 // For CCS implement this function in pure assembly. This prevents the TI
 // compiler from doing funny things with the optimizer.

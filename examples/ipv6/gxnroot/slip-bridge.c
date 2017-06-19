@@ -49,9 +49,7 @@
 
 #define DEBUG 0  //DEBUG_PRINT
 #include "net/ip/uip-debug.h"
-// void led_toggle(uint32_t i);
-// void logic_test(uint32_t i);
-// static uint32_t logic=0;
+
 void set_prefix_64(uip_ipaddr_t *);
 
 static uip_ipaddr_t last_sender;
@@ -59,8 +57,7 @@ static uip_ipaddr_t last_sender;
 static void
 slip_input_callback(void)
 {
-  // logic = logic ^1;
-  // logic_test(logic);
+  
   //PRINTF("SIN: %u\n", uip_len);
   if(uip_buf[0] == '!') 
   {

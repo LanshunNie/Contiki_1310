@@ -1,9 +1,9 @@
 /******************************************************************************
 *  Filename:       hw_memmap_h
-*  Revised:        2015-06-18 17:11:10 +0200 (Thu, 18 Jun 2015)
-*  Revision:       43982
+*  Revised:        2016-06-24 08:39:58 +0200 (Fri, 24 Jun 2016)
+*  Revision:       46762
 *
-* Copyright (c) 2015, Texas Instruments Incorporated
+* Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@
 #define BROM_BASE               0x10000000 // BROM
 #define GPRAM_BASE              0x11000000 // GPRAM
 #define SRAM_BASE               0x20000000 // SRAM
-#define RFC_RAM_BASE            0x21000000 // RFRAM
+#define RFC_RAM_BASE            0x21000000 // RFC_RAM
 #define SSI0_BASE               0x40000000 // SSI
 #define UART0_BASE              0x40001000 // UART
 #define I2C0_BASE               0x40002000 // I2C
@@ -82,7 +82,7 @@
 #define AON_BATMON_BASE         0x40095000 // AON_BATMON
 #define AUX_AIODIO0_BASE        0x400C1000 // AUX_AIODIO
 #define AUX_AIODIO1_BASE        0x400C2000 // AUX_AIODIO
-#define AUX_TDCIF_BASE          0x400C4000 // AUX_TDC
+#define AUX_TDC_BASE            0x400C4000 // AUX_TDC
 #define AUX_EVCTL_BASE          0x400C5000 // AUX_EVCTL
 #define AUX_WUC_BASE            0x400C6000 // AUX_WUC
 #define AUX_TIMER_BASE          0x400C7000 // AUX_TIMER
@@ -134,7 +134,7 @@
                                 0x600C1000 // AUX_AIODIO CPU nonbuf base
 #define AUX_AIODIO1_NONBUF_BASE \
                                 0x600C2000 // AUX_AIODIO CPU nonbuf base
-#define AUX_TDCIF_NONBUF_BASE   0x600C4000 // AUX_TDC CPU nonbuf base
+#define AUX_TDC_NONBUF_BASE     0x600C4000 // AUX_TDC CPU nonbuf base
 #define AUX_EVCTL_NONBUF_BASE   0x600C5000 // AUX_EVCTL CPU nonbuf base
 #define AUX_WUC_NONBUF_BASE     0x600C6000 // AUX_WUC CPU nonbuf base
 #define AUX_TIMER_NONBUF_BASE   0x600C7000 // AUX_TIMER CPU nonbuf base

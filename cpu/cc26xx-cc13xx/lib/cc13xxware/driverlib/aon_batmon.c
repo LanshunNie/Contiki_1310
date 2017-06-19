@@ -1,11 +1,11 @@
 /******************************************************************************
 *  Filename:       aon_batmon.c
-*  Revised:        2015-04-24 17:38:27 +0200 (Fri, 24 Apr 2015)
-*  Revision:       43311
+*  Revised:        2016-06-30 09:21:03 +0200 (Thu, 30 Jun 2016)
+*  Revision:       46799
 *
 *  Description:    Driver for the AON Battery and Temperature Monitor
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,15 @@
 #include <inc/hw_fcfg1.h>
 
 //*****************************************************************************
-// Need to know the AON_BATMON:TEMP.INT field width in order to sign extend correctly
-// (This is not given in the hw_aon_batmon.h file and therefore hard coded here)
+//
+// Handle support for DriverLib in ROM:
+// This section will undo prototype renaming made in the header file
+//
 //*****************************************************************************
-#define AON_BATMON_TEMP_INT_FIELD_WIDTH   9
+#if !defined(DOXYGEN)
+    #undef  AONBatMonTemperatureGetDegC
+    #define AONBatMonTemperatureGetDegC     NOROM_AONBatMonTemperatureGetDegC
+#endif
 
 //*****************************************************************************
 //
@@ -62,12 +67,12 @@ AONBatMonTemperatureGetDegC( void )
    // Shift left then right to sign extend the BATMON_TEMP field
    //
    signedTemp = ((((int32_t)HWREG( AON_BATMON_BASE + AON_BATMON_O_TEMP ))
-     << ( 32 - AON_BATMON_TEMP_INT_FIELD_WIDTH - AON_BATMON_TEMP_INT_S ))
-     >> ( 32 - AON_BATMON_TEMP_INT_FIELD_WIDTH - AON_BATMON_TEMP_INT_S ));
+     << ( 32 - AON_BATMON_TEMP_INT_W - AON_BATMON_TEMP_INT_S ))
+     >> ( 32 - AON_BATMON_TEMP_INT_W - AON_BATMON_TEMP_INT_S ));
 
    //
    // Typecasting voltageSlope to int8_t prior to assignment in order to make sure sign extension works properly
-   // Using byte read (HWREGB) in order to make more efficient code since FCFG1_O_MISC_TRIM is assigned to bits[7:0]
+   // Using byte read (HWREGB) in order to make more efficient code since voltageSlope is assigned to bits[7:0] of FCFG1_O_MISC_TRIM
    //
    voltageSlope      = ((int8_t)HWREGB( FCFG1_BASE + FCFG1_O_MISC_TRIM ));
    tempCorrection    = (( voltageSlope * (((int32_t)HWREG( AON_BATMON_BASE + AON_BATMON_O_BAT )) - 0x300 )) >> 4 );

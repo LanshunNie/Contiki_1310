@@ -62,12 +62,9 @@
 #include "contiki.h"
 
 #include "ti-lib.h"
-
-#include <stdio.h>
 /*---------------------------------------------------------------------------*/
 static volatile uint64_t count;
 /*---------------------------------------------------------------------------*/
-
 static void
 power_domain_on(void)
 {
@@ -101,7 +98,7 @@ clock_init(void)
   HWREG(GPT0_BASE + GPT_O_CTL) &= ~(GPT_CTL_TAEN | GPT_CTL_TBEN);
 
   /*
-   * We think that the clock is running at 48MHz, we use GPT0 Timer A,
+   * We assume that the clock is running at 48MHz, we use GPT0 Timer A,
    * one-shot, countdown, prescaled by 48 gives us 1 tick per usec
    */
   ti_lib_timer_configure(GPT0_BASE,
@@ -122,6 +119,8 @@ clock_init(void)
   HWREG(GPT0_BASE + GPT_O_TBMR) =
         ((TIMER_CFG_B_ONE_SHOT >> 8) & 0xFF) | GPT_TBMR_TBPWMIE;
 
+  /* enable sync with radio timer */
+  HWREGBITW(AON_RTC_BASE + AON_RTC_O_CTL, AON_RTC_CTL_RTC_UPD_EN_BITN) = 1;
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -139,7 +138,6 @@ update_clock_variable(void)
 
   /* Convert AON RTC ticks to clock tick counter */
   count = (aon_rtc_secs_now * CLOCK_SECOND) + (aon_rtc_ticks_now >> 9);
-
 }
 /*---------------------------------------------------------------------------*/
 CCIF clock_time_t
@@ -150,11 +148,6 @@ clock_time(void)
   return (clock_time_t)(count & 0xFFFFFFFF);
 }
 /*---------------------------------------------------------------------------*/
-/**
- * \brief This function is called by soc_rtc_isr function,
- *   which is executed every 1/128 seconds.
- *   
- */
 void
 clock_update(void)
 {

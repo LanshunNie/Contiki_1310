@@ -1,11 +1,11 @@
 /******************************************************************************
 *  Filename:       uart.c
-*  Revised:        2015-01-13 16:59:55 +0100 (Tue, 13 Jan 2015)
-*  Revision:       42365
+*  Revised:        2016-07-07 19:12:02 +0200 (Thu, 07 Jul 2016)
+*  Revision:       46848
 *
 *  Description:    Driver for the UART.
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -132,11 +132,6 @@ UARTConfigSetExpClk(uint32_t ui32Base, uint32_t ui32UARTClk,
     // Set parity, data length, and number of stop bits.
     //
     HWREG(ui32Base + UART_O_LCRH) = ui32Config;
-
-    //
-    // Clear the flags register.
-    //
-    HWREG(ui32Base + UART_O_FR) = 0;
 }
 
 //*****************************************************************************
@@ -340,12 +335,12 @@ UARTIntRegister(uint32_t ui32Base, void (*pfnHandler)(void))
     //
     // Register the interrupt handler.
     //
-    IntRegister(INT_UART0, pfnHandler);
+    IntRegister(INT_UART0_COMB, pfnHandler);
 
     //
     // Enable the UART interrupt.
     //
-    IntEnable(INT_UART0);
+    IntEnable(INT_UART0_COMB);
 }
 
 //*****************************************************************************
@@ -364,10 +359,10 @@ UARTIntUnregister(uint32_t ui32Base)
     //
     // Disable the interrupt.
     //
-    IntDisable(INT_UART0);
+    IntDisable(INT_UART0_COMB);
 
     //
     // Unregister the interrupt handler.
     //
-    IntUnregister(INT_UART0);
+    IntUnregister(INT_UART0_COMB);
 }

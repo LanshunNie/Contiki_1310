@@ -1,9 +1,9 @@
 /******************************************************************************
 *  Filename:       hw_vims_h
-*  Revised:        2015-05-13 16:18:38 +0200 (Wed, 13 May 2015)
-*  Revision:       43498
+*  Revised:        2016-03-14 09:20:59 +0100 (Mon, 14 Mar 2016)
+*  Revision:       45924
 *
-* Copyright (c) 2015, Texas Instruments Incorporated
+* Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -100,13 +100,12 @@
 // Current VIMS mode
 // ENUMs:
 // OFF                      VIMS Off mode
-// SPLIT                    VIMS Split Cache mode
 // CACHE                    VIMS Cache mode
 // GPRAM                    VIMS GPRAM mode
+#define VIMS_STAT_MODE_W                                                     2
 #define VIMS_STAT_MODE_M                                            0x00000003
 #define VIMS_STAT_MODE_S                                                     0
 #define VIMS_STAT_MODE_OFF                                          0x00000003
-#define VIMS_STAT_MODE_SPLIT                                        0x00000002
 #define VIMS_STAT_MODE_CACHE                                        0x00000001
 #define VIMS_STAT_MODE_GPRAM                                        0x00000000
 
@@ -187,16 +186,19 @@
 
 // Field:   [1:0] MODE
 //
-// VIMS mode request
+// VIMS mode request.
+// Write accesses to this field will be blocked while STAT.MODE_CHANGING is set
+// to 1.
+// Note: Transaction from CACHE mode to GPRAM mode should be done through OFF
+// mode to minimize flash block delay.
 // ENUMs:
 // OFF                      VIMS Off mode
-// SPLIT                    VIMS Split Cache mode
 // CACHE                    VIMS Cache mode
 // GPRAM                    VIMS GPRAM mode
+#define VIMS_CTL_MODE_W                                                      2
 #define VIMS_CTL_MODE_M                                             0x00000003
 #define VIMS_CTL_MODE_S                                                      0
 #define VIMS_CTL_MODE_OFF                                           0x00000003
-#define VIMS_CTL_MODE_SPLIT                                         0x00000002
 #define VIMS_CTL_MODE_CACHE                                         0x00000001
 #define VIMS_CTL_MODE_GPRAM                                         0x00000000
 

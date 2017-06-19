@@ -1,9 +1,9 @@
 /******************************************************************************
 *  Filename:       hw_device.h
-*  Revised:        2015-02-10 13:17:04 +0100 (Tue, 10 Feb 2015)
-*  Revision:       42629
+*  Revised:        2016-06-30 09:21:03 +0200 (Thu, 30 Jun 2016)
+*  Revision:       46799
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,8 @@
 #ifndef __HW_DEVICE_H__
 #define __HW_DEVICE_H__
 
+#include <inc/hw_chip_def.h>
+
 #ifdef CC_GET_CHIP_PACKAGE
 
 #if ( CC_GET_CHIP_PACKAGE == 0x7 )
@@ -46,7 +48,7 @@
 // CC26xx 7x7 packaged device.
 //
 //*****************************************************************************
-#define AON_EVENT_DIO0         18
+#define AON_EVENT_DIO0         0x3F
 #define AON_EVENT_DIO1         17
 #define AON_EVENT_DIO2         16
 #define AON_EVENT_DIO3         15

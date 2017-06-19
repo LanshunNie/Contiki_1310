@@ -1,9 +1,9 @@
 /******************************************************************************
 *  Filename:       rf_patch_cpe_genfsk.h
-*  Revised:        2015-09-11 13:15:59 +0100 (fr, 11 Sep 2015)
-*  Revision:       
+*  Revised:        $Date: 2016-06-08 15:35:28 +0200 (on, 08 jun 2016) $
+*  Revision:       $Revision: 17220 $
 *
-*  Description:    Patch for CC13XX Generic FSK
+*  Description:    RF Core patch file for CC13xx generic FSK
 *
 *  Copyright (c) 2015, Texas Instruments Incorporated
 *  All rights reserved.
@@ -39,6 +39,17 @@
 #ifndef _RF_PATCH_CPE_GENFSK_H
 #define _RF_PATCH_CPE_GENFSK_H
 
+//*****************************************************************************
+//
+// If building with a C++ compiler, make all of the definitions in this header
+// have a C binding.
+//
+//*****************************************************************************
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <stdint.h>
 #include <string.h>
 
@@ -54,37 +65,54 @@
 #define PATCH_FUN_SPEC static inline
 #endif
 
+#ifndef _APPLY_PATCH_TAB
+#define _APPLY_PATCH_TAB
+#endif
 
-CPE_PATCH_TYPE patchImage[] = {
-   0x21000479,
-   0x210004dd,
-   0x210004fd,
-   0x21000527,
-   0x2100055d,
-   0x21000465,
+
+CPE_PATCH_TYPE patchImageGenfsk[] = {
+   0x210004ad,
+   0x21000449,
+   0x2100047d,
+   0x21000481,
+   0x21000511,
+   0x21000591,
+   0x21000641,
    0x4710b5f8,
    0x460eb5f8,
    0x25012100,
    0x473004ad,
-   0x4904b570,
-   0xb5704708,
-   0x47084903,
-   0x4903b5f8,
-   0x00004708,
-   0x00004bc9,
-   0x00004a69,
+   0x7803480a,
+   0xf80ff000,
+   0xd00b079b,
+   0x78204c12,
+   0xd00728ff,
+   0x702121ff,
+   0x240f490e,
+   0x43200224,
+   0x82c83160,
+   0xb5f8bdf8,
+   0x47004801,
+   0x2100026b,
    0x00004ce5,
-   0x21004a02,
-   0xb4f06011,
-   0x47084901,
-   0x40044014,
-   0x000068cf,
+   0xe0014809,
+   0x0c004808,
+   0x49054c06,
+   0x2aff7822,
+   0x7acad101,
+   0x31607022,
+   0x467082c8,
+   0x47001c80,
+   0x40086200,
+   0x210006a4,
+   0x08080f07,
+   0x4708b4f0,
    0x4603b570,
    0x29014615,
    0x2900d006,
    0x4a11d006,
    0xf7ff4628,
-   0xbd70ffd3,
+   0xbd70ffbb,
    0xe000480f,
    0x2405480f,
    0xd8034283,
@@ -96,46 +124,14 @@ CPE_PATCH_TYPE patchImage[] = {
    0x4906d007,
    0x31802300,
    0xf7ff4628,
-   0xb2e0ffbd,
+   0xb2e0ffa5,
    0x4902bd70,
    0x316c4b04,
    0x0000e7f6,
    0x00005c83,
    0x2386bca0,
    0x230d8300,
-   0x21000660,
-   0x481ab510,
-   0x56412100,
-   0xd1021c49,
-   0x7ac94918,
-   0x49177001,
-   0x31604817,
-   0xf7ff82c8,
-   0xbd10ffa8,
-   0x4815b510,
-   0xf7ff7ac4,
-   0x07a0ffa5,
-   0x490fd00c,
-   0x56082000,
-   0xd0071c42,
-   0x0212220f,
-   0x4a0c4310,
-   0x82d03260,
-   0x700820ff,
-   0xb510bd10,
-   0x21004807,
-   0x1c495641,
-   0x4906d102,
-   0x70017ac9,
-   0x48074904,
-   0x82c83160,
-   0xff80f7ff,
-   0x0000bd10,
-   0x21000690,
-   0x40086200,
-   0x00000f07,
-   0x21000260,
-   0x00000808,
+   0x21000674,
    0x4e1ab5f8,
    0x6b714605,
    0x09cc4819,
@@ -168,36 +164,60 @@ CPE_PATCH_TYPE patchImage[] = {
    0x2100029b,
    0x00003f7b,
    0x40044040,
-   0x4d17b538,
+   0x4a22b510,
+   0x61512100,
+   0x68894921,
+   0xd40900c9,
+   0x4b204921,
+   0x429805ca,
+   0xd8016b4b,
+   0xe0004313,
+   0x634b4393,
+   0xf7ff491d,
+   0xbd10ff77,
+   0x4d1ab538,
    0x28007f28,
-   0x4816d127,
+   0x481ad127,
    0x09c08800,
    0xd12207c0,
-   0x69604c14,
+   0x69604c12,
    0xd11e2800,
    0xf0004668,
-   0x4668f82b,
+   0x4668f845,
    0x28017800,
    0x4668d117,
    0x28107840,
    0x2008d213,
    0x6a686160,
    0x01400940,
-   0x4a0b6020,
+   0x4a0e6020,
    0x62d12100,
-   0x21024a0a,
+   0x21024a0d,
    0x21016011,
    0x60204308,
    0x43082103,
    0x60206268,
-   0x4806bd38,
+   0x4809bd38,
    0xbd384780,
-   0x21000280,
-   0x21000068,
    0x40044000,
+   0x21000018,
+   0x08930000,
+   0x21000280,
+   0x000068cf,
+   0x21000068,
    0x40041100,
    0xe000e280,
    0x00003bc3,
+   0x28004907,
+   0x2004d000,
+   0xb6724a06,
+   0x07c97809,
+   0x5810d001,
+   0x2080e000,
+   0xb240b662,
+   0x00004770,
+   0x2100026b,
+   0x40046058,
    0x4801b403,
    0xbd019001,
    0x00006fa5,
@@ -215,57 +235,86 @@ CPE_PATCH_TYPE patchImage[] = {
    0xe5e0e3c1,
    0x000000ff,
 };
-#define _NWORD_PATCHIMAGE 158
+#define _NWORD_PATCHIMAGE_GENFSK 163
 
-#define _NWORD_PATCHSYS 0
+#define _NWORD_PATCHSYS_GENFSK 0
 
-#define IRQ_PATCH_0 0x210005dd
+#define _IRQ_PATCH_0 0x210005bd
 
 
-#define _SYS_PATCH_FIXED_ADDR 0x20000000
+#ifndef _GENFSK_SYSRAM_START
+#define _GENFSK_SYSRAM_START 0x20000000
+#endif
 
-PATCH_FUN_SPEC void enterCpePatch(void)
+#ifndef _GENFSK_CPERAM_START
+#define _GENFSK_CPERAM_START 0x21000000
+#endif
+
+#define _GENFSK_SYS_PATCH_FIXED_ADDR 0x20000000
+
+#define _GENFSK_PARSER_PATCH_TAB_OFFSET 0x0338
+#define _GENFSK_PATCH_TAB_OFFSET 0x0340
+#define _GENFSK_IRQPATCH_OFFSET 0x03BC
+#define _GENFSK_PATCH_VEC_OFFSET 0x041C
+
+PATCH_FUN_SPEC void enterGenfskCpePatch(void)
 {
-   uint32_t *pPatchVec = (uint32_t *) 0x2100041C;
+   uint32_t *pPatchVec = (uint32_t *) (_GENFSK_CPERAM_START + _GENFSK_PATCH_VEC_OFFSET);
 
-#if (_NWORD_PATCHIMAGE > 0)
-   memcpy(pPatchVec, patchImage, sizeof(patchImage));
+#if (_NWORD_PATCHIMAGE_GENFSK > 0)
+   memcpy(pPatchVec, patchImageGenfsk, sizeof(patchImageGenfsk));
 #endif
 }
 
-PATCH_FUN_SPEC void enterSysPatch(void)
+PATCH_FUN_SPEC void enterGenfskSysPatch(void)
 {
 }
 
-PATCH_FUN_SPEC void configurePatch(void)
+PATCH_FUN_SPEC void configureGenfskPatch(void)
 {
-   uint8_t *pPatchTab = (uint8_t *) 0x21000340;
-   uint32_t *pIrqPatch = (uint32_t *) 0x210003BC;
+   uint8_t *pPatchTab = (uint8_t *) (_GENFSK_CPERAM_START + _GENFSK_PATCH_TAB_OFFSET);
+   uint32_t *pIrqPatch = (uint32_t *) (_GENFSK_CPERAM_START + _GENFSK_IRQPATCH_OFFSET);
 
 
    pPatchTab[80] = 0;
-   pPatchTab[53] = 1;
-   pPatchTab[57] = 2;
+   pPatchTab[57] = 1;
+   pPatchTab[53] = 2;
    pPatchTab[55] = 3;
    pPatchTab[110] = 4;
    pPatchTab[107] = 5;
+   pPatchTab[65] = 6;
 
-   pIrqPatch[1] = IRQ_PATCH_0;
+   pIrqPatch[1] = _IRQ_PATCH_0;
+}
+
+PATCH_FUN_SPEC void applyGenfskPatch(void)
+{
+   enterGenfskSysPatch();
+   enterGenfskCpePatch();
+   configureGenfskPatch();
+}
+
+PATCH_FUN_SPEC void refreshGenfskPatch(void)
+{
+   enterGenfskCpePatch();
+   configureGenfskPatch();
 }
 
 PATCH_FUN_SPEC void rf_patch_cpe_genfsk(void)
 {
-   enterSysPatch();
-   enterCpePatch();
-   configurePatch();
+   applyGenfskPatch();
 }
 
-PATCH_FUN_SPEC void refreshPatch(void)
-{
-   enterCpePatch();
-   configurePatch();
+#undef _IRQ_PATCH_0
+
+//*****************************************************************************
+//
+// Mark the end of the C bindings section for C++ compilers.
+//
+//*****************************************************************************
+#ifdef __cplusplus
 }
-
-#undef IRQ_PATCH_0
-
 #endif
+
+#endif //  _RF_PATCH_CPE_GENFSK_H
+

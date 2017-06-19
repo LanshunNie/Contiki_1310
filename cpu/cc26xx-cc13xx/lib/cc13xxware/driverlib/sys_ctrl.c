@@ -1,11 +1,11 @@
 /******************************************************************************
 *  Filename:       sys_ctrl.c
-*  Revised:        2015-09-14 10:55:44 +0200 (Mon, 14 Sep 2015)
-*  Revision:       44571
+*  Revised:        2016-08-09 12:38:32 +0200 (Tue, 09 Aug 2016)
+*  Revision:       46980
 *
 *  Description:    Driver for the System Control.
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,8 @@
 // Driverlib headers
 #include <driverlib/aon_batmon.h>
 #include <driverlib/sys_ctrl.h>
+#include <driverlib/setup_rom.h>
 
-// Prototype from setup.c
-int32_t SignExtendVddrTrimValue( uint32_t ui32VddrTrimVal );
 
 //*****************************************************************************
 //
@@ -55,12 +54,12 @@ int32_t SignExtendVddrTrimValue( uint32_t ui32VddrTrimVal );
 #if !defined(DOXYGEN)
     #undef  SysCtrlPowerEverything
     #define SysCtrlPowerEverything          NOROM_SysCtrlPowerEverything
-    #undef  SysCtrlStandby
-    #define SysCtrlStandby                  NOROM_SysCtrlStandby
-    #undef  SysCtrlPowerdown
-    #define SysCtrlPowerdown                NOROM_SysCtrlPowerdown
-    #undef  SysCtrlShutdown
-    #define SysCtrlShutdown                 NOROM_SysCtrlShutdown
+    #undef  SysCtrlSetRechargeBeforePowerDown
+    #define SysCtrlSetRechargeBeforePowerDown NOROM_SysCtrlSetRechargeBeforePowerDown
+    #undef  SysCtrlAdjustRechargeAfterPowerDown
+    #define SysCtrlAdjustRechargeAfterPowerDown NOROM_SysCtrlAdjustRechargeAfterPowerDown
+    #undef  SysCtrl_DCDC_VoltageConditionalControl
+    #define SysCtrl_DCDC_VoltageConditionalControl NOROM_SysCtrl_DCDC_VoltageConditionalControl
     #undef  SysCtrlResetSourceGet
     #define SysCtrlResetSourceGet           NOROM_SysCtrlResetSourceGet
 #endif
@@ -111,6 +110,7 @@ static const uint32_t g_pui32ModuleCG[] =
     PRCM_PERIPH_GPIO,
     PRCM_PERIPH_I2S
 };
+
 
 //*****************************************************************************
 //
@@ -211,125 +211,6 @@ SysCtrlPowerEverything(void)
 
 //*****************************************************************************
 //
-//! Force the system in to standby mode
-//
-//*****************************************************************************
-void SysCtrlStandby(void)
-{
-    //
-    // Enable the oscillator configuration interface
-    //
-    OSCInterfaceEnable();
-
-    //
-    // Ensure the low frequency clock source is sourced from a low frequency
-    // oscillator. The XTAL will provide the most accurate real time clock.
-    //
-    OSCClockSourceSet(OSC_SRC_CLK_LF,OSC_XOSC_LF);
-
-    //
-    // Enable the oscillator configuration interface
-    //
-    OSCInterfaceDisable();
-
-    //
-    // Execute the transition to standby
-    //
-    PowerCtrlStateSet(PWRCTRL_STANDBY);
-}
-
-//*****************************************************************************
-//
-//! Force the system in to power down.
-//
-//*****************************************************************************
-void
-SysCtrlPowerdown(void)
-{
-    //
-    // Make sure the oscillator interface is enabled
-    //
-    OSCInterfaceEnable();
-
-    //
-    // Source the LF clock from the low frequency XTAL_OSC.
-    // HF and MF are sourced from the high frequency RC_OSC.
-    //
-    OSCClockSourceSet(OSC_SRC_CLK_LF, OSC_XOSC_LF);
-    OSCClockSourceSet(OSC_SRC_CLK_MF | OSC_SRC_CLK_HF, OSC_RCOSC_HF);
-
-    //
-    // Check if already sourcing the HF clock from RC_OSC.
-    // If a switch of the clock source is not required, then the call to ROM
-    // will loop forever.
-    //
-    if(OSCClockSourceGet(OSC_SRC_CLK_HF) != OSC_RCOSC_HF)
-    {
-        OSCHfSourceSwitch();
-    }
-
-    //
-    // Disable the oscillator interface
-    //
-    OSCInterfaceDisable();
-
-    //
-    // Execute the transition to power down.
-    //
-    PowerCtrlStateSet(PWRCTRL_POWER_DOWN);
-}
-
-//*****************************************************************************
-//
-//! Force the system in to shutdown.
-//
-//*****************************************************************************
-void
-SysCtrlShutdown(void)
-{
-    //
-    // Make sure the oscillator interface is enabled
-    //
-    OSCInterfaceEnable();
-
-    //
-    // Source the LF clock from the low frequency RC_OSC.
-    // HF and MF are sourced from the high frequency RC_OSC.
-    //
-    OSCClockSourceSet(OSC_SRC_CLK_LF, OSC_RCOSC_LF);
-    OSCClockSourceSet(OSC_SRC_CLK_MF | OSC_SRC_CLK_HF, OSC_RCOSC_HF);
-
-    //
-    // Check if already sourcing the HF clock from RC_OSC.
-    // If a switch of the clock source is not required, then the call to ROM
-    // will loop forever.
-    //
-    if(OSCClockSourceGet(OSC_SRC_CLK_HF) != OSC_RCOSC_HF)
-    {
-        OSCHfSourceSwitch();
-    }
-
-    //
-    // Disable the oscillator interface
-    //
-    OSCInterfaceDisable();
-
-    //
-    // Execute transition to shutdown.
-    //
-    PowerCtrlStateSet(PWRCTRL_SHUTDOWN);
-}
-
-
-//*****************************************************************************
-// Need to know the CCFG:MODE_CONF.VDDR_TRIM_SLEEP_DELTA fild width in order
-// to sign extend correctly but this is however not defined in the hardware
-// description fields and are therefore defined separately here.
-//*****************************************************************************
-#define CCFG_MODE_CONF_VDDR_TRIM_SLEEP_DELTA_WIDTH    4
-
-//*****************************************************************************
-//
 // SysCtrlSetRechargeBeforePowerDown( xoscPowerMode )
 //
 //*****************************************************************************
@@ -373,6 +254,48 @@ SysCtrlSetRechargeBeforePowerDown( uint32_t xoscPowerMode )
    //--- Spec. point 1 ---
    curTemp  = AONBatMonTemperatureGetDegC();
    curState = 0;
+
+   // read the MODE_CONF register in CCFG
+   ccfg_ModeConfReg = HWREG( CCFG_BASE + CCFG_O_MODE_CONF );
+   // Get VDDR_TRIM_SLEEP_DELTA + 1 (sign extended)
+   deltaVddrSleepTrim = ((((int32_t) ccfg_ModeConfReg )
+      << ( 32 - CCFG_MODE_CONF_VDDR_TRIM_SLEEP_DELTA_W - CCFG_MODE_CONF_VDDR_TRIM_SLEEP_DELTA_S ))
+      >> ( 32 - CCFG_MODE_CONF_VDDR_TRIM_SLEEP_DELTA_W )) + 1;
+   // Do temperature compensation if enabled
+   if (( ccfg_ModeConfReg & CCFG_MODE_CONF_VDDR_TRIM_SLEEP_TC ) == 0 ) {
+      int32_t tcDelta = ( 62 - curTemp ) >> 3;
+      if ( tcDelta > 8 ) tcDelta = 8;
+      if ( tcDelta > deltaVddrSleepTrim ) deltaVddrSleepTrim = tcDelta;
+   }
+   if ((( ccfg_ModeConfReg & CCFG_MODE_CONF_VDDR_EXT_LOAD  ) == 0 ) &&
+       (( ccfg_ModeConfReg & CCFG_MODE_CONF_VDDS_BOD_LEVEL ) != 0 )    )
+   {
+      vddrTrimSleep = SetupSignExtendVddrTrimValue((
+         HWREG( FCFG1_BASE + FCFG1_O_VOLT_TRIM ) &
+         FCFG1_VOLT_TRIM_VDDR_TRIM_SLEEP_H_M ) >>
+         FCFG1_VOLT_TRIM_VDDR_TRIM_SLEEP_H_S ) ;
+      vddrTrimActve = SetupSignExtendVddrTrimValue((
+         HWREG( FCFG1_BASE + FCFG1_O_VOLT_TRIM ) &
+         FCFG1_VOLT_TRIM_VDDR_TRIM_HH_M ) >>
+         FCFG1_VOLT_TRIM_VDDR_TRIM_HH_S ) ;
+   } else
+   {
+      vddrTrimSleep = SetupSignExtendVddrTrimValue((
+         HWREG( FCFG1_BASE + FCFG1_O_LDO_TRIM ) &
+         FCFG1_LDO_TRIM_VDDR_TRIM_SLEEP_M ) >>
+         FCFG1_LDO_TRIM_VDDR_TRIM_SLEEP_S ) ;
+      vddrTrimActve = SetupSignExtendVddrTrimValue((
+         HWREG( FCFG1_BASE + FCFG1_O_SHDW_ANA_TRIM ) &
+         FCFG1_SHDW_ANA_TRIM_VDDR_TRIM_M ) >>
+         FCFG1_SHDW_ANA_TRIM_VDDR_TRIM_S ) ;
+   }
+   vddrTrimSleep += deltaVddrSleepTrim;
+   if ( vddrTrimSleep >  21 ) vddrTrimSleep =  21;
+   if ( vddrTrimSleep < -10 ) vddrTrimSleep = -10;
+   // Write adjusted value using MASKED write (MASK8)
+   HWREGH( ADI3_BASE + ADI_O_MASK8B + ( ADI_3_REFSYS_O_DCDCCTL1 * 2 )) = (( ADI_3_REFSYS_DCDCCTL1_VDDR_TRIM_SLEEP_M << 8 ) |
+      (( vddrTrimSleep << ADI_3_REFSYS_DCDCCTL1_VDDR_TRIM_SLEEP_S ) & ADI_3_REFSYS_DCDCCTL1_VDDR_TRIM_SLEEP_M ));
+
    prcmRamRetention = HWREG( PRCM_BASE + PRCM_O_RAMRETEN );
    if ( prcmRamRetention & PRCM_RAMRETEN_VIMS_M ) {
       curState |= PD_STATE_CACHE_RET;
@@ -384,8 +307,6 @@ SysCtrlSetRechargeBeforePowerDown( uint32_t xoscPowerMode )
       curState |= PD_STATE_XOSC_LPM;
    }
 
-   pLookupTable = (uint32_t *)( FCFG1_BASE + FCFG1_O_PWD_CURR_20C );
-
    //--- Spec. point 2 ---
    if ((( curTemp - powerQualGlobals.pdTemp ) >= 5 ) || ( curState != powerQualGlobals.pdState )) {
       //--- Spec. point 3 ---
@@ -396,6 +317,8 @@ SysCtrlSetRechargeBeforePowerDown( uint32_t xoscPowerMode )
       // Currently not implementing external load handling
       // if ( __ccfg.ulModeConfig & MODE_CONF_VDDR_EXT_LOAD ) {
       // }
+
+      pLookupTable = (uint32_t *)( FCFG1_BASE + FCFG1_O_PWD_CURR_20C );
 
       //--- Spec point 5 ---
       di    = 0;
@@ -454,47 +377,6 @@ SysCtrlSetRechargeBeforePowerDown( uint32_t xoscPowerMode )
 
       //--- Spec. point 9 ---
       load += ((( di * ( shiftedTemp - ( ti << 8 ))) + 128 ) >> 8 );
-
-      // read the MODE_CONF register in CCFG
-      ccfg_ModeConfReg = HWREG( CCFG_BASE + CCFG_O_MODE_CONF );
-      // Get VDDR_TRIM_SLEEP_DELTA + 1 (sign extended)
-      deltaVddrSleepTrim = ((((int32_t) ccfg_ModeConfReg )
-         << ( 32 - CCFG_MODE_CONF_VDDR_TRIM_SLEEP_DELTA_WIDTH - CCFG_MODE_CONF_VDDR_TRIM_SLEEP_DELTA_S ))
-         >> ( 32 - CCFG_MODE_CONF_VDDR_TRIM_SLEEP_DELTA_WIDTH )) + 1;
-      // Do temperature compensation if enabled
-      if (( ccfg_ModeConfReg & CCFG_MODE_CONF_VDDR_TRIM_SLEEP_TC ) == 0 ) {
-         int32_t tcDelta = ( 62 - curTemp ) >> 3;
-         if ( tcDelta > 8 ) tcDelta = 8;
-         if ( tcDelta > deltaVddrSleepTrim ) deltaVddrSleepTrim = tcDelta;
-      }
-      if ((( ccfg_ModeConfReg & CCFG_MODE_CONF_VDDR_EXT_LOAD  ) == 0 ) &&
-          (( ccfg_ModeConfReg & CCFG_MODE_CONF_VDDS_BOD_LEVEL ) != 0 )    )
-      {
-         vddrTrimSleep = SignExtendVddrTrimValue((
-            HWREG( FCFG1_BASE + FCFG1_O_VOLT_TRIM ) &
-            FCFG1_VOLT_TRIM_VDDR_TRIM_SLEEP_H_M ) >>
-            FCFG1_VOLT_TRIM_VDDR_TRIM_SLEEP_H_S ) ;
-         vddrTrimActve = SignExtendVddrTrimValue((
-            HWREG( FCFG1_BASE + FCFG1_O_VOLT_TRIM ) &
-            FCFG1_VOLT_TRIM_VDDR_TRIM_HH_M ) >>
-            FCFG1_VOLT_TRIM_VDDR_TRIM_HH_S ) ;
-      } else
-      {
-         vddrTrimSleep = SignExtendVddrTrimValue((
-            HWREG( FCFG1_BASE + FCFG1_O_LDO_TRIM ) &
-            FCFG1_LDO_TRIM_VDDR_TRIM_SLEEP_M ) >>
-            FCFG1_LDO_TRIM_VDDR_TRIM_SLEEP_S ) ;
-         vddrTrimActve = SignExtendVddrTrimValue((
-            HWREG( FCFG1_BASE + FCFG1_O_SHDW_ANA_TRIM ) &
-            FCFG1_SHDW_ANA_TRIM_VDDR_TRIM_M ) >>
-            FCFG1_SHDW_ANA_TRIM_VDDR_TRIM_S ) ;
-      }
-      vddrTrimSleep += deltaVddrSleepTrim;
-      if ( vddrTrimSleep >  21 ) vddrTrimSleep =  21;
-      if ( vddrTrimSleep < -10 ) vddrTrimSleep = -10;
-      // Write adjusted value using MASKED write (MASK8)
-      HWREGH( ADI3_BASE + ADI_O_MASK8B + ( ADI_3_REFSYS_O_DCDCCTL1 * 2 )) = (( ADI_3_REFSYS_DCDCCTL1_VDDR_TRIM_SLEEP_M << 8 ) |
-         (( vddrTrimSleep << ADI_3_REFSYS_DCDCCTL1_VDDR_TRIM_SLEEP_S ) & ADI_3_REFSYS_DCDCCTL1_VDDR_TRIM_SLEEP_M ));
 
       // Currently not implementing external load handling
       // if ( __ccfg.ulModeConfig & MODE_CONF_VDDR_EXT_LOAD ) {
@@ -617,14 +499,16 @@ SysCtrl_DCDC_VoltageConditionalControl( void )
    if ( aonBatmonBat != 0 ) {
       //
       // Check if Voltage Conditional Control is enabled
-      // It is enabled if both:
+      // It is enabled if all the following are true:
       // - DCDC in use (either in active or recharge mode), (in use if one of the corresponding CCFG bits are zero).
       // - Alternative DCDC settings are enabled ( DIS_ALT_DCDC_SETTING == 0 )
+      // - Not in external regulator mode ( EXT_REG_MODE == 0 )
       //
       ccfg_ModeConfReg = HWREG( CCFG_BASE + CCFG_O_MODE_CONF );
 
       if (((( ccfg_ModeConfReg & CCFG_MODE_CONF_DCDC_RECHARGE_M ) == 0                                            ) ||
            (( ccfg_ModeConfReg & CCFG_MODE_CONF_DCDC_ACTIVE_M   ) == 0                                            )    ) &&
+          (( HWREG( AON_SYSCTL_BASE + AON_SYSCTL_O_PWRCTL ) & AON_SYSCTL_PWRCTL_EXT_REG_MODE )               == 0      ) &&
           (( HWREG( CCFG_BASE + CCFG_O_SIZE_AND_DIS_FLAGS ) & CCFG_SIZE_AND_DIS_FLAGS_DIS_ALT_DCDC_SETTING ) == 0      )    )
       {
          aonSysctlPwrctl = HWREG( AON_SYSCTL_BASE + AON_SYSCTL_O_PWRCTL );

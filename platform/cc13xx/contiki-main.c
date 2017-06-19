@@ -72,7 +72,10 @@ set_rf_params(void)
 int
 main(void)
 {
-    
+    /* Enable flash cache and prefetch. */
+  ti_lib_vims_mode_set(VIMS_BASE, VIMS_MODE_ENABLED);
+  ti_lib_vims_configure(VIMS_BASE, true, true);
+
   ti_lib_int_master_disable();
   /* Set the LF XOSC as the LF system clock source */
   oscillators_select_lf_xosc();
@@ -80,10 +83,6 @@ main(void)
   lpm_init();
   
   board_init();
-
-  #if CC26XX_UART_CONF_ENABLE
-    cc26xx_uart_init();
-  #endif
 
   printf("Starting " CONTIKI_VERSION_STRING "\n");
   printf("supports cc13xx platform\n");
@@ -112,10 +111,11 @@ main(void)
   
   /*************************************************/
 
-
   ti_lib_int_master_enable(); 
 
   soc_rtc_init();
+
+  clock_init();//radio combine timer
 
   rtimer_init();
   
@@ -124,9 +124,11 @@ main(void)
   process_init(); 
 
   random_init(0x1234);
+
+  #if CC26XX_UART_CONF_ENABLE
+    cc26xx_uart_init();
+  #endif
   
-  /*set uart-input function*/
-  //uart1_set_input(serial_line_input_byte);
   serial_line_init();
 
   process_start(&etimer_process, NULL);
@@ -143,36 +145,37 @@ main(void)
   printf("%s\n", NETSTACK_RDC.name);
   
 
-  // netstack_init();
+  netstack_init();
   
-  set_rf_params();
-#if NETSTACK_CONF_WITH_IPV6
-  memcpy(&uip_lladdr.addr, &linkaddr_node_addr, sizeof(uip_lladdr.addr));
-  queuebuf_init();
-  process_start(&tcpip_process, NULL);
-#endif /* NETSTACK_CONF_WITH_IPV6 */
+//   set_rf_params();
+// #if NETSTACK_CONF_WITH_IPV6
+//   memcpy(&uip_lladdr.addr, &linkaddr_node_addr, sizeof(uip_lladdr.addr));
+//   queuebuf_init();
+//   process_start(&tcpip_process, NULL);
+// #endif /* NETSTACK_CONF_WITH_IPV6 */
 
- // ***************by xiaobing *************//
-  #if CONTIKI_CONF_NETSYNCH
+//  // ***************by xiaobing *************//
+//   #if CONTIKI_CONF_NETSYNCH
 
-   netsynch_init();
+//    netsynch_init();
 
-   #if  ROOTNODE  
-    // netsynch_set_authority_level(0); 
-   correct_time_init();
-   #endif 
+//    #if  ROOTNODE  
+//     // netsynch_set_authority_level(0); 
+//    correct_time_init();
+//    #endif 
 
-  task_schedule_init();
+//   task_schedule_init();
 
-  #endif
+//   #endif
 /******************************/
-  NETSTACK_RADIO.off();//the default state is off
+  // NETSTACK_RADIO.off();//the default state is off
   
 
 /*****************************/  
   autostart_start(autostart_processes);
 
   watchdog_start();
+
 
   while(1) {
     

@@ -1,7 +1,7 @@
 /******************************************************************************
 *  Filename:       startup_gcc.c
-*  Revised:        $Date: 2015-05-19 15:09:11 +0200 (ti, 19 mai 2015) $
-*  Revision:       $Revision: 15736 $
+*  Revised:        $Date: 2016-05-19 11:08:26 +0200 (to, 19 mai 2016) $
+*  Revision:       $Revision: 17109 $
 *
 *  Description:    Startup code for CC13xx PG2 device family for use with GCC.
 *
@@ -47,6 +47,7 @@
 #endif
 
 #include <inc/hw_types.h>
+#include <driverlib/setup.h>
 
 
 //*****************************************************************************
@@ -113,18 +114,11 @@ void AUXCompAIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
 void AUXADCIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
 void TRNGIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
 
-//*****************************************************************************
-//
-//! The entry point for the device trim fxn.
-//
-//*****************************************************************************
-extern void trimDevice(void);
 
 //*****************************************************************************
 //
 // The following are constructs created by the linker, indicating where the
-// the "data" and "bss" segments reside in memory.  The initializers for the
-// for the "data" segment resides immediately following the "text" segment.
+// the "data" and "bss" segments reside in memory.
 //
 //*****************************************************************************
 extern uint32_t _etext;
@@ -142,7 +136,7 @@ extern uint32_t _estack;
 //
 //*****************************************************************************
 __attribute__ ((section(".vectors"), used))
-void (* const gVectors[])(void) =
+void (* const g_pfnVectors[])(void) =
 {
     (void (*)(void))&_estack,               // The initial stack pointer 
     ResetISR,                               // The reset handler
@@ -212,12 +206,12 @@ void (* const gVectors[])(void) =
 void
 ResetISR(void)
 {
-	uint32_t *pui32Src, *pui32Dest;
+    uint32_t *pui32Src, *pui32Dest;
 
     //
     // Final trim of device
     //
-    trimDevice();
+    SetupTrimDevice();
     
     //
     // Copy the data segment initializers from flash to SRAM.

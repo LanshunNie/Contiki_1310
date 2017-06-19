@@ -50,15 +50,8 @@
 #include "netsynch.h"
 #include "task-schedule.h"
 #endif
-
-/*---------------------------define hit platform softclock-------------------------------------*/
-
-
 static uint8_t  active_flag_one_second_before = 0;
-
-/*define our time interval.such as active period or inactive period*/
-#define RTC_TIME (RTIMER_SECOND)   //10 minutes
-/*---------------------------------------------------------------------------*/
+#define RTC_TIME (RTIMER_SECOND)   //1 second
 #define soc_rtc_isr(...) AONRTCIntHandler(__VA_ARGS__)
 /*---------------------------------------------------------------------------*/
 /* Prototype of a function in clock.c. Called every time the handler fires */
@@ -67,7 +60,6 @@ void clock_update(void);
 static rtimer_clock_t last_isr_time;
 /*---------------------------------------------------------------------------*/
 #define COMPARE_INCREMENT (RTIMER_SECOND / CLOCK_SECOND)
-// #define COMPARE_INCREMENT (RTIMER_SECOND /128 )
 #define MULTIPLE_512_MASK 0xFFFFFE00
 /*---------------------------------------------------------------------------*/
 /*
@@ -81,22 +73,14 @@ static rtimer_clock_t last_isr_time;
 #else
 #define SOC_RTC_START_TICK_COUNT 0
 #endif
-
+/*---------------------------------------------------------------------------*/
+// void logic_test(uint32_t i);
+// static uint32_t logic=0;
 
 /*---------------------------------------------------------------------------*/
-void
-soc_rtc_schedule_one_shot(uint32_t channel, uint32_t ticks)
-{
-  if((channel != AON_RTC_CH0) && (channel != AON_RTC_CH1)) {
-    return;
-  }
-
-  /* Set the channel to fire a one-shot compare event at time==ticks */
-  ti_lib_aon_rtc_compare_value_set(channel, ticks);
-  ti_lib_aon_rtc_channel_enable(channel);
-
-}
-
+static uint32_t logic;
+void logic_test(uint32_t i);
+/*----------------------------------------------------------------------------*/
 void
 soc_rtc_init(void)
 {
@@ -110,16 +94,13 @@ soc_rtc_init(void)
 
   ti_lib_aon_rtc_event_clear(AON_RTC_CH0);
   ti_lib_aon_rtc_event_clear(AON_RTC_CH1);
-  ti_lib_aon_rtc_event_clear(AON_RTC_CH2);//add by hit
-
+  ti_lib_aon_rtc_event_clear(AON_RTC_CH2);
 
   /* Setup the wakeup event */
   ti_lib_aon_event_mcu_wake_up_set(AON_EVENT_MCU_WU0, AON_EVENT_RTC_CH0);
   ti_lib_aon_event_mcu_wake_up_set(AON_EVENT_MCU_WU1, AON_EVENT_RTC_CH1);
-  ti_lib_aon_event_mcu_wake_up_set(AON_EVENT_MCU_WU2, AON_EVENT_RTC_CH2);//add by hit
-
-
-  ti_lib_aon_rtc_combined_event_config(AON_RTC_CH0 | AON_RTC_CH1 | AON_RTC_CH2);//change by hit
+  ti_lib_aon_event_mcu_wake_up_set(AON_EVENT_MCU_WU2, AON_EVENT_RTC_CH2);
+  ti_lib_aon_rtc_combined_event_config(AON_RTC_CH0 | AON_RTC_CH1 | AON_RTC_CH2);
 
   HWREG(AON_RTC_BASE + AON_RTC_O_SEC) = SOC_RTC_START_TICK_COUNT;
 
@@ -128,27 +109,20 @@ soc_rtc_init(void)
   /* Configure channel 1 to start generating clock ticks. First tick at 512 */
   ti_lib_aon_rtc_compare_value_set(AON_RTC_CH1, next);
 
-  
   next = ti_lib_aon_rtc_current_compare_value_get() + RTC_TIME;
-
-  /* Configure channel 1 to start generating clock ticks. First tick at 1 sec */
+/* Configure channel 1 to start generating clock ticks. First tick at 1 sec */
   ti_lib_aon_rtc_compare_value_set(AON_RTC_CH2, next);
-
-
-
   /* Enable channel 1 and the RTC */
   ti_lib_aon_rtc_channel_enable(AON_RTC_CH1);
   ti_lib_aon_rtc_channel_enable(AON_RTC_CH2);// add by hit
-
   ti_lib_aon_rtc_enable();
 
-  ti_lib_int_enable(INT_AON_RTC);
+  ti_lib_rom_int_enable(INT_AON_RTC_COMB);
 
   /* Re-enable interrupts */
   if(!interrupts_disabled) {
     ti_lib_int_master_enable();
   }
- 
 }
 /*---------------------------------------------------------------------------*/
 rtimer_clock_t
@@ -156,33 +130,46 @@ soc_rtc_get_next_trigger()
 {
   rtimer_clock_t ch1 = ti_lib_aon_rtc_compare_value_get(AON_RTC_CH1);
 
- 
   if(HWREG(AON_RTC_BASE + AON_RTC_O_CHCTL) & AON_RTC_CHCTL_CH0_EN) {
     rtimer_clock_t ch0 = ti_lib_aon_rtc_compare_value_get(AON_RTC_CH0);
+
     return RTIMER_CLOCK_LT(ch0, ch1) ? ch0 : ch1;
   }
 
   return ch1;
 }
-
-
-void enable_etimer(){
+/*---------------------------------------------------------------------------*/
+void enable_etimer()
+{
   
   uint32_t next;
   next = ti_lib_aon_rtc_current_compare_value_get() + COMPARE_INCREMENT;
 
-  // /* Configure channel 1 to start generating clock ticks. First tick at 512 */
+  /* Configure channel 1 to start generating clock ticks. First tick at 512 */
   ti_lib_aon_rtc_compare_value_set(AON_RTC_CH1, next);
   ti_lib_aon_rtc_channel_enable(AON_RTC_CH1);
   
- 
-
 }
 
+/*---------------------------------------------------------------------------*/
 void disable_etimer(){
 
   ti_lib_aon_rtc_channel_disable(AON_RTC_CH1);
 }
+
+/*---------------------------------------------------------------------------*/
+void
+soc_rtc_schedule_one_shot(uint32_t channel, uint32_t ticks)
+{
+  if((channel != AON_RTC_CH0) && (channel != AON_RTC_CH1)) {
+    return;
+  }
+
+  /* Set the channel to fire a one-shot compare event at time==ticks */
+  ti_lib_aon_rtc_compare_value_set(channel, ticks);
+  ti_lib_aon_rtc_channel_enable(channel);
+}
+
 /*---------------------------------------------------------------------------*/
 rtimer_clock_t
 soc_rtc_last_isr_time(void)
@@ -194,41 +181,22 @@ soc_rtc_last_isr_time(void)
 void
 soc_rtc_isr(void)
 {
-  uint32_t now, next;
+  uint32_t next;
 
-  // ENERGEST_ON(ENERGEST_TYPE_IRQ);
+  ENERGEST_ON(ENERGEST_TYPE_IRQ);
 
   last_isr_time = RTIMER_NOW();
 
-  now = ti_lib_aon_rtc_current_compare_value_get();
-
-  if(ti_lib_aon_rtc_event_get(AON_RTC_CH2)){// add by hit cps
-
+  if(ti_lib_aon_rtc_event_get(AON_RTC_CH2)) {// change by hit cps
     HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH2;
 
-   
-    /*********************************************/
-
+ /*---------------------define hit platform component:soft timer-------------*/
 #if !WAKEUP_NODE_DEV  
 
 #if ROOTNODE
     update_soft_time();
 #else      
-    /*if(ledon_flag){
-      leds_off(LEDS_ALL);
-      ledon_flag =0;
-    }*/
-
-    /*++cal_count;
-    if(cal_offest != 0 && cal_count >= cal_interval){
-      cal_count = 0;
-      if(cal_offest < 0){
-        update_soft_time();
-        update_soft_time();
-      }
-    }else{
-      update_soft_time();
-    }*/
+    
     set_cal_countaddone();
     if(get_cal_offest()!= 0&&get_cal_count()>=get_cal_interval()){
         set_cal_countzero();
@@ -246,8 +214,7 @@ soc_rtc_isr(void)
 
        active_flag_one_second_before=get_active_flag();
        set_active_flag();
-       // set_active_flag(timenow.hour,timenow.minute,timenow.sec);
-
+       
       if(get_active_flag()!=active_flag_one_second_before){
         
          if(get_active_flag() ==1){
@@ -271,40 +238,39 @@ soc_rtc_isr(void)
    }
 #endif
     
-
     /***********************************************/
-    next = (now + RTC_TIME);
+    next = (ti_lib_aon_rtc_current_compare_value_get() + RTC_TIME);
     
     ti_lib_aon_rtc_compare_value_set(AON_RTC_CH2, next);
   }
 
+
   if(ti_lib_aon_rtc_event_get(AON_RTC_CH1)) {
     HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH1;
-     
-     /* Adjust the s/w tick counter irrespective of which event trigger this */
-      clock_update();
-           
+    
+    /* Adjust the s/w tick counter irrespective of which event trigger this */
+    clock_update();
+    // logic =logic^1;
+    // logic_test(logic);
     /*
      * We need to keep ticking while we are awake, so we schedule the next
      * event on the next 512 tick boundary. If we drop to deep sleep before it
      * happens, lpm_drop() will reschedule us in the 'distant' future
      */
-
-      next = (now + COMPARE_INCREMENT) & MULTIPLE_512_MASK;
-
-      ti_lib_aon_rtc_compare_value_set(AON_RTC_CH1, next);
-
+    next = ((ti_lib_aon_rtc_current_compare_value_get() + 5) +
+            COMPARE_INCREMENT) & MULTIPLE_512_MASK;
+    ti_lib_aon_rtc_compare_value_set(AON_RTC_CH1, next);
   }
 
   if(ti_lib_aon_rtc_event_get(AON_RTC_CH0)) {
     ti_lib_aon_rtc_channel_disable(AON_RTC_CH0);
     HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH0;
     rtimer_run_next();
-    
   }
 
-  // ENERGEST_OFF(ENERGEST_TYPE_IRQ);
   
+
+  ENERGEST_OFF(ENERGEST_TYPE_IRQ);
 }
 /*---------------------------------------------------------------------------*/
 /** @} */

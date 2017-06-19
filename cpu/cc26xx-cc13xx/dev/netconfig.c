@@ -8,8 +8,8 @@
 #include "task-schedule.h"
 #endif
 
-// void logic_test(uint32_t i);
-// static uint32_t logic=0;
+void logic_test(uint32_t i);
+static uint32_t logic=0;
 // static uint32_t add_time=0;
 
 #if CC1310_CONF_LOWPOWER
@@ -42,7 +42,7 @@ void update_soft_time()
 
 {
   // logic=logic^1;
-  // led_toggle(logic);
+  // logic_test(logic);
   // add_time++;
   // // printf("time %d\n",add_time);
 
@@ -79,33 +79,33 @@ uint16_t get_init_flag(){
 // void set_active_flag(int hour,int minute,int second_s)
 void set_active_flag()
 {
-//   calendar_time  cal_time_now;
-  int index=0;
-  // read_calendar(&cal_time_now);
-  // int hour   = BCD_to_dec(cal_time_now.hour);
-  // int minute = BCD_to_dec(cal_time_now.min);
-  // index=hour*6+minute/10;         //6 ,10
-  index=timenow.hour*6+timenow.minute/10;         //6   ,10
-  schedule_bitmap_get(schedule_bit);
+// //   calendar_time  cal_time_now;
+//   int index=0;
+//   // read_calendar(&cal_time_now);
+//   // int hour   = BCD_to_dec(cal_time_now.hour);
+//   // int minute = BCD_to_dec(cal_time_now.min);
+//   // index=hour*6+minute/10;         //6 ,10
+//   index=timenow.hour*6+timenow.minute/10;         //6   ,10
+//   schedule_bitmap_get(schedule_bit);
 
-#if 0  
-  int index2=0;
-  for(;index2<18;index2++){
-    printf("schedule_bit [%d] = %d\n",index2,schedule_bit[index2] );
-  }
-#endif
-  active_flag= init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
+// #if 0  
+//   int index2=0;
+//   for(;index2<18;index2++){
+//     printf("schedule_bit [%d] = %d\n",index2,schedule_bit[index2] );
+//   }
+// #endif
+//   active_flag= init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
 
-  #if !ROOTNODE
-     // printf("active flag:%u\n",active_flag);
-  #endif
+//   #if !ROOTNODE
+//      // printf("active flag:%u\n",active_flag);
+//   #endif
   active_flag = 1;
 
-  // if(timenow.sec%30==0){
+  // if(timenow.sec%5==0){
      
   //   active_flag =active_flag^1;
-  //   logic =logic^1;
-  //   logic_test(logic);
+  //   // logic =logic^1;
+  //   // logic_test(logic);
   // }
 
 

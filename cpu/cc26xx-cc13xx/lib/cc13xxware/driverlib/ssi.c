@@ -1,11 +1,11 @@
 /******************************************************************************
 *  Filename:       ssi.c
-*  Revised:        2015-01-13 16:59:55 +0100 (Tue, 13 Jan 2015)
-*  Revision:       42365
+*  Revised:        2016-06-30 09:21:03 +0200 (Thu, 30 Jun 2016)
+*  Revision:       46799
 *
 *  Description:    Driver for Synchronous Serial Interface
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -285,7 +285,7 @@ SSIIntRegister(uint32_t ui32Base, void (*pfnHandler)(void))
     //
     // Determine the interrupt number based on the SSI port.
     //
-    ui32Int = (ui32Base == SSI0_BASE) ? INT_SSI0 : INT_SSI1;
+    ui32Int = (ui32Base == SSI0_BASE) ? INT_SSI0_COMB : INT_SSI1_COMB;
 
     //
     // Register the interrupt handler.
@@ -327,7 +327,7 @@ SSIIntUnregister(uint32_t ui32Base)
     //
     // Determine the interrupt number based on the SSI port.
     //
-    ui32Int = (ui32Base == SSI0_BASE) ? INT_SSI0 : INT_SSI1;
+    ui32Int = (ui32Base == SSI0_BASE) ? INT_SSI0_COMB : INT_SSI1_COMB;
 
     //
     // Disable the interrupt.

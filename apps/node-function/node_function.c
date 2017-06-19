@@ -8,13 +8,14 @@
 #include "net/ip/uip.h"
 #include "net/ipv6/uip-ds6.h"
 #include "net/rpl/rpl.h"
-#include "bat-voltage.h"
+// #include "bat-voltage.h"
 #include "contikimac.h"
 
 #include "netsync-auto-calibrate.h"
 //provide reboot service
 #include "dev/watchdog.h"
 
+// #include <stdio.h>
 #define DEBUG 0
 #if DEBUG 
 #include <stdio.h>
@@ -148,7 +149,7 @@ void get_system_monitor_msg(uint8_t array[],int length)
   array[INDEX_PARENTRSSI]       = 0; 
   array[INDEX_PARENTRSSI+1]     = 0;;
 
-  temp_votlage = (uint32_t)get_voltage();
+  // temp_votlage = (uint32_t)get_voltage();
   array[INDEX_ADCVOLTAGE]       = (temp_votlage>>8)&0xff; //directly show the value of voltage
   array[INDEX_ADCVOLTAGE+1]     = temp_votlage&0xff;
 
@@ -164,6 +165,7 @@ void get_system_monitor_msg(uint8_t array[],int length)
   array[INDEX_TIME_DIFF]        = netsynch_get_offset();
 
   array[INDEX_RESTART_COUNT] = restart_count;
+  // printf("restart count %d\n",restart_count );//by huangxiaobing
   
   struct netsync_cal_s *cal_info = get_autocal_info();
 

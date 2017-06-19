@@ -1,11 +1,11 @@
 /******************************************************************************
 *  Filename:       pwr_ctrl.h
-*  Revised:        2015-07-16 12:12:04 +0200 (Thu, 16 Jul 2015)
-*  Revision:       44151
+*  Revised:        2016-07-07 19:12:02 +0200 (Thu, 07 Jul 2016)
+*  Revision:       46848
 *
 *  Description:    Defines and prototypes for the System Power Control.
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -73,9 +73,7 @@ extern "C"
 #include <driverlib/osc.h>
 #include <driverlib/cpu.h>
 #include <driverlib/prcm.h>
-#include <driverlib/aon_wuc.h>
 #include <driverlib/aon_ioc.h>
-#include <driverlib/aux_wuc.h>
 #include <driverlib/adi.h>
 
 //*****************************************************************************
@@ -92,7 +90,6 @@ extern "C"
 //
 //*****************************************************************************
 #if !defined(DOXYGEN)
-    #define PowerCtrlStateSet               NOROM_PowerCtrlStateSet
     #define PowerCtrlSourceSet              NOROM_PowerCtrlSourceSet
 #endif
 
@@ -130,46 +127,14 @@ extern "C"
 #define PWRCTRL_RST_VDD_BOD     0x00000003  // VDD Brown Out Detect
 #define PWRCTRL_RST_VDDR_BOD    0x00000004  // VDDR Brown Out Detect
 #define PWRCTRL_RST_CLK_LOSS    0x00000005  // Clock loss Reset
-#define PWRCTRL_RST_SW_PIN      0x00000006  // Clock loss Reset
-#define PWRCTRL_RST_WARM        0x00000007  // Warm Reset
+#define PWRCTRL_RST_SW_PIN      0x00000006  // SYSRESET or pin reset
+#define PWRCTRL_RST_WARM        0x00000007  // Reset via PRCM warm reset request
 
 //*****************************************************************************
 //
 // API Functions and prototypes
 //
 //*****************************************************************************
-
-//*****************************************************************************
-//
-//! \brief Force the system into low power modes.
-//!
-//! The device has 4 main power states where \ref PWRCTRL_ACTIVE is the default
-//! state. If the CPU is running the system is considered to be in the active
-//! state. The three other states are:
-//! - \ref PWRCTRL_STANDBY
-//! - \ref PWRCTRL_POWER_DOWN
-//! - \ref PWRCTRL_SHUTDOWN
-//!
-//! \note This code does not guarantee free operation of the Sensor Controller.
-//! It is only guaranteed to flip the switches to force the desired low power
-//! mode on the device.
-//!
-//! \note It is solely the programmers responsibility to properly configure an
-//! interrupt that will enable the device to wakeup before configuring the
-//! power mode. If not properly implemented the behavior is undefined.
-//!
-//! \note This function will be deprecated in future releases.
-//!
-//! \param ui32Powerstate defines the next power state for the system.
-//! - \ref PWRCTRL_ACTIVE (default)
-//! - \ref PWRCTRL_STANDBY
-//! - \ref PWRCTRL_POWER_DOWN
-//! - \ref PWRCTRL_SHUTDOWN
-//!
-//! \return None
-//
-//*****************************************************************************
-extern void PowerCtrlStateSet(uint32_t ui32Powerstate);
 
 //*****************************************************************************
 //
@@ -230,10 +195,14 @@ PowerCtrlSourceGet(void)
     }
 }
 
-
 //*****************************************************************************
 //
-//! \brief Get the last known reset source of the system.
+//! \brief OBSOLETE: Get the last known reset source of the system.
+//!
+//! Recommend using function \ref SysCtrlResetSourceGet() instead of this one.
+//! This function returns reset source but does not cover if waking up from shutdown.
+//! This function can be seen as a subset of function \ref SysCtrlResetSourceGet()
+//! and will be removed in a future release.
 //!
 //! \return Returns one of the known reset values.
 //! The possible reset sources are:
@@ -245,6 +214,8 @@ PowerCtrlSourceGet(void)
 //! - \ref PWRCTRL_RST_CLK_LOSS
 //! - \ref PWRCTRL_RST_SW_PIN
 //! - \ref PWRCTRL_RST_WARM
+//!
+//! \sa \ref SysCtrlResetSourceGet()
 //
 //*****************************************************************************
 __STATIC_INLINE uint32_t
@@ -253,8 +224,9 @@ PowerCtrlResetSourceGet(void)
     //
     //  Get the reset source.
     //
-    return (HWREG(AON_SYSCTL_BASE + AON_SYSCTL_O_RESETCTL) &
-            AON_SYSCTL_RESETCTL_RESET_SRC_M);
+    return (( HWREG( AON_SYSCTL_BASE + AON_SYSCTL_O_RESETCTL ) &
+        AON_SYSCTL_RESETCTL_RESET_SRC_M ) >>
+        AON_SYSCTL_RESETCTL_RESET_SRC_S ) ;
 }
 
 //*****************************************************************************
@@ -314,10 +286,6 @@ PowerCtrlIOFreezeDisable(void)
 //*****************************************************************************
 #if !defined(DRIVERLIB_NOROM) && !defined(DOXYGEN)
     #include <driverlib/rom.h>
-    #ifdef ROM_PowerCtrlStateSet
-        #undef  PowerCtrlStateSet
-        #define PowerCtrlStateSet               ROM_PowerCtrlStateSet
-    #endif
     #ifdef ROM_PowerCtrlSourceSet
         #undef  PowerCtrlSourceSet
         #define PowerCtrlSourceSet              ROM_PowerCtrlSourceSet

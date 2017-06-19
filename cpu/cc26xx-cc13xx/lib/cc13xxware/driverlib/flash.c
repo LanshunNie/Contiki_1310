@@ -1,11 +1,11 @@
 /******************************************************************************
 *  Filename:       flash.c
-*  Revised:        2015-04-22 15:39:25 +0200 (Wed, 22 Apr 2015)
-*  Revision:       43290
+*  Revised:        2016-07-07 19:12:02 +0200 (Thu, 07 Jul 2016)
+*  Revision:       46848
 *
 *  Description:    Driver for on chip Flash.
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -37,9 +37,11 @@
 ******************************************************************************/
 
 #include <inc/hw_types.h>
+#include <inc/hw_ccfg.h>
 #include <driverlib/flash.h>
 #include <driverlib/rom.h>
 #include <driverlib/chipinfo.h>
+
 //*****************************************************************************
 //
 // Handle support for DriverLib in ROM:
@@ -66,6 +68,18 @@
     #undef  FlashDisableSectorsForWrite
     #define FlashDisableSectorsForWrite     NOROM_FlashDisableSectorsForWrite
 #endif
+
+
+//*****************************************************************************
+//
+// Defines for accesses to the security control in the customer configuration
+// area in flash top sector.
+//
+//*****************************************************************************
+#define CCFG_OFFSET_SECURITY   CCFG_O_BL_CONFIG
+#define CCFG_OFFSET_SECT_PROT  CCFG_O_CCFG_PROT_31_0
+#define CCFG_SIZE_SECURITY     0x00000014
+#define CCFG_SIZE_SECT_PROT    0x00000004
 
 //*****************************************************************************
 //
@@ -369,11 +383,11 @@ FlashSectorErase(uint32_t ui32SectorAddress)
     ASSERT(ui32SectorAddress <= (FLASHMEM_BASE + FlashSizeGet() -
                                  FlashSectorSizeGet()));
     ASSERT((ui32SectorAddress & (FlashSectorSizeGet() - 1)) == 00);
-    
+
     //
     // Call ROM function
     //
-    FuncPointer = (uint32_t (*)(uint32_t)) (ROM_FLASHTABLE[5]);
+    FuncPointer = (uint32_t (*)(uint32_t)) (ROM_API_FLASH_TABLE[5]);
     ui32ErrorReturn = FuncPointer(ui32SectorAddress);
 
     //
@@ -408,7 +422,7 @@ FlashProgram(uint8_t *pui8DataBuffer, uint32_t ui32Address, uint32_t ui32Count)
     //
     // Call ROM function
     //
-    FuncPointer = (uint32_t (*)(uint8_t *, uint32_t, uint32_t)) (ROM_FLASHTABLE[6]);
+    FuncPointer = (uint32_t (*)(uint8_t *, uint32_t, uint32_t)) (ROM_API_FLASH_TABLE[6]);
     ui32ErrorReturn = FuncPointer( pui8DataBuffer, ui32Address, ui32Count);
 
     //

@@ -1,11 +1,11 @@
 /******************************************************************************
 *  Filename:       sys_ctrl.h
-*  Revised:        2015-07-16 12:12:04 +0200 (Thu, 16 Jul 2015)
-*  Revision:       44151
+*  Revised:        2016-07-07 19:12:02 +0200 (Thu, 07 Jul 2016)
+*  Revision:       46848
 *
 *  Description:    Defines and prototypes for the System Controller.
 *
-*  Copyright (c) 2015, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2016, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -104,9 +104,9 @@ extern "C"
 //*****************************************************************************
 #if !defined(DOXYGEN)
     #define SysCtrlPowerEverything          NOROM_SysCtrlPowerEverything
-    #define SysCtrlStandby                  NOROM_SysCtrlStandby
-    #define SysCtrlPowerdown                NOROM_SysCtrlPowerdown
-    #define SysCtrlShutdown                 NOROM_SysCtrlShutdown
+    #define SysCtrlSetRechargeBeforePowerDown NOROM_SysCtrlSetRechargeBeforePowerDown
+    #define SysCtrlAdjustRechargeAfterPowerDown NOROM_SysCtrlAdjustRechargeAfterPowerDown
+    #define SysCtrl_DCDC_VoltageConditionalControl NOROM_SysCtrl_DCDC_VoltageConditionalControl
     #define SysCtrlResetSourceGet           NOROM_SysCtrlResetSourceGet
 #endif
 
@@ -135,12 +135,6 @@ extern "C"
 #define XOSC_IN_HIGH_POWER_MODE 0 // When xosc_hf is in HIGH_POWER_XOSC
 #define XOSC_IN_LOW_POWER_MODE  1 // When xosc_hf is in LOW_POWER_XOSC
 
-//
-// Keeping backward compatibility until major revision number is incremented
-//
-#define XoscInHighPowerMode      ( XOSC_IN_HIGH_POWER_MODE     )
-#define XoscInLowPowerMode       ( XOSC_IN_LOW_POWER_MODE      )
-
 //*****************************************************************************
 //
 // API Functions and prototypes
@@ -165,53 +159,6 @@ extern void SysCtrlPowerEverything(void);
 
 //*****************************************************************************
 //
-//! \brief Force the system into standby mode.
-//!
-//! \note The sequencing in this function is not necessarily how you would
-//! want to sequence the standby in a real application. There might be
-//! application specific prerequisites you would want to do before entering
-//! standby which deviate from this specific implementation.
-//!
-//! \return None
-//
-//*****************************************************************************
-extern void SysCtrlStandby(void);
-
-//*****************************************************************************
-//
-//! \brief Force the system into power down.
-//!
-//! \note The sequencing in this function is not necessarily how you would
-//! want to sequence the powerdown in a real application. There might be
-//! application specific prerequisites you would want to do before entering
-//! powerdown which deviate from this specific implementation.
-//!
-//! \return None
-//
-//*****************************************************************************
-extern void SysCtrlPowerdown(void);
-
-//*****************************************************************************
-//
-//! \brief Force the system into shutdown.
-//!
-//! \note It is solely the programmer's responsibility to properly configure an
-//! interrupt that will enable the device to wakeup from the shutdown mode,
-//! before calling this function. In shutdown the only possible wakeup action
-//! is an IO interrupt.
-//!
-//! \note The sequencing in this function is not necessarily how you would
-//! want to sequence the shutdown in a real application. There might be
-//! application specific prerequisites you would want to do before entering
-//! shutdown which deviate from this specific implementation.
-//!
-//! \return This function does \b not return.
-//
-//*****************************************************************************
-extern void SysCtrlShutdown(void);
-
-//*****************************************************************************
-//
 //! \brief Get the CPU core clock frequency.
 //!
 //! Use this function to get the current clock frequency for the CPU.
@@ -231,15 +178,18 @@ SysCtrlClockGet( void )
     return( GET_MCU_CLOCK );
 }
 
-
 //*****************************************************************************
 //
 //! \brief Sync all accesses to the AON register interface.
 //!
-//! When this function returns, all writes to the AON register interface is
-//! guaranteed to have progressed to hardware.
+//! When this function returns, all writes to the AON register interface are
+//! guaranteed to have propagated to hardware. The function will return
+//! immediately if no AON writes are pending; otherwise, it will wait for the next
+//! AON clock before returning.
 //!
 //! \return None
+//!
+//! \sa \ref SysCtrlAonUpdate()
 //
 //*****************************************************************************
 __STATIC_INLINE void
@@ -260,11 +210,13 @@ SysCtrlAonSync(void)
 //! is guaranteed to be in sync.
 //!
 //! \note This function should primarily be used after wakeup from sleep modes,
-//! as it will guarantee that all shadow registers on the interface between MCU
-//! and AON are updated. If a write has been done to the AON interface it is
-//! sufficient to call the \ref SysCtrlAonSync().
+//! as it will guarantee that all shadow registers on the AON interface are updated
+//! before reading any AON registers from the MCU domain. If a write has been
+//! done to the AON interface it is sufficient to call the \ref SysCtrlAonSync().
 //!
 //! \return None
+//!
+//! \sa \ref SysCtrlAonSync()
 //
 //*****************************************************************************
 __STATIC_INLINE void
@@ -302,8 +254,7 @@ SysCtrlAonUpdate(void)
 //! \return None
 //
 //*****************************************************************************
-void
-SysCtrlSetRechargeBeforePowerDown( uint32_t xoscPowerMode );
+extern void SysCtrlSetRechargeBeforePowerDown( uint32_t xoscPowerMode );
 
 
 //*****************************************************************************
@@ -320,15 +271,12 @@ SysCtrlSetRechargeBeforePowerDown( uint32_t xoscPowerMode );
 //! \note
 //! Special care must be taken to make sure that the AON registers read are
 //! updated after the wakeup. Writing to an AON register and then calling
-//! \ref SysCtrlAonSync() will handle this. Typically this must be done anyway,
-//! for example by calling \ref AONWUCAuxWakeupEvent() and then later on calling
-//! \ref SysCtrlAonSync() just before calling \ref SysCtrlSetRechargeBeforePowerDown().
+//! \ref SysCtrlAonSync() will handle this.
 //!
 //! \return None
 //
 //*****************************************************************************
-void
-SysCtrlAdjustRechargeAfterPowerDown( void );
+extern void SysCtrlAdjustRechargeAfterPowerDown( void );
 
 
 //*****************************************************************************
@@ -346,23 +294,22 @@ SysCtrlAdjustRechargeAfterPowerDown( void );
 //! \return None
 //
 //*****************************************************************************
-void
-SysCtrl_DCDC_VoltageConditionalControl( void );
+extern void SysCtrl_DCDC_VoltageConditionalControl( void );
 
 
 //*****************************************************************************
 // \name Return values from calling SysCtrlResetSourceGet()
 //@{
 //*****************************************************************************
-#define RSTSRC_PWR_ON               (( AON_SYSCTL_RESETCTL_RESET_SRC_PWR_ON    >> AON_SYSCTL_RESETCTL_RESET_SRC_S ))
-#define RSTSRC_PIN_RESET            (( AON_SYSCTL_RESETCTL_RESET_SRC_PIN_RESET >> AON_SYSCTL_RESETCTL_RESET_SRC_S ))
-#define RSTSRC_VDDS_LOSS            (( AON_SYSCTL_RESETCTL_RESET_SRC_VDDS_LOSS >> AON_SYSCTL_RESETCTL_RESET_SRC_S ))
-#define RSTSRC_VDD_LOSS             (( AON_SYSCTL_RESETCTL_RESET_SRC_VDD_LOSS  >> AON_SYSCTL_RESETCTL_RESET_SRC_S ))
-#define RSTSRC_VDDR_LOSS            (( AON_SYSCTL_RESETCTL_RESET_SRC_VDDR_LOSS >> AON_SYSCTL_RESETCTL_RESET_SRC_S ))
-#define RSTSRC_CLK_LOSS             (( AON_SYSCTL_RESETCTL_RESET_SRC_CLK_LOSS  >> AON_SYSCTL_RESETCTL_RESET_SRC_S ))
-#define RSTSRC_SYSRESET             (( AON_SYSCTL_RESETCTL_RESET_SRC_SYSRESET  >> AON_SYSCTL_RESETCTL_RESET_SRC_S ))
-#define RSTSRC_WARMRESET            (( AON_SYSCTL_RESETCTL_RESET_SRC_WARMRESET >> AON_SYSCTL_RESETCTL_RESET_SRC_S ))
-#define RSTSRC_WAKEUP_FROM_SHUTDOWN (( AON_SYSCTL_RESETCTL_RESET_SRC_M         >> AON_SYSCTL_RESETCTL_RESET_SRC_S ) + 1 )
+#define RSTSRC_PWR_ON               (( AON_SYSCTL_RESETCTL_RESET_SRC_PWR_ON    ) >> ( AON_SYSCTL_RESETCTL_RESET_SRC_S ))
+#define RSTSRC_PIN_RESET            (( AON_SYSCTL_RESETCTL_RESET_SRC_PIN_RESET ) >> ( AON_SYSCTL_RESETCTL_RESET_SRC_S ))
+#define RSTSRC_VDDS_LOSS            (( AON_SYSCTL_RESETCTL_RESET_SRC_VDDS_LOSS ) >> ( AON_SYSCTL_RESETCTL_RESET_SRC_S ))
+#define RSTSRC_VDD_LOSS             (( AON_SYSCTL_RESETCTL_RESET_SRC_VDD_LOSS  ) >> ( AON_SYSCTL_RESETCTL_RESET_SRC_S ))
+#define RSTSRC_VDDR_LOSS            (( AON_SYSCTL_RESETCTL_RESET_SRC_VDDR_LOSS ) >> ( AON_SYSCTL_RESETCTL_RESET_SRC_S ))
+#define RSTSRC_CLK_LOSS             (( AON_SYSCTL_RESETCTL_RESET_SRC_CLK_LOSS  ) >> ( AON_SYSCTL_RESETCTL_RESET_SRC_S ))
+#define RSTSRC_SYSRESET             (( AON_SYSCTL_RESETCTL_RESET_SRC_SYSRESET  ) >> ( AON_SYSCTL_RESETCTL_RESET_SRC_S ))
+#define RSTSRC_WARMRESET            (( AON_SYSCTL_RESETCTL_RESET_SRC_WARMRESET ) >> ( AON_SYSCTL_RESETCTL_RESET_SRC_S ))
+#define RSTSRC_WAKEUP_FROM_SHUTDOWN ((( AON_SYSCTL_RESETCTL_RESET_SRC_M        ) >> ( AON_SYSCTL_RESETCTL_RESET_SRC_S )) + 1 )
 //@}
 
 //*****************************************************************************
@@ -376,7 +323,7 @@ extern uint32_t SysCtrlResetSourceGet( void );
 
 //*****************************************************************************
 //
-//! \brief Perform a full system reset
+//! \brief Perform a full system reset.
 //!
 //! \return The chip will reset and hence never return from this call.
 //
@@ -394,6 +341,53 @@ SysCtrlSystemReset( void )
    }
 }
 
+//*****************************************************************************
+//
+//! \brief Enables reset if OSC clock loss event is asserted.
+//!
+//! Clock loss circuit in analog domain must be enabled as well in order to
+//! actually enable for a clock loss reset to occur
+//! \ref OSCClockLossEventEnable().
+//!
+//! \note This function shall typically not be called because the clock loss
+//! reset functionality is controlled by the boot code (a factory configuration
+//! defines whether it is set or not).
+//!
+//! \return None
+//!
+//! \sa \ref SysCtrlClockLossResetDisable(), \ref OSCClockLossEventEnable()
+//
+//*****************************************************************************
+__STATIC_INLINE void
+SysCtrlClockLossResetEnable(void)
+{
+    //
+    // Set clock loss enable bit in AON_SYSCTRL using bit banding
+    //
+    HWREGBITW(AON_SYSCTL_BASE + AON_SYSCTL_O_RESETCTL, AON_SYSCTL_RESETCTL_CLK_LOSS_EN_BITN) = 1;
+}
+
+//*****************************************************************************
+//
+//! \brief Disables reset due to OSC clock loss event.
+//!
+//! \note This function shall typically not be called because the clock loss
+//! reset functionality is controlled by the boot code (a factory configuration
+//! defines whether it is set or not).
+//!
+//! \return None
+//!
+//! \sa \ref SysCtrlClockLossResetEnable()
+//
+//*****************************************************************************
+__STATIC_INLINE void
+SysCtrlClockLossResetDisable(void)
+{
+    //
+    // Clear clock loss enable bit in AON_SYSCTRL using bit banding
+    //
+    HWREGBITW(AON_SYSCTL_BASE + AON_SYSCTL_O_RESETCTL, AON_SYSCTL_RESETCTL_CLK_LOSS_EN_BITN) = 0;
+}
 
 //*****************************************************************************
 //
@@ -407,17 +401,17 @@ SysCtrlSystemReset( void )
         #undef  SysCtrlPowerEverything
         #define SysCtrlPowerEverything          ROM_SysCtrlPowerEverything
     #endif
-    #ifdef ROM_SysCtrlStandby
-        #undef  SysCtrlStandby
-        #define SysCtrlStandby                  ROM_SysCtrlStandby
+    #ifdef ROM_SysCtrlSetRechargeBeforePowerDown
+        #undef  SysCtrlSetRechargeBeforePowerDown
+        #define SysCtrlSetRechargeBeforePowerDown ROM_SysCtrlSetRechargeBeforePowerDown
     #endif
-    #ifdef ROM_SysCtrlPowerdown
-        #undef  SysCtrlPowerdown
-        #define SysCtrlPowerdown                ROM_SysCtrlPowerdown
+    #ifdef ROM_SysCtrlAdjustRechargeAfterPowerDown
+        #undef  SysCtrlAdjustRechargeAfterPowerDown
+        #define SysCtrlAdjustRechargeAfterPowerDown ROM_SysCtrlAdjustRechargeAfterPowerDown
     #endif
-    #ifdef ROM_SysCtrlShutdown
-        #undef  SysCtrlShutdown
-        #define SysCtrlShutdown                 ROM_SysCtrlShutdown
+    #ifdef ROM_SysCtrl_DCDC_VoltageConditionalControl
+        #undef  SysCtrl_DCDC_VoltageConditionalControl
+        #define SysCtrl_DCDC_VoltageConditionalControl ROM_SysCtrl_DCDC_VoltageConditionalControl
     #endif
     #ifdef ROM_SysCtrlResetSourceGet
         #undef  SysCtrlResetSourceGet
