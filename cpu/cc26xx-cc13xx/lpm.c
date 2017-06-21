@@ -387,7 +387,7 @@ setup_sleep_mode(void)
         } else {
           /* Use the farthest possible wakeup time */
           // soc_rtc_schedule_one_shot(AON_RTC_CH1, now - 1);
-          soc_rtc_schedule_one_shot(AON_RTC_CH1, now + 100*RTIMER_SECOND);//by huangxiaobing
+          soc_rtc_schedule_one_shot(AON_RTC_CH1, now + 600*RTIMER_SECOND);//by huangxiaobing
         }
      }
   }

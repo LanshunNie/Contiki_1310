@@ -44,7 +44,6 @@
 
 #include <stdio.h> /* For printf() */
 
-
 // void led_toggle(uint32_t i);
 // void logic_test(uint32_t i);
 // static uint32_t logic=0;

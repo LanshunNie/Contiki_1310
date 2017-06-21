@@ -1,1 +1,0 @@
-netsynch_src += netsynch.c  netsync-auto-calibrate.c

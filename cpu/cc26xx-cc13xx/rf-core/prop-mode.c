@@ -137,7 +137,7 @@
 #ifdef PROP_MODE_CONF_RSSI_THRESHOLD
 #define PROP_MODE_RSSI_THRESHOLD PROP_MODE_CONF_RSSI_THRESHOLD
 #else
-#define PROP_MODE_RSSI_THRESHOLD 0xBA//0xBA<==>-70  0xB0<==>-80// 0xA6<==>-90
+#define PROP_MODE_RSSI_THRESHOLD 0xB0//0xBA<==>-70  0xB0<==>-80// 0xA6<==>-90
 #endif
 
 static int8_t rssi_threshold = PROP_MODE_RSSI_THRESHOLD;
@@ -499,7 +499,7 @@ rx_on_prop(void)
     ENERGEST_ON(ENERGEST_TYPE_LISTEN);
   }
 
-  ti_lib_gpio_write_dio(BOARD_IOID_LED,1);  
+  // ti_lib_gpio_write_dio(BOARD_IOID_LED,1);  
   return ret;
 }
 /*---------------------------------------------------------------------------*/
@@ -987,7 +987,7 @@ on(void)
 static int
 off(void)
 {
-   ti_lib_gpio_write_dio(BOARD_IOID_LED,0); 
+   // ti_lib_gpio_write_dio(BOARD_IOID_LED,0); 
   /*
    * If we are in the middle of a BLE operation, we got called by ContikiMAC
    * from within an interrupt context. Abort, but pretend everything is OK.

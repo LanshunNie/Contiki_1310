@@ -99,7 +99,7 @@ void set_active_flag()
 //   #if !ROOTNODE
 //      // printf("active flag:%u\n",active_flag);
 //   #endif
-  active_flag = 1;
+  active_flag = 0;
 
   // if(timenow.sec%5==0){
      

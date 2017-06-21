@@ -754,11 +754,11 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #endif
 
 // inactive don't send packet ,just return mac_tx_ok ;
-// #if CC1310_CONF_LOWPOWER 
-//  if(get_active_flag()== 0 ||get_idle_time()<= 10){  //if debug contiki,please comment out
-//    return MAC_TX_OK;
-//  }
-// #endif
+#if CC1310_CONF_LOWPOWER 
+ if(get_active_flag()== 0 ||get_idle_time()<= 10){  //if debug contiki,please comment out
+   return MAC_TX_OK;
+ }
+#endif
   
   /* Exit if RDC and radio were explicitly turned off */
    if(!contikimac_is_on && !contikimac_keep_radio_on) {
@@ -928,9 +928,9 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #if RDC_CONF_HARDWARE_ACK
       int ret = NETSTACK_RADIO.transmit(transmit_len);
 #else
-      ti_lib_gpio_write_dio(BOARD_IOID_LED,1);
+      // ti_lib_gpio_write_dio(BOARD_IOID_LED,1);
       NETSTACK_RADIO.transmit(transmit_len);
-      ti_lib_gpio_write_dio(BOARD_IOID_LED,0);
+      // ti_lib_gpio_write_dio(BOARD_IOID_LED,0);
 #endif
 
 #if RDC_CONF_HARDWARE_ACK
@@ -974,7 +974,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #endif
           break;
         } else {
-          printf("contikimac: collisions while sending2\n");
+          PRINTF("contikimac: collisions while sending2\n");
           // printf("len: %d ackbuf: %d seqno: %d\n",len,ackbuf[ack_len-1],seqno);
           collisions++;
           #if TEST_NOACK

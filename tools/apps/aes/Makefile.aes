@@ -1,1 +1,0 @@
-aes_src = aes.c aes-ccm.c netstack-aes.c
