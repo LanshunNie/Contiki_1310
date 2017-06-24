@@ -150,25 +150,25 @@ main(void)
   netstack_init();
   
   set_rf_params();
-// #if NETSTACK_CONF_WITH_IPV6
-//   memcpy(&uip_lladdr.addr, &linkaddr_node_addr, sizeof(uip_lladdr.addr));
-//   queuebuf_init();
-//   process_start(&tcpip_process, NULL);
-// #endif /* NETSTACK_CONF_WITH_IPV6 */
+#if NETSTACK_CONF_WITH_IPV6
+  memcpy(&uip_lladdr.addr, &linkaddr_node_addr, sizeof(uip_lladdr.addr));
+  queuebuf_init();
+  process_start(&tcpip_process, NULL);
+#endif /* NETSTACK_CONF_WITH_IPV6 */
 
-//  // ***************by xiaobing *************//
-//   #if CONTIKI_CONF_NETSYNCH
+ // ***************by Xiaobing Huang*************//
+  #if CONTIKI_CONF_NETSYNCH
 
-//    netsynch_init();
+   netsynch_init();
 
-//    #if  ROOTNODE  
-//     // netsynch_set_authority_level(0); 
-//    correct_time_init();
-//    #endif 
+   #if  ROOTNODE  
+    // netsynch_set_authority_level(0); 
+   correct_time_init();
+   #endif 
 
-//   task_schedule_init();
+  task_schedule_init();
 
-//   #endif
+  #endif
 /******************************/
   NETSTACK_RADIO.off();//the default state is off
   

@@ -37,6 +37,7 @@
  */
 /*---------------------------------------------------------------------------*/
 #include "contiki.h"
+#include "net/netstack.h"
 #include "sys/energest.h"
 #include "rtimer.h"
 #include "lpm.h"
@@ -139,7 +140,7 @@ soc_rtc_get_next_trigger()
 /*---------------------------------------------------------------------------*/
 void enable_etimer()
 {
-  
+
   uint32_t next;
   next = ti_lib_aon_rtc_current_compare_value_get() + COMPARE_INCREMENT;
 
@@ -159,6 +160,7 @@ void disable_etimer(){
 void
 soc_rtc_schedule_one_shot(uint32_t channel, uint32_t ticks)
 {
+  
   if((channel != AON_RTC_CH0) && (channel != AON_RTC_CH1)) {
     return;
   }
@@ -179,6 +181,8 @@ soc_rtc_last_isr_time(void)
 void
 soc_rtc_isr(void)
 {
+  // static uint8_t shut_num = 0;//added by Xiaobing Huang
+
   uint32_t next;
 
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
@@ -210,12 +214,14 @@ soc_rtc_isr(void)
 
 #endif
 
-       active_flag_one_second_before=get_active_flag();
+       active_flag_one_second_before = get_active_flag();
        set_active_flag();
        
       if(get_active_flag()!=active_flag_one_second_before){
         
          if(get_active_flag() ==1){
+           // shut_num = 0;
+           NETSTACK_RDC.on();
            enable_etimer();
            task_schedule_change();
            
@@ -225,12 +231,18 @@ soc_rtc_isr(void)
 // if node is root node keep working in active state forever.
   
 #if  (!ROOTNODE) & (!WAKEUP_NODE_DEV)
+
+
     if(get_active_flag() ==1){ 
           
       ;;//because of multiple shutdown that lead to etimer err time sequence
   
-    }else {         
-
+    }else {
+      // if(shut_num < 10){
+        
+      // }
+      // shut_num++;         
+      NETSTACK_RDC.off(0);
       disable_etimer();    //etimer  off
   
    }

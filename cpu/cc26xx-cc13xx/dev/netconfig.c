@@ -79,27 +79,27 @@ uint16_t get_init_flag(){
 // void set_active_flag(int hour,int minute,int second_s)
 void set_active_flag()
 {
-// //   calendar_time  cal_time_now;
-//   int index=0;
-//   // read_calendar(&cal_time_now);
-//   // int hour   = BCD_to_dec(cal_time_now.hour);
-//   // int minute = BCD_to_dec(cal_time_now.min);
-//   // index=hour*6+minute/10;         //6 ,10
-//   index=timenow.hour*6+timenow.minute/10;         //6   ,10
-//   schedule_bitmap_get(schedule_bit);
+//   calendar_time  cal_time_now;
+  int index=0;
+  // read_calendar(&cal_time_now);
+  // int hour   = BCD_to_dec(cal_time_now.hour);
+  // int minute = BCD_to_dec(cal_time_now.min);
+  // index=hour*6+minute/10;         //6 ,10
+  index=timenow.hour*6+timenow.minute/10;         //6   ,10
+  schedule_bitmap_get(schedule_bit);
 
-// #if 0  
-//   int index2=0;
-//   for(;index2<18;index2++){
-//     printf("schedule_bit [%d] = %d\n",index2,schedule_bit[index2] );
-//   }
-// #endif
-//   active_flag= init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
+#if 0  
+  int index2=0;
+  for(;index2<18;index2++){
+    printf("schedule_bit [%d] = %d\n",index2,schedule_bit[index2] );
+  }
+#endif
+  active_flag = init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
 
-//   #if !ROOTNODE
-//      // printf("active flag:%u\n",active_flag);
-//   #endif
-  active_flag = 0;
+  #if !ROOTNODE
+     // printf("active flag:%u\n",active_flag);
+  #endif
+  // active_flag = 0;
 
   // if(timenow.sec%5==0){
      

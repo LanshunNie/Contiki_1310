@@ -358,8 +358,9 @@ schedule_powercycle_fixed(struct rtimer *t, rtimer_clock_t fixed_time)
     if(RTIMER_CLOCK_LT(fixed_time, now + RTIMER_GUARD_TIME)) {
       fixed_time = now + RTIMER_GUARD_TIME;
     }
-
+    
     r = rtimer_set(t, fixed_time, 1, powercycle_wrapper, NULL);
+       
     if(r != RTIMER_OK) {
       PRINTF("schedule_powercycle: could not set rtimer\n");
     }
@@ -1360,6 +1361,12 @@ turn_off(int keep_radio_on)
     return NETSTACK_RADIO.on();
   } else {
     radio_is_on = 0;
+
+  // #if CC1310_CONF_LOWPOWER
+  //   if(get_active_flag()==0){//modified by Xiaobing Huang.please consider the degree of coupling software
+  //     return 1;
+  //   }
+  // #endif
     return NETSTACK_RADIO.off();
   }
 }
