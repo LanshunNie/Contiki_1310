@@ -52,7 +52,7 @@
 #include "net/ip/uip-debug.h"
 
 #ifndef PERIOD
-#define PERIOD  5
+#define PERIOD  2
 #endif
 
 #define START_INTERVAL    (10 * CLOCK_SECOND)
@@ -118,7 +118,7 @@ send_packet(void *ptr)
   seq_id++;
   id=uip_htons(seq_id);
   rpl_rank_t curr_rank = dag->rank;
-  PRINTF("DATA send to '%d'\n", seq_id);
+  printf("DATA send to '%d'\n", seq_id);
   // PRINTF("DATA send to %d '%d'\n",
   //        server_ipaddr.u8[sizeof(server_ipaddr.u8) - 1], seq_id);
   memcpy(buf,&id,sizeof(seq_id));

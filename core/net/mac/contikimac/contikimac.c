@@ -262,7 +262,7 @@ static volatile unsigned char we_are_sending = 0;
 static volatile unsigned char radio_is_on = 0;
 
 #define TEST_ERROR_WAKE     0
-#define TEST_NOACK          0
+#define TEST_NOACK          1
 
 #if TEST_ERROR_WAKE
 static uint32_t cca_count = 0;
@@ -401,6 +401,8 @@ powercycle_wrapper(struct rtimer *t, void *ptr)
 static char
 powercycle(struct rtimer *t, void *ptr)
 {
+  
+
 #if SYNC_CYCLE_STARTS
   static volatile rtimer_clock_t sync_cycle_start;
   static volatile uint8_t sync_cycle_phase;
@@ -437,7 +439,13 @@ powercycle(struct rtimer *t, void *ptr)
 #endif
 
     rdc_channel_check_interval_count ++;
-  //   //get_init_flag()==0 ;
+
+  #if CHANGERREU
+    if(get_active_flag()==0){ //by huangxiaobing
+      CYCLE_TIME = RTIMER_ARCH_SECOND *5;
+    }     
+  #endif
+
   if(get_active_flag() || ( get_init_flag()==0 &&
      rdc_channel_check_interval_count >= rdc_channel_check_interval)){
     
@@ -757,6 +765,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 // inactive don't send packet ,just return mac_tx_ok ;
 #if CC1310_CONF_LOWPOWER 
  if(get_active_flag()== 0 ||get_idle_time()<= 10){  //if debug contiki,please comment out
+   printf("my mac ok\n");
    return MAC_TX_OK;
  }
 #endif
@@ -1024,7 +1033,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #if TEST_NOACK  
     mac_noack_count ++;
 #endif
-   printf("MAC_TX_NOACK\n");
+   PRINTF("MAC_TX_NOACK\n");
   } else {
     ret = MAC_TX_OK;
    // printf("MAC_TX_OK\n");
@@ -1287,6 +1296,13 @@ set_cycletime(){
 }
 /*--------------------------------------------------------------------------*/
 void 
+reset_contikimac_rtimer(){//by xiaobing
+  #if CHANGERREU
+    CYCLE_TIME = RTIMER_ARCH_SECOND / NETSTACK_RDC_CHANNEL_CHECK_RATE; 
+  #endif
+  rtimer_set(&rt, RTIMER_NOW() + RTIMER_ARCH_SECOND/128, 1, powercycle_wrapper, NULL); 
+}
+void 
 set_rdc_active_channel_check_rate(uint8_t channel_check_rate){
   if(channel_check_rate!= 0 && channel_check_rate != 0xFF){
     rdc_active_channel_check_rate = channel_check_rate;
@@ -1362,11 +1378,7 @@ turn_off(int keep_radio_on)
   } else {
     radio_is_on = 0;
 
-  // #if CC1310_CONF_LOWPOWER
-  //   if(get_active_flag()==0){//modified by Xiaobing Huang.please consider the degree of coupling software
-  //     return 1;
-  //   }
-  // #endif
+  
     return NETSTACK_RADIO.off();
   }
 }

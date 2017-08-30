@@ -41,11 +41,7 @@ static uint8_t  ledon_flag =0;
 void update_soft_time()
 
 {
-  // logic=logic^1;
-  // logic_test(logic);
-  // add_time++;
-  // // printf("time %d\n",add_time);
-
+  
   timenow.sec+=1;
   if( timenow.sec/60){ 
       ++timenow.minute;
@@ -99,16 +95,23 @@ void set_active_flag()
   #if !ROOTNODE
      // printf("active flag:%u\n",active_flag);
   #endif
-  // active_flag = 0;
-
-  // if(timenow.sec%5==0){
-     
-  //   active_flag =active_flag^1;
+ // active_flag = 0;
+  // static int tempcount = 0;
+  // if(timenow.sec%10 == 0){
+  //   tempcount++;    
   //   // logic =logic^1;
   //   // logic_test(logic);
+  //   if(tempcount >=6){
+  //     active_flag =active_flag^1;
+  //     tempcount = 0;
+  //   }
   // }
 
 
+  // #if MYSERVER
+  //   active_flag = 1;
+  // #endif
+  
 }
 #endif
 
@@ -144,7 +147,7 @@ clock_time_t get_idle_time(void)  //return 0 means not in active mode .
     }else 
       break;
     }
-    // printf("%d %d\n",counter,index);
+    printf("%d %d\n",counter,index);
     return ((10*counter+9-timenow.minute%10)*60+(60-timenow.sec)); 
   }
   return 0x0;

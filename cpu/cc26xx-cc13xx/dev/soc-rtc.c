@@ -47,6 +47,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 /*---------------------------------------------------------------------------*/
+#include "net/mac/contikimac/contikimac.h"
 #if CONTIKI_CONF_NETSYNCH
 #include "netsynch.h"
 #include "task-schedule.h"
@@ -189,6 +190,8 @@ soc_rtc_isr(void)
 
   last_isr_time = RTIMER_NOW();
 
+ 
+  
   if(ti_lib_aon_rtc_event_get(AON_RTC_CH2)) {// change by hit cps
     HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH2;
 
@@ -220,9 +223,13 @@ soc_rtc_isr(void)
       if(get_active_flag()!=active_flag_one_second_before){
         
          if(get_active_flag() ==1){
-           // shut_num = 0;
-           NETSTACK_RDC.on();
+           
+        #if CHANGERREU
+          reset_contikimac_rtimer();//by xiaobing, from contikimac
+        #endif
+        #if CHANGEETIMER
            enable_etimer();
+        #endif   
            task_schedule_change();
            
          }
@@ -237,14 +244,10 @@ soc_rtc_isr(void)
           
       ;;//because of multiple shutdown that lead to etimer err time sequence
   
-    }else {
-      // if(shut_num < 10){
-        
-      // }
-      // shut_num++;         
-      NETSTACK_RDC.off(0);
+    }else {             
+    #if CHANGEETIMER
       disable_etimer();    //etimer  off
-  
+    #endif
    }
 #endif
     
@@ -253,7 +256,6 @@ soc_rtc_isr(void)
     
     ti_lib_aon_rtc_compare_value_set(AON_RTC_CH2, next);
   }
-
 
   if(ti_lib_aon_rtc_event_get(AON_RTC_CH1)) {
     HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH1;

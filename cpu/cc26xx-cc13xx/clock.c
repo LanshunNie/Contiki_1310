@@ -62,6 +62,8 @@
 #include "contiki.h"
 
 #include "ti-lib.h"
+
+#include "dev/netconfig.h"
 /*---------------------------------------------------------------------------*/
 static volatile uint64_t count;
 /*---------------------------------------------------------------------------*/
@@ -129,7 +131,13 @@ update_clock_variable(void)
   uint32_t aon_rtc_secs_now;
   uint32_t aon_rtc_secs_now2;
   uint16_t aon_rtc_ticks_now;
-
+  
+#if !ROOTNODE&&CHANGEETIMER
+  if(get_active_flag()==0){
+    return ;
+   }
+#endif
+  
   do {
     aon_rtc_secs_now = HWREG(AON_RTC_BASE + AON_RTC_O_SEC);
     aon_rtc_ticks_now = HWREG(AON_RTC_BASE + AON_RTC_O_SUBSEC) >> 16;
@@ -153,9 +161,18 @@ clock_update(void)
 {
   update_clock_variable();
 
-  if(etimer_pending()) {
-    etimer_request_poll();
-  }
+#if !ROOTNODE&&CHANGEETIMER
+  if(get_active_flag()==1){
+#endif   
+
+    if(etimer_pending()) {
+      etimer_request_poll();
+    }
+
+#if !ROOTNODE&&CHANGEETIMER
+  } 
+#endif
+
 }
 /*---------------------------------------------------------------------------*/
 CCIF unsigned long

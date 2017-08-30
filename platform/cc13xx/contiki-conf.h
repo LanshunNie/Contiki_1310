@@ -546,6 +546,7 @@ typedef uint32_t rtimer_clock_t;
 #endif /* CC1310_CONF_LOWPOWER */
 
 /*------------------------------------------------*/
+
 /*-------------uart  configure -------------------*/
 #undef  ROOTNODE
 #define ROOTNODE  0
@@ -554,11 +555,17 @@ typedef uint32_t rtimer_clock_t;
 #define HW_NEW_BIG 0
 #endif 
 
-
-
 #define HEAT_METER 1 // baud rate 2400
 
 /*---------------------------------------------------------------------------*/
+/*-----------rtimer change frequence and etimer shutdown inactive------------*/
+#if!ROOTNODE
+#define MYSERVER  0
+#define CHANGERREU 1 //change contikimac frequence
+#define CHANGEETIMER 1 //inactive shutdown etimer,active open etimer
+
+#endif
+/*------------------------------------------------*/
 /* board.h assumes that basic configuration is done */
 #include "board.h"
 #include "hitlib.h"

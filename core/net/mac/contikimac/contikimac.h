@@ -50,6 +50,7 @@ void set_rdc_active_channel_check_rate(uint8_t active_channel_check_rate);
 void set_rdc_inactive_channel_check_interval(uint8_t inactive_channel_check_interval);
 uint8_t get_rdc_active_channel_check_rate();
 uint8_t get_rdc_inactive_channel_check_interval();
+void reset_contikimac_rtimer();
 
 void rdc_turn_radio_off(void);
 #endif /* CONTIKIMAC_H */

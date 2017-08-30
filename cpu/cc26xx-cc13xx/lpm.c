@@ -334,10 +334,18 @@ setup_sleep_mode(void)
   if(pm < max_pm) {
     max_pm = pm;
   }
+
+#if CHANGEETIMER
+  if(get_active_flag()==0){
+    return max_pm;
+  }
+#endif
+  
   pm = check_next_etimer(now, &next_etimer, &next_etimer_set);
   if(pm < max_pm) {
     max_pm = pm;
   }
+
 
   if(max_pm == LPM_MODE_SLEEP) {
     if(next_etimer_set) {
@@ -371,13 +379,13 @@ setup_sleep_mode(void)
 //     }
 // #endif
 
-#if CC1310_CONF_LOWPOWER
-#define CC1310_ACTIVE_FLAG get_active_flag()
-#else
-#define CC1310_ACTIVE_FLAG 1
-#endif
+// #if CC1310_CONF_LOWPOWER
+// #define CC1310_ACTIVE_FLAG get_active_flag()
+// #else
+// #define CC1310_ACTIVE_FLAG 1
+// #endif
 
-    if(CC1310_ACTIVE_FLAG==1){
+//     if(CC1310_ACTIVE_FLAG==1){
         
         if(next_etimer_set) {
           /* Schedule the next system wakeup due to etimer.
@@ -390,7 +398,7 @@ setup_sleep_mode(void)
           soc_rtc_schedule_one_shot(AON_RTC_CH1, now + 600*RTIMER_SECOND);//by huangxiaobing
         }
      }
-  }
+  // }
 
   return max_pm;
 }
