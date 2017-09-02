@@ -93,9 +93,6 @@ rtimer_set(struct rtimer *rtimer, rtimer_clock_t time,
   
   if(last_flag ==0 && get_active_flag()==1 ){ //by xiaobing,because inactive turns into active,contikimac rtimer &rt change
    if(next_rtimer == rtimer){
-      // rtimer_run_next();
-      // last_flag = get_active_flag();
-      // return RTIMER_OK;
       rtimer_arch_schedule(time);
    }
   }

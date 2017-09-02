@@ -293,6 +293,7 @@ check_next_etimer(rtimer_clock_t now, rtimer_clock_t *next_etimer, bool *next_et
       if(RTIMER_CLOCK_LT(*next_etimer, now + STANDBY_MIN_DURATION)) {
         max_pm = MIN(max_pm, LPM_MODE_SLEEP);
       }
+
     }
   }
 

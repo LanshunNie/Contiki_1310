@@ -205,7 +205,7 @@ extern const prop_mode_tx_power_config_t TX_POWER_DRIVER[];
 #define OUTPUT_POWER_UNKNOWN 0xFFFF
 
 /* Default TX Power - position in output_power[] */
-const prop_mode_tx_power_config_t *tx_power_current = &TX_POWER_DRIVER[1];
+const prop_mode_tx_power_config_t *tx_power_current = &TX_POWER_DRIVER[0];
 /*---------------------------------------------------------------------------*/
 #ifdef PROP_MODE_CONF_LO_DIVIDER
 #define PROP_MODE_LO_DIVIDER   PROP_MODE_CONF_LO_DIVIDER

@@ -87,7 +87,7 @@ PROCESS_THREAD(etimer_process, ev, data)
   
   while(1) {
     PROCESS_YIELD();
-
+    
     if(ev == PROCESS_EVENT_EXITED) {
       struct process *p = data;
 

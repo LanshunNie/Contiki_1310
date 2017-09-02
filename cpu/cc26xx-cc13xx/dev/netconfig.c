@@ -3,6 +3,7 @@
 #include "dev/netconfig.h"
 #include "stdio.h"
 #include "node-id.h"
+#include "ti-lib.h"
 #if CONTIKI_CONF_NETSYNCH
 #include "netsynch.h"
 #include "task-schedule.h"
@@ -10,10 +11,16 @@
 
 // void logic_test(uint32_t i);
 // static uint32_t logic=0;
-// static uint32_t add_time=0;
+
+
 
 #if CC1310_CONF_LOWPOWER
 
+/***********/
+#if EXTER_WATCHDOG
+static uint32_t add_time = 0;//by xiaobing,external watch dog DIO14
+#endif 
+/***********/
 
 static volatile uint8_t  active_flag_one_second_before = 0;
 static volatile uint16_t  init_net_flag = 1;
@@ -38,10 +45,33 @@ static uint8_t  ledon_flag =0;
 //static void update_soft_time();
 #endif
 
+void external_watch_dog(int tick){//by xiaobing,external watch dog DIO14
+
+  ti_lib_gpio_write_dio(BOARD_IOID_DIO14,1);
+  
+  //delay 10us
+  for(int i =0; i< tick; i++){
+    for(int j = 0; j < i; ++j) {
+      __asm("nop");
+    }
+  }
+  
+  ti_lib_gpio_write_dio(BOARD_IOID_DIO14,0);
+}
+
 void update_soft_time()
 
 {
   
+  #if EXTER_WATCHDOG
+   if(add_time >=300){ //by xiaobing,external watch dog DIO14
+      external_watch_dog(15);
+      add_time = 0;
+   }
+   add_time++;
+  // // printf("time %d\n",add_time);
+  #endif 
+
   timenow.sec+=1;
   if( timenow.sec/60){ 
       ++timenow.minute;
@@ -147,7 +177,7 @@ clock_time_t get_idle_time(void)  //return 0 means not in active mode .
     }else 
       break;
     }
-    printf("%d %d\n",counter,index);
+    // printf("%d %d\n",counter,index);
     return ((10*counter+9-timenow.minute%10)*60+(60-timenow.sec)); 
   }
   return 0x0;

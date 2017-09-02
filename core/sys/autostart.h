@@ -44,7 +44,6 @@
 
 #if ! CC_NO_VA_ARGS
 #if AUTOSTART_ENABLE
-// #warning autorun
 #define AUTOSTART_PROCESSES(...)					\
 struct process * const autostart_processes[] = {__VA_ARGS__, NULL}
 #else /* AUTOSTART_ENABLE */

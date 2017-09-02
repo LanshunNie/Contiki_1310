@@ -121,7 +121,7 @@
 #define NULLRDC_CONF_SEND_802154_ACK              1
 
 #define CONTIKIMAC_CONF_CCA_CHECK_TIME            (RTIMER_ARCH_SECOND / 1600)
-#define CONTIKIMAC_CONF_CCA_SLEEP_TIME            (RTIMER_ARCH_SECOND / 238) //238
+#define CONTIKIMAC_CONF_CCA_SLEEP_TIME            (RTIMER_ARCH_SECOND / 192) //238:4.2 192:5.2
 #define CONTIKIMAC_CONF_LISTEN_TIME_AFTER_PACKET_DETECTED  (RTIMER_ARCH_SECOND / 20)
 #define CONTIKIMAC_CONF_SEND_SW_ACK               1
 #define CONTIKIMAC_CONF_AFTER_ACK_DETECTECT_WAIT_TIME (RTIMER_SECOND / 920) //920
@@ -546,6 +546,7 @@ typedef uint32_t rtimer_clock_t;
 #endif /* CC1310_CONF_LOWPOWER */
 
 /*------------------------------------------------*/
+#define EXTER_WATCHDOG 1
 
 /*-------------uart  configure -------------------*/
 #undef  ROOTNODE

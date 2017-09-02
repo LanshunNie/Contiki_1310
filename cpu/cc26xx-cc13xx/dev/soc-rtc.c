@@ -141,7 +141,7 @@ soc_rtc_get_next_trigger()
 /*---------------------------------------------------------------------------*/
 void enable_etimer()
 {
-
+  
   uint32_t next;
   next = ti_lib_aon_rtc_current_compare_value_get() + COMPARE_INCREMENT;
 
@@ -165,7 +165,7 @@ soc_rtc_schedule_one_shot(uint32_t channel, uint32_t ticks)
   if((channel != AON_RTC_CH0) && (channel != AON_RTC_CH1)) {
     return;
   }
-
+  
   /* Set the channel to fire a one-shot compare event at time==ticks */
   ti_lib_aon_rtc_compare_value_set(channel, ticks);
   ti_lib_aon_rtc_channel_enable(channel);
@@ -182,8 +182,7 @@ soc_rtc_last_isr_time(void)
 void
 soc_rtc_isr(void)
 {
-  // static uint8_t shut_num = 0;//added by Xiaobing Huang
-
+  
   uint32_t next;
 
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
@@ -223,7 +222,10 @@ soc_rtc_isr(void)
       if(get_active_flag()!=active_flag_one_second_before){
         
          if(get_active_flag() ==1){
-           
+        
+        #if!ROOTNODE
+          clock_update();
+        #endif
         #if CHANGERREU
           reset_contikimac_rtimer();//by xiaobing, from contikimac
         #endif

@@ -401,8 +401,6 @@ powercycle_wrapper(struct rtimer *t, void *ptr)
 static char
 powercycle(struct rtimer *t, void *ptr)
 {
-  
-
 #if SYNC_CYCLE_STARTS
   static volatile rtimer_clock_t sync_cycle_start;
   static volatile uint8_t sync_cycle_phase;
@@ -436,6 +434,7 @@ powercycle(struct rtimer *t, void *ptr)
     }
 #else
     cycle_start += CYCLE_TIME;
+   
 #endif
 
     rdc_channel_check_interval_count ++;
@@ -765,7 +764,7 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 // inactive don't send packet ,just return mac_tx_ok ;
 #if CC1310_CONF_LOWPOWER 
  if(get_active_flag()== 0 ||get_idle_time()<= 10){  //if debug contiki,please comment out
-   printf("my mac ok\n");
+   // printf("my mac ok\n");
    return MAC_TX_OK;
  }
 #endif
@@ -1299,9 +1298,11 @@ void
 reset_contikimac_rtimer(){//by xiaobing
   #if CHANGERREU
     CYCLE_TIME = RTIMER_ARCH_SECOND / NETSTACK_RDC_CHANNEL_CHECK_RATE; 
+    cycle_start = RTIMER_NOW() - CYCLE_TIME;
   #endif
-  rtimer_set(&rt, RTIMER_NOW() + RTIMER_ARCH_SECOND/128, 1, powercycle_wrapper, NULL); 
+  rtimer_set(&rt, RTIMER_NOW() + RTIMER_ARCH_SECOND/256, 1, powercycle_wrapper, NULL); 
 }
+/*--------------------------------------------------------------------------*/
 void 
 set_rdc_active_channel_check_rate(uint8_t channel_check_rate){
   if(channel_check_rate!= 0 && channel_check_rate != 0xFF){
