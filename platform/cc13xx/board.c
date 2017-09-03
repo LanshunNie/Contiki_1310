@@ -126,6 +126,8 @@ board_init()
   }
 
   ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_LED);
+  ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_DIO14);
+  ti_lib_gpio_write_dio(BOARD_IOID_DIO14,0);
 
   PRINTF("We are using " BOARD_STRING "\n");
 }
