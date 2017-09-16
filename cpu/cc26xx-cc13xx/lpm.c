@@ -577,7 +577,6 @@ lpm_drop()
   } else if(max_pm == LPM_MODE_DEEP_SLEEP) {
     deep_sleep();
   }
-
   ti_lib_int_master_enable();
 }
 /*---------------------------------------------------------------------------*/

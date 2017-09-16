@@ -80,8 +80,9 @@ configure_unused_pins(void)
     ti_lib_ioc_pin_type_gpio_input(*pin);
     ti_lib_ioc_io_port_pull_set(*pin, IOC_IOPULL_DOWN);
   }
+
 }
-/*--------------------------------------------------------------------------*/
+  
 void led_toggle(uint32_t i){
 
   ti_lib_gpio_write_dio(BOARD_IOID_LED,i);
@@ -128,6 +129,12 @@ board_init()
   ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_LED);
   ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_DIO14);
   ti_lib_gpio_write_dio(BOARD_IOID_DIO14,0);
+
+  //bug
+  ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_DIO17);
+  ti_lib_gpio_write_dio(BOARD_IOID_DIO17,0);
+
+
 
   PRINTF("We are using " BOARD_STRING "\n");
 }

@@ -48,15 +48,16 @@ static uint8_t  ledon_flag =0;
 void external_watch_dog(int tick){//by xiaobing,external watch dog DIO14
 
   ti_lib_gpio_write_dio(BOARD_IOID_DIO14,1);
-  
-  //delay 10us
-  for(int i =0; i< tick; i++){
-    for(int j = 0; j < i; ++j) {
-      __asm("nop");
+   //delay 10us
+    for(int i =0; i< tick; i++){
+      for(int j = 0; j < i; ++j) {
+        __asm("nop");
+      }
     }
-  }
-  
+    
   ti_lib_gpio_write_dio(BOARD_IOID_DIO14,0);
+  ti_lib_ioc_pin_type_gpio_input(BOARD_IOID_DIO14);
+  ti_lib_ioc_io_port_pull_set(BOARD_IOID_DIO14, IOC_IOPULL_DOWN);
 }
 
 void update_soft_time()
@@ -69,7 +70,15 @@ void update_soft_time()
       add_time = 0;
    }
    add_time++;
-  // // printf("time %d\n",add_time);
+  // // // printf("time %d\n",add_time);
+  //  ti_lib_gpio_write_dio(BOARD_IOID_DIO17,1);
+  //  //delay 10us
+  //   for(int i =0; i< 50; i++){
+  //     for(int j = 0; j < i; ++j) {
+  //       __asm("nop");
+  //     }
+  //   }
+  // ti_lib_gpio_write_dio(BOARD_IOID_DIO17,0);
   #endif 
 
   timenow.sec+=1;
@@ -105,27 +114,27 @@ uint16_t get_init_flag(){
 // void set_active_flag(int hour,int minute,int second_s)
 void set_active_flag()
 {
-//   calendar_time  cal_time_now;
-  int index=0;
-  // read_calendar(&cal_time_now);
-  // int hour   = BCD_to_dec(cal_time_now.hour);
-  // int minute = BCD_to_dec(cal_time_now.min);
-  // index=hour*6+minute/10;         //6 ,10
-  index=timenow.hour*6+timenow.minute/10;         //6   ,10
-  schedule_bitmap_get(schedule_bit);
+// //   calendar_time  cal_time_now;
+//   int index=0;
+//   // read_calendar(&cal_time_now);
+//   // int hour   = BCD_to_dec(cal_time_now.hour);
+//   // int minute = BCD_to_dec(cal_time_now.min);
+//   // index=hour*6+minute/10;         //6 ,10
+//   index=timenow.hour*6+timenow.minute/10;         //6   ,10
+//   schedule_bitmap_get(schedule_bit);
 
-#if 0  
-  int index2=0;
-  for(;index2<18;index2++){
-    printf("schedule_bit [%d] = %d\n",index2,schedule_bit[index2] );
-  }
-#endif
-  active_flag = init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
+// #if 0  
+//   int index2=0;
+//   for(;index2<18;index2++){
+//     printf("schedule_bit [%d] = %d\n",index2,schedule_bit[index2] );
+//   }
+// #endif
+//   active_flag = init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
 
-  #if !ROOTNODE
-     // printf("active flag:%u\n",active_flag);
-  #endif
- // active_flag = 0;
+//   #if !ROOTNODE
+//      // printf("active flag:%u\n",active_flag);
+//   #endif
+ active_flag = 0;
   // static int tempcount = 0;
   // if(timenow.sec%10 == 0){
   //   tempcount++;    

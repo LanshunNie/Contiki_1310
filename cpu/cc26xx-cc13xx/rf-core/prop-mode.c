@@ -499,7 +499,7 @@ rx_on_prop(void)
     ENERGEST_ON(ENERGEST_TYPE_LISTEN);
   }
 
-  ti_lib_gpio_write_dio(BOARD_IOID_LED,1);  
+  // ti_lib_gpio_write_dio(BOARD_IOID_LED,1);  
   return ret;
 }
 /*---------------------------------------------------------------------------*/
@@ -987,7 +987,7 @@ on(void)
 static int
 off(void)
 {
-   ti_lib_gpio_write_dio(BOARD_IOID_LED,0); 
+   // ti_lib_gpio_write_dio(BOARD_IOID_LED,0); 
   /*
    * If we are in the middle of a BLE operation, we got called by ContikiMAC
    * from within an interrupt context. Abort, but pretend everything is OK.

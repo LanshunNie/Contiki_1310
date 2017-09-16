@@ -55,35 +55,35 @@ PROCESS_THREAD(hello_world_process, ev, data)
 {
 
   PROCESS_BEGIN();
-  // //printf(" %x\n",get_voltage());
-  static struct etimer et;
-  etimer_set(&et,CLOCK_SECOND);
-  // unsigned long cpu,lpm,transmit,listen,irq;
-  while(1)
-  {
-     PROCESS_YIELD();
-     if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
-     {
+  // // //printf(" %x\n",get_voltage());
+  // static struct etimer et;
+  // etimer_set(&et,CLOCK_SECOND);
+  // // unsigned long cpu,lpm,transmit,listen,irq;
+  // while(1)
+  // {
+  //    PROCESS_YIELD();
+  //    if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
+  //    {
       
-      // cpu      = energest_type_time(ENERGEST_TYPE_CPU)      ;
-      // lpm      = energest_type_time(ENERGEST_TYPE_LPM)      ;
-      // listen   = energest_type_time(ENERGEST_TYPE_LISTEN)   ;
-      // //printf("cpu  %lu  , lpm  %lu\n", cpu,lpm);
-      // printf("listen  %lu\n", listen);
-      // energest_type_set(ENERGEST_TYPE_CPU,0);
-      // energest_type_set(ENERGEST_TYPE_LPM,0);
-      // energest_type_set(ENERGEST_TYPE_LISTEN,0);
+  //     // cpu      = energest_type_time(ENERGEST_TYPE_CPU)      ;
+  //     // lpm      = energest_type_time(ENERGEST_TYPE_LPM)      ;
+  //     // listen   = energest_type_time(ENERGEST_TYPE_LISTEN)   ;
+  //     // //printf("cpu  %lu  , lpm  %lu\n", cpu,lpm);
+  //     // printf("listen  %lu\n", listen);
+  //     // energest_type_set(ENERGEST_TYPE_CPU,0);
+  //     // energest_type_set(ENERGEST_TYPE_LPM,0);
+  //     // energest_type_set(ENERGEST_TYPE_LISTEN,0);
       printf("hello-world!\n");
-      //printf("voltage: %d\n",get_voltage());
-     //  // printf("restart count %d\n",restart_count );
-     //  restart_count_byte_restore();
-     //  printf("restart count %d\n",restart_count );
-     //  restart_count++;
-     //  restart_count_byte_burn(restart_count);
-      etimer_set(&et,CLOCK_SECOND);
-     }
+  //     //printf("voltage: %d\n",get_voltage());
+  //    //  // printf("restart count %d\n",restart_count );
+  //    //  restart_count_byte_restore();
+  //    //  printf("restart count %d\n",restart_count );
+  //    //  restart_count++;
+  //    //  restart_count_byte_burn(restart_count);
+  //     etimer_set(&et,CLOCK_SECOND);
+  //    }
 
-  }
+  // }
  
  PROCESS_END();
 

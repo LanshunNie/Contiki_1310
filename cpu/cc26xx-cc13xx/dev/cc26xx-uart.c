@@ -238,8 +238,12 @@ lpm_drop_handler(uint8_t mode)
   while(!ti_lib_prcm_load_get());
 
   /* Set pins to low leakage configuration in preparation for deep sleep */
-  lpm_pin_set_default_state(BOARD_IOID_UART_TX);
+ // lpm_pin_set_default_state(BOARD_IOID_UART_TX);
   lpm_pin_set_default_state(BOARD_IOID_UART_RX);
+
+  ti_lib_ioc_port_configure_set(BOARD_IOID_UART_TX, IOC_PORT_GPIO, IOC_STD_OUTPUT);//bug 
+  ti_lib_gpio_write_dio(BOARD_IOID_UART_TX,1);
+
   lpm_pin_set_default_state(BOARD_IOID_UART_CTS);
   lpm_pin_set_default_state(BOARD_IOID_UART_RTS);
 }

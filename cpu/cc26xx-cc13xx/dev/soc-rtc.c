@@ -264,8 +264,6 @@ soc_rtc_isr(void)
     
     /* Adjust the s/w tick counter irrespective of which event trigger this */
     clock_update();
-    // logic =logic^1;
-    // logic_test(logic);
     /*
      * We need to keep ticking while we are awake, so we schedule the next
      * event on the next 512 tick boundary. If we drop to deep sleep before it
