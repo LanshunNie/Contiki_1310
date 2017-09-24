@@ -173,7 +173,7 @@ main(void)
   NETSTACK_RADIO.off();//the default state is off
   
 
-/*****************************/  
+// /*****************************/  
   autostart_start(autostart_processes);
 
   watchdog_start();

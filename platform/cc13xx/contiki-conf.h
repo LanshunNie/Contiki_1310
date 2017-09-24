@@ -559,7 +559,7 @@ typedef uint32_t rtimer_clock_t;
 #define HEAT_METER 1 // baud rate 2400
 
 /*---------------------------------------------------------------------------*/
-/*-----------rtimer change frequence and etimer shutdown inactive------------*/
+/*-----------rtimer change frequence and etimer shutdown inactive,by xiaobing------------*/
 #if!ROOTNODE
 #define MYSERVER  0
 #define CHANGERREU 1 //change contikimac frequence

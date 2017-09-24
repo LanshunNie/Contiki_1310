@@ -61,6 +61,7 @@
 #include <stdint.h>
 void enable_etimer();
 void disable_etimer();
+
 /*---------------------------------------------------------------------------*/
 /**
  * \brief Initialise the CC13XX/CC26XX AON RTC module

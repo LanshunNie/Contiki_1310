@@ -5,6 +5,7 @@
 #include "clock.h"
 /************************define hit softtime*************************************/
 
+extern uint32_t timecount;
 #if CC1310_CONF_LOWPOWER
 
 void update_soft_time();

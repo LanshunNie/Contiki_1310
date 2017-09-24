@@ -35,6 +35,7 @@
  * \file
  * Implementation of the CC13xx/CC26xx AON RTC driver
  */
+#include "cpu/cc26xx-cc13xx/dev/soc-rtc.h"
 /*---------------------------------------------------------------------------*/
 #include "contiki.h"
 #include "net/netstack.h"
@@ -53,7 +54,8 @@
 #include "task-schedule.h"
 #endif
 static uint8_t  active_flag_one_second_before = 0;
-#define RTC_TIME (RTIMER_SECOND)   //1 second
+#define COMPENSATION 12
+#define RTC_TIME (65536-COMPENSATION)   //1 second RTIMER_SECOND
 #define soc_rtc_isr(...) AONRTCIntHandler(__VA_ARGS__)
 /*---------------------------------------------------------------------------*/
 /* Prototype of a function in clock.c. Called every time the handler fires */
@@ -188,8 +190,6 @@ soc_rtc_isr(void)
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
 
   last_isr_time = RTIMER_NOW();
-
- 
   
   if(ti_lib_aon_rtc_event_get(AON_RTC_CH2)) {// change by hit cps
     HWREG(AON_RTC_BASE + AON_RTC_O_EVFLAGS) = AON_RTC_EVFLAGS_CH2;
@@ -280,7 +280,6 @@ soc_rtc_isr(void)
     rtimer_run_next();
   }
 
-  
 
   ENERGEST_OFF(ENERGEST_TYPE_IRQ);
 }

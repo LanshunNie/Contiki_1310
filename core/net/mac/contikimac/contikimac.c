@@ -440,7 +440,7 @@ powercycle(struct rtimer *t, void *ptr)
     rdc_channel_check_interval_count ++;
 
   #if CHANGERREU
-    if(get_active_flag()==0){ //by huangxiaobing
+    if(get_active_flag()==0){ //by Xiaobing
       CYCLE_TIME = RTIMER_ARCH_SECOND *5;
     }     
   #endif
@@ -448,7 +448,6 @@ powercycle(struct rtimer *t, void *ptr)
   if(get_active_flag() || ( get_init_flag()==0 &&
      rdc_channel_check_interval_count >= rdc_channel_check_interval)){
     
-   // printf("do cca \n");
 
 // if(get_active_flag()){
     rdc_channel_check_interval_count = 0;
@@ -1035,7 +1034,6 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
    PRINTF("MAC_TX_NOACK\n");
   } else {
     ret = MAC_TX_OK;
-   // printf("MAC_TX_OK\n");
   }
 
 #if WITH_PHASE_OPTIMIZATION

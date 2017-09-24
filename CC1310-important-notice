@@ -1,0 +1,8 @@
+contiki-orpl-1310-newinc-v.1是v.14基础上更改
+v.14应用测试正常,平均电流 avg:2.89uA max:12.36uA,基本上满足现场实验需求
+v.15版本的修改ccfg和15dbm,射频性能良好，驱动没有问题，此外该版本修改了外围硬件
+contiki-orpl-1310-newinc-v.1实现了rtimer变频率，也实现了低功耗。
+contiki-orpl-1310-newinc-v.2修正了会连续的做CCA bug
+contiki-orpl-1310-newinc-v.3修正了38uA电流来源UART的TX
+contiki-orpl-1310-newinc-v.4通过补偿走时的方式解决了软时钟走慢的问题：6小时1轮节点偏差和同步偏差在1秒内
+

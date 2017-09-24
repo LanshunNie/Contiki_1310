@@ -9,9 +9,12 @@
 #include "task-schedule.h"
 #endif
 
-// void logic_test(uint32_t i);
-// static uint32_t logic=0;
-
+#define DEBUG 0
+#if DEBUG 
+void logic_test(uint32_t i);
+static uint32_t logic=0;
+ uint32_t timecount =0;
+#endif
 
 
 #if CC1310_CONF_LOWPOWER
@@ -56,31 +59,10 @@ void external_watch_dog(int tick){//by xiaobing,external watch dog DIO14
     }
     
   ti_lib_gpio_write_dio(BOARD_IOID_DIO14,0);
-  ti_lib_ioc_pin_type_gpio_input(BOARD_IOID_DIO14);
-  ti_lib_ioc_io_port_pull_set(BOARD_IOID_DIO14, IOC_IOPULL_DOWN);
 }
 
 void update_soft_time()
-
 {
-  
-  #if EXTER_WATCHDOG
-   if(add_time >=300){ //by xiaobing,external watch dog DIO14
-      external_watch_dog(15);
-      add_time = 0;
-   }
-   add_time++;
-  // // // printf("time %d\n",add_time);
-  //  ti_lib_gpio_write_dio(BOARD_IOID_DIO17,1);
-  //  //delay 10us
-  //   for(int i =0; i< 50; i++){
-  //     for(int j = 0; j < i; ++j) {
-  //       __asm("nop");
-  //     }
-  //   }
-  // ti_lib_gpio_write_dio(BOARD_IOID_DIO17,0);
-  #endif 
-
   timenow.sec+=1;
   if( timenow.sec/60){ 
       ++timenow.minute;
@@ -95,6 +77,15 @@ void update_soft_time()
       timenow.hour=0;
       ++days;
   }
+
+  #if EXTER_WATCHDOG
+   if(add_time >=300){ //by xiaobing,external watch dog DIO14
+      external_watch_dog(15);
+      add_time = 0;
+   }
+   add_time++;
+ 
+  #endif 
 
 }
 
@@ -114,27 +105,27 @@ uint16_t get_init_flag(){
 // void set_active_flag(int hour,int minute,int second_s)
 void set_active_flag()
 {
-// //   calendar_time  cal_time_now;
-//   int index=0;
-//   // read_calendar(&cal_time_now);
-//   // int hour   = BCD_to_dec(cal_time_now.hour);
-//   // int minute = BCD_to_dec(cal_time_now.min);
-//   // index=hour*6+minute/10;         //6 ,10
-//   index=timenow.hour*6+timenow.minute/10;         //6   ,10
-//   schedule_bitmap_get(schedule_bit);
+//   calendar_time  cal_time_now;
+  int index=0;
+  // read_calendar(&cal_time_now);
+  // int hour   = BCD_to_dec(cal_time_now.hour);
+  // int minute = BCD_to_dec(cal_time_now.min);
+  // index=hour*6+minute/10;         //6 ,10
+  index=timenow.hour*6+timenow.minute/10;         //6   ,10
+  schedule_bitmap_get(schedule_bit);
 
-// #if 0  
-//   int index2=0;
-//   for(;index2<18;index2++){
-//     printf("schedule_bit [%d] = %d\n",index2,schedule_bit[index2] );
-//   }
-// #endif
-//   active_flag = init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
+#if 0  
+  int index2=0;
+  for(;index2<18;index2++){
+    printf("schedule_bit [%d] = %d\n",index2,schedule_bit[index2] );
+  }
+#endif
+  active_flag = init_net_flag&((schedule_bit[index/8]) >> (7-(index%8)));
 
-//   #if !ROOTNODE
-//      // printf("active flag:%u\n",active_flag);
-//   #endif
- active_flag = 0;
+  #if !ROOTNODE
+     // printf("active flag:%u\n",active_flag);
+  #endif
+ // active_flag = 1;//test
   // static int tempcount = 0;
   // if(timenow.sec%10 == 0){
   //   tempcount++;    
@@ -145,7 +136,7 @@ void set_active_flag()
   //     tempcount = 0;
   //   }
   // }
-
+    // active_flag = 1;
 
   // #if MYSERVER
   //   active_flag = 1;
@@ -219,7 +210,6 @@ uint32_t get_cal_count(){
 
 void set_cal_countaddone(){
   cal_count++;
-  // printf
 }
 
 int get_cal_offest(){

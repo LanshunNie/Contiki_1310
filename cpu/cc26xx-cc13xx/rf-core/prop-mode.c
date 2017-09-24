@@ -400,11 +400,6 @@ prop_div_radio_setup(void)
   smartrf_settings_cmd_prop_radio_div_setup.config.biasMode =
     RF_CORE_PROP_BIAS_MODE;
 
-  // #if RF_CORE_PROP_BIAS_MODE==1
-
-  // #else
-  //   #error Bias error
-  // #endif
   
   /* Send Radio setup to RF Core */
   if(rf_core_send_cmd((uint32_t)cmd, &cmd_status) != RF_CORE_CMD_OK) {

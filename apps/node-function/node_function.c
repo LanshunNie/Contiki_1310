@@ -27,7 +27,7 @@
 // static uint64_t last_lpm      = 0;
 // static uint64_t last_transmit = 0;
 // static uint64_t last_listen   = 0;
-
+#include <stdio.h>
 static void set_energy(int index,uint8_t array[],uint64_t val)
 {
   int i ;
@@ -87,6 +87,11 @@ void get_system_monitor_msg(uint8_t array[],int length)
    array[INDEX_NETSYN_RECVTIME]=   recvmsg.caltime.hour;
    array[INDEX_NETSYN_RECVTIME+1]=   recvmsg.caltime.minute;
    array[INDEX_NETSYN_RECVTIME+2]=   recvmsg.caltime.sec;
+
+   printf("node time:%u:%u:%u  ",timenow.hour,timenow.minute,timenow.sec);//by huangxiaobing 
+   printf("recvmsg time:%u:%u:%u\n",recvmsg.caltime.hour,recvmsg.caltime.minute,recvmsg.caltime.sec);
+
+
    array[INDEX_NETSYN_RECVSEQNUM]  =recvmsg.seqnum;
    array[INDEX_NETSYN_RECVLEVEL]  =recvmsg.authority_level;
 
@@ -162,7 +167,7 @@ void get_system_monitor_msg(uint8_t array[],int length)
   array[INDEX_RTMETRIC]         = (rtmetric>>8) & 0xff;        
   array[INDEX_RTMETRIC+1]       = rtmetric&0xff  ;  
 
-  array[INDEX_TIME_DIFF]        = netsynch_get_offset();
+  array[INDEX_TIME_DIFF]        = netsynch_get_offset();//synchronize time fifference
 
   array[INDEX_RESTART_COUNT] = restart_count;
   // printf("restart count %d\n",restart_count );//by huangxiaobing
