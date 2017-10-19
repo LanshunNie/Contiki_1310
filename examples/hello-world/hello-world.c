@@ -38,53 +38,88 @@
  */
 
 #include "contiki.h"
-#include "dev/watchdog.h"
-#include "node-id.h"
+// #include "dev/watchdog.h"
+// #include "node-id.h"
 // #include "bat-voltage.h"
-#include "dev/netconfig.h"
+// #include "dev/netconfig.h"
 #include <stdio.h> /* For printf() */
-#include "cpu/cc26xx-cc13xx/dev/soc-rtc.h"
-// void led_toggle(uint32_t i);
-// void logic_test(uint32_t i);
-// static uint32_t logic=0;
+#include <string.h>
+// #include "cpu/cc26xx-cc13xx/dev/soc-rtc.h"
+#include "dev/serial-line.h"
+#include "dev/uart1.h"
+#include "dev/leds.h"
+#include "node-id.h"
+
+unsigned char my_cmd[14]={0x05,0x10,0x5B,0xFE,0x59,0x16};
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
 AUTOSTART_PROCESSES(&hello_world_process);
 
-PROCESS_THREAD(hello_world_process, ev, data)
+PROCESS_THREAD(hello_world_process, ev, data) 
 {
 
   PROCESS_BEGIN();
-  // // // //printf(" %x\n",get_voltage());
+  // // // // //printf(" %x\n",get_voltage());
   static struct etimer et;
-  etimer_set(&et,CLOCK_SECOND);
-  // // unsigned long cpu,lpm,transmit,listen,irq;
+  etimer_set(&et,1*CLOCK_SECOND);
+  // // // unsigned long cpu,lpm,transmit,listen,irq;
+  // uint8_t my_cmd[14]={8,0x08,9,0x09,10,0x0A,11,0x0B,12,0x0C,16,0x10};
+  // uint8_t my_cmd[14]={1,2,3,4,5,6,7,8,9,10,11,12};
+  uart1_set_input(serial_line_input_byte2);
   while(1)
   {
      PROCESS_YIELD();
+
      if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
      {
+         if(cmd_read_meter[0] != 0xFF)
+         {
+            // uart1_set_input(serial_line_input_byte2);
+            for(int i=0;i< cmd_read_meter[0];i++)
+            {
+              printf("%c",(unsigned char )cmd_read_meter[i+1]);
+            }
+
+         }
       
-  // //     // cpu      = energest_type_time(ENERGEST_TYPE_CPU)      ;
-  // //     // lpm      = energest_type_time(ENERGEST_TYPE_LPM)      ;
-  // //     // listen   = energest_type_time(ENERGEST_TYPE_LISTEN)   ;
-  // //     // //printf("cpu  %lu  , lpm  %lu\n", cpu,lpm);
-  // //     // printf("listen  %lu\n", listen);
-  // //     // energest_type_set(ENERGEST_TYPE_CPU,0);
-  // //     // energest_type_set(ENERGEST_TYPE_LPM,0);
-  // //     // energest_type_set(ENERGEST_TYPE_LISTEN,0);
-     // printf("hello-world!\n");
-      printf("%lu   ",first );
-      printf("%lu\n",second );
-  //     printf("tick:%lu\n",timecount);
-  // //     //printf("voltage: %d\n",get_voltage());
-  // //    //  // printf("restart count %d\n",restart_count );
-  // //    //  restart_count_byte_restore();
-  // //    //  printf("restart count %d\n",restart_count );
-  // //    //  restart_count++;
-  // //    //  restart_count_byte_burn(restart_count);
+  //      for(int i=1;i<6;i++){
+  //          unsigned char ch= my_cmd[i];
+  //          printf("%c",ch);
+  //          // cc26xx_uart_write_byte(ch);
+  //      }
+  //         //  logic =logic^1;
+  //         // led_toggle(logic);
+  // // // //     // cpu      = energest_type_time(ENERGEST_TYPE_CPU)      ;
+  // // // //     // lpm      = energest_type_time(ENERGEST_TYPE_LPM)      ;
+  // // // //     // listen   = energest_type_time(ENERGEST_TYPE_LISTEN)   ;
+  // // // //     // //printf("cpu  %lu  , lpm  %lu\n", cpu,lpm);
+  // // // //     // printf("listen  %lu\n", listen);
+  // // // //     // energest_type_set(ENERGEST_TYPE_CPU,0);
+  // // // //     // energest_type_set(ENERGEST_TYPE_LPM,0);
+  // // // //     // energest_type_set(ENERGEST_TYPE_LISTEN,0);
+  //     // printf("hello-world!\n");
+  // //     printf("%lu   ",first );
+  // //     printf("%lu\n",second );
+  // // //     printf("tick:%lu\n",timecount);
+  // // // //     //printf("voltage: %d\n",get_voltage());
+  // // // //    //  // printf("restart count %d\n",restart_count );
+  // // // //    //  restart_count_byte_restore();
+  // // // //    //  printf("restart count %d\n",restart_count );
+  // // // //    //  restart_count++;
+  // // // //    //  restart_count_byte_burn(restart_count);
       etimer_set(&et,5*CLOCK_SECOND);
      }
+
+    if (ev==serial_line_event_message2)
+    {
+      int  data_length =(int)((char *)data)[0];
+      // for(int i=0;i<data_length;i++){
+          leds_toggle(LEDS_RED);
+      // }
+     // printf("data len:%d\n",data_length );
+      // uart1_set_input(NULL);
+
+    }
 
   }
  

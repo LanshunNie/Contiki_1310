@@ -39,8 +39,9 @@
 #include "contiki-conf.h"
 
 #include "lpm.h"
+#include "dev/leds.h"
 #include "ti-lib.h"
-
+#include "board.h"
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
@@ -51,6 +52,41 @@
 #else
 #define PRINTF(...)
 #endif
+/*---------------------------------------------------------------------------*/
+static unsigned char c;
+static int inited = 0;
+/*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
+void
+leds_arch_init(void)
+{
+  if(inited) {
+    return;
+  }
+  inited = 1;
+
+  ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_RED_LED);
+  ti_lib_gpio_write_dio(BOARD_IOID_RED_LED,0);
+
+}
+/*---------------------------------------------------------------------------*/
+unsigned char
+leds_arch_get(void)
+{
+  return c;
+}
+/*---------------------------------------------------------------------------*/
+void
+leds_arch_set(unsigned char leds)
+{
+  c = leds;
+
+  ti_lib_gpio_write_dio(BOARD_LED_ALL,0);//low 0
+  if((leds & LEDS_RED) == LEDS_RED) {
+    ti_lib_gpio_write_dio(BOARD_IOID_RED_LED,1);// high 1
+  }
+  
+}
 /*---------------------------------------------------------------------------*/
 static void
 wakeup_handler(void)
@@ -83,14 +119,10 @@ configure_unused_pins(void)
 
 }
   
-void led_toggle(uint32_t i){
-
-  ti_lib_gpio_write_dio(BOARD_IOID_LED,i);
-}
 /*--------------------------------------------------------------------------*/
 void logic_test(uint32_t i){
 
-  ti_lib_gpio_write_dio(BOARD_IOID_LED,i);
+  ti_lib_gpio_write_dio(BOARD_IOID_RED_LED,i);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -126,15 +158,11 @@ board_init()
     ti_lib_int_master_enable();
   }
 
-  ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_LED);
+  //external watchdog pin
   ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_DIO14);
   ti_lib_gpio_write_dio(BOARD_IOID_DIO14,0);
-
-  //bug
-  ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_DIO17);
-  ti_lib_gpio_write_dio(BOARD_IOID_DIO17,0);
-
-
+  
+  leds_init();
 
   PRINTF("We are using " BOARD_STRING "\n");
 }

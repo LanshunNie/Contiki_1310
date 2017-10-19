@@ -164,11 +164,18 @@ configure(void)
                            BOARD_IOID_UART_CTS, BOARD_IOID_UART_RTS);
 
   /* Configure the UART for 115,200, 8-N-1 operation. */
+  #if !HEAT_METER
   ti_lib_uart_config_set_exp_clk(UART0_BASE, ti_lib_sys_ctrl_clock_get(),
                                  CC26XX_UART_CONF_BAUD_RATE,
                                  (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
                                   UART_CONFIG_PAR_NONE));
-
+  #else
+  //change default parity to even patity by Xiaobing Huang,because of reading meter
+   ti_lib_uart_config_set_exp_clk(UART0_BASE, ti_lib_sys_ctrl_clock_get(),
+                                 CC26XX_UART_CONF_BAUD_RATE,
+                                 (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
+                                  UART_CONFIG_PAR_EVEN));
+   #endif
   /*
    * Generate an RX interrupt at FIFO 1/2 full.
    * We don't really care about the TX interrupt

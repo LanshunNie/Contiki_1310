@@ -102,20 +102,16 @@ serial_line_input_byte2(unsigned char c)
             overflow = 0;
           }
    }
- //      t0=RTIMER_NOW();
 
- // while(RTIMER_CLOCK_LT(RTIMER_NOW() , t0 + RTIMER_ARCH_SECOND/20)) {};
-   
     process_poll(&serial_line_process2);
-     
-    //printf("serial line input byte2\n");
+ 
    return 1;
 }
 /*===========================by Guoxuenan========================================================*/
 
 PROCESS_THREAD(serial_line_process2, ev, data)
 {
-//
+
   static char buf[BUFSIZE];
   static int ptr;
            
@@ -140,10 +136,7 @@ while(1)
       } 
       static rtimer_clock_t t0;
       t0=RTIMER_NOW();
-      // 2400while(RTIMER_CLOCK_LT(RTIMER_NOW() , t0 + RTIMER_ARCH_SECOND/20)) {};
-
-      while(RTIMER_CLOCK_LT(RTIMER_NOW() , t0 + RTIMER_ARCH_SECOND/50)) {};
-   
+      while(RTIMER_CLOCK_LT(RTIMER_NOW() , t0 + RTIMER_ARCH_SECOND/12)) {}; //delay t>73&&t<73+63
       
         if(ringbuf_elements(&rxbuf2)==0)
         { 
@@ -251,7 +244,6 @@ PROCESS_THREAD(serial_line_process, ev, data)
 {
   static char buf[BUFSIZE];
   static int ptr;
-  //static struct  rtimer rtim;
   PROCESS_BEGIN();
 
   serial_line_event_message = process_alloc_event();
@@ -261,9 +253,7 @@ while(1)
 {
     /* Fill application buffer until newline or empty */
     int c = ringbuf_get(&rxbuf);
-    // printf("%c\n", (uint8_t)c);
-    // printf("process 0 char is %c\n", c);
-   // rtimer_set();
+
     if(c == -1) 
     {
         /* Buffer empty, wait for poll */

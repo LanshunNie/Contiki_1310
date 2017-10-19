@@ -262,7 +262,7 @@ static volatile unsigned char we_are_sending = 0;
 static volatile unsigned char radio_is_on = 0;
 
 #define TEST_ERROR_WAKE     0
-#define TEST_NOACK          1
+#define TEST_NOACK          0
 
 #if TEST_ERROR_WAKE
 static uint32_t cca_count = 0;

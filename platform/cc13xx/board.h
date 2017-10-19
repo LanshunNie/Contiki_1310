@@ -68,11 +68,11 @@
 #undef LEDS_CONF_ALL
 
 #define LEDS_RED       1
-#define LEDS_GREEN     2
-#define LEDS_YELLOW    LEDS_GREEN
+#define LEDS_GREEN     LEDS_RED
+#define LEDS_YELLOW    LEDS_RED
 #define LEDS_ORANGE    LEDS_RED
 
-#define LEDS_CONF_ALL  3
+#define LEDS_CONF_ALL  1
 
 /* Notify various examples that we have LEDs */
 #define PLATFORM_HAS_LEDS        1
@@ -84,9 +84,9 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_LED          IOID_30
-#define BOARD_LED              (1 << BOARD_IOID_LED)
-
+#define BOARD_IOID_RED_LED          IOID_17
+#define BOARD_RED_LED              (1 << BOARD_IOID_RED_LED)
+#define BOARD_LED_ALL             (BOARD_IOID_RED_LED)
 /** @} */
 /*---------------------------------------------------------------------------*/
 /**

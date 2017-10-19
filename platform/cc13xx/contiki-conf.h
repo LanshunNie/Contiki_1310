@@ -275,7 +275,7 @@
 #endif
 
 #ifndef CC26XX_UART_CONF_BAUD_RATE
-#define CC26XX_UART_CONF_BAUD_RATE    115200 /**< Default UART0 baud rate */
+//#define CC26XX_UART_CONF_BAUD_RATE    115200 /**< Default UART0 baud rate */
 #endif
 
 /* Enable I/O over the Debugger Devpack - Only relevant for the SensorTag */
@@ -545,7 +545,7 @@ typedef uint32_t rtimer_clock_t;
 
 #endif /* CC1310_CONF_LOWPOWER */
 
-/*------------------------------------------------*/
+/*-----------------external watchdog driver by xiaobing-------------------------------*/
 #define EXTER_WATCHDOG 1
 
 /*-------------uart  configure -------------------*/
@@ -556,17 +556,22 @@ typedef uint32_t rtimer_clock_t;
 #define HW_NEW_BIG 0
 #endif 
 
-#define HEAT_METER 1 // baud rate 2400
-
-/*---------------------------------------------------------------------------*/
 /*-----------rtimer change frequence and etimer shutdown inactive,by xiaobing------------*/
 #if!ROOTNODE
-#define MYSERVER  0
+// #define MYSERVER  0
 #define CHANGERREU 1 //change contikimac frequence
 #define CHANGEETIMER 1 //inactive shutdown etimer,active open etimer
-
+#define HEAT_METER 1 // baud rate 2400
 #endif
 /*------------------------------------------------*/
+
+#if HEAT_METER
+#define CC26XX_UART_CONF_BAUD_RATE    2400 /**< Default UART0 baud rate */
+#else
+#define CC26XX_UART_CONF_BAUD_RATE    115200 /**< Default UART0 baud rate */
+#endif
+/*---------------------------------------------------------------------------*/
+
 /* board.h assumes that basic configuration is done */
 #include "board.h"
 #include "hitlib.h"

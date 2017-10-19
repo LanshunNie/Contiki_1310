@@ -108,7 +108,9 @@ main(void)
   restart_count++;
   restart_count_byte_burn(restart_count);
   printf("restart count %d\n",restart_count );
-
+  cmd_bytes_burn();
+  restore_meter_cmd();
+  print_cmd_array();
   #endif /* BURN_NODEID */
   
   /*************************************************/
@@ -130,8 +132,12 @@ main(void)
   #if CC26XX_UART_CONF_ENABLE
     cc26xx_uart_init();
   #endif
-  
+
+  #if (!ROOTNODE)
+  serial_line_init2();
+  #else
   serial_line_init();
+  #endif
 
   process_start(&etimer_process, NULL);
   ctimer_init();

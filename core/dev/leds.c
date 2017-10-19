@@ -65,7 +65,7 @@ show_leds(unsigned char new_leds)
       ENERGEST_OFF(ENERGEST_TYPE_LED_RED);
     }
   }
-//  leds_arch_set(leds);
+ leds_arch_set(leds);
 }
 /*---------------------------------------------------------------------------*/
 void
