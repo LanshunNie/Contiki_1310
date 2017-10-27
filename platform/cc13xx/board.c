@@ -122,7 +122,7 @@ configure_unused_pins(void)
 /*--------------------------------------------------------------------------*/
 void logic_test(uint32_t i){
 
-  ti_lib_gpio_write_dio(BOARD_IOID_RED_LED,i);
+  ti_lib_gpio_write_dio(BOARD_IOID_LOGIC,i);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -163,6 +163,8 @@ board_init()
   ti_lib_gpio_write_dio(BOARD_IOID_DIO14,0);
   
   leds_init();
+  //logic-test
+  ti_lib_rom_ioc_pin_type_gpio_output(BOARD_IOID_LOGIC);
 
   PRINTF("We are using " BOARD_STRING "\n");
 }

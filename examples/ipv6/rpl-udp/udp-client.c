@@ -50,14 +50,16 @@
 
 #define DEBUG DEBUG_PRINT
 #include "net/ip/uip-debug.h"
+#include "dev/leds.h"
 
 #ifndef PERIOD
-#define PERIOD  2
+#define PERIOD  60
 #endif
 
 #define START_INTERVAL    (10 * CLOCK_SECOND)
 #define SEND_INTERVAL   (PERIOD * CLOCK_SECOND)
 #define SEND_TIME   (random_rand() % (SEND_INTERVAL))
+// #define SEND_TIME   (SEND_INTERVAL)//fixed interval time
 #define MAX_PAYLOAD_LEN   30
 
 static struct uip_udp_conn *client_conn;
@@ -105,6 +107,9 @@ send_packet(void *ptr)
   uint16_t id;
   int pos;
   
+  //add node's rssi
+  radio_value_t rssi=-50;
+
   pos = 0;
   memset(buf,0,10);
 
@@ -125,9 +130,17 @@ send_packet(void *ptr)
   pos+= sizeof(seq_id);
   memcpy(buf+pos,&curr_rank, sizeof(curr_rank));
   pos+= sizeof(curr_rank);
+
+  //add node's rssi
+  NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI,&rssi);
+  memcpy(buf+pos,&rssi,sizeof(rssi));
+  pos+= sizeof(rssi);
+ 
   uip_udp_packet_sendto(client_conn, buf, pos,
                         &server_ipaddr, UIP_HTONS(UDP_SERVER_PORT));
-  
+  #if DEBUG
+  leds_toggle(LEDS_RED);
+  #endif
   PRINT6ADDR(&server_ipaddr);
   PRINTF("\n");
 }

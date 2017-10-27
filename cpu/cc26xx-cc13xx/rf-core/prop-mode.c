@@ -41,6 +41,7 @@
 #include "dev/cc26xx-uart.h"
 #include "dev/oscillators.h"
 #include "dev/watchdog.h"
+#include "dev/leds.h"
 #include "net/packetbuf.h"
 #include "net/rime/rimestats.h"
 #include "net/linkaddr.h"
@@ -79,6 +80,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 /*---------------------------------------------------------------------------*/
+#define LOGIC_TEST 0
+#if LOGIC_TEST 
+void logic_test(uint32_t i);
+#endif
+
 #define DEBUG 0
 #if DEBUG
 #define PRINTF(...) printf(__VA_ARGS__)
@@ -493,8 +499,9 @@ rx_on_prop(void)
   if(ret) {
     ENERGEST_ON(ENERGEST_TYPE_LISTEN);
   }
-
-  // ti_lib_gpio_write_dio(BOARD_IOID_LED,1);  
+  #if LOGIC_TEST
+  logic_test(1);
+  #endif
   return ret;
 }
 /*---------------------------------------------------------------------------*/
@@ -676,7 +683,7 @@ transmit(unsigned short transmit_len)
       return RADIO_TX_ERR;
     }
   }
-// ti_lib_gpio_write_dio(BOARD_IOID_LED,1);  
+// ti_lib_gpio_write_dio(BOARD_IOID_LED,1);
   /*
    * Prepare the .15.4g PHY header
    * MS=0, Length MSBits=0, DW and CRC configurable
@@ -982,7 +989,9 @@ on(void)
 static int
 off(void)
 {
-   // ti_lib_gpio_write_dio(BOARD_IOID_LED,0); 
+  #if LOGIC_TEST
+   logic_test(0);
+  #endif
   /*
    * If we are in the middle of a BLE operation, we got called by ContikiMAC
    * from within an interrupt context. Abort, but pretend everything is OK.

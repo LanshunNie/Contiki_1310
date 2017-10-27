@@ -61,6 +61,8 @@ PROCESS_THREAD(hello_world_process, ev, data)
   PROCESS_BEGIN();
   // // // // //printf(" %x\n",get_voltage());
   static struct etimer et;
+  static char mybuf[5];
+  static int rssi=-110;
   etimer_set(&et,1*CLOCK_SECOND);
   // // // unsigned long cpu,lpm,transmit,listen,irq;
   // uint8_t my_cmd[14]={8,0x08,9,0x09,10,0x0A,11,0x0B,12,0x0C,16,0x10};
@@ -72,16 +74,21 @@ PROCESS_THREAD(hello_world_process, ev, data)
 
      if(etimer_expired(&et)&& ev==PROCESS_EVENT_TIMER)
      {
-         if(cmd_read_meter[0] != 0xFF)
-         {
-            // uart1_set_input(serial_line_input_byte2);
-            for(int i=0;i< cmd_read_meter[0];i++)
-            {
-              printf("%c",(unsigned char )cmd_read_meter[i+1]);
-            }
+         // if(cmd_read_meter[0] != 0xFF)
+         // {
+         //    // uart1_set_input(serial_line_input_byte2);
+         //    for(int i=0;i< cmd_read_meter[0];i++)
+         //    {
+         //      printf("%c",(unsigned char )cmd_read_meter[i+1]);
+         //    }
 
-         }
-      
+         // }
+         rssi=-110;
+         printf("before: %d ",rssi);
+         memcpy(mybuf,&rssi,sizeof(rssi));
+         rssi = 0;
+         memcpy(&rssi,(int *)mybuf,sizeof(rssi));
+         printf("after: %d\n",rssi);
   //      for(int i=1;i<6;i++){
   //          unsigned char ch= my_cmd[i];
   //          printf("%c",ch);
@@ -114,7 +121,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
     {
       int  data_length =(int)((char *)data)[0];
       // for(int i=0;i<data_length;i++){
-          leds_toggle(LEDS_RED);
+          // leds_toggle(LEDS_RED);
       // }
      // printf("data len:%d\n",data_length );
       // uart1_set_input(NULL);

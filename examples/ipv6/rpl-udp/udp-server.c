@@ -35,6 +35,7 @@
 
 #include "net/netstack.h"
 #include "dev/button-sensor.h"
+#include "dev/leds.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -74,9 +75,9 @@ tcpip_handler(void)
   uint16_t sender_addr =0;
   uint16_t count ;
   uint16_t node_rank =0;
-
+  int rssi = 0;
   if(uip_newdata()) {
-   uip_udp_received_data_preprocess();
+    uip_udp_received_data_preprocess();
 
     sender.u8[0] = UIP_IP_BUF->srcipaddr.u8[15];
     sender.u8[1] = UIP_IP_BUF->srcipaddr.u8[14];  
@@ -85,35 +86,38 @@ tcpip_handler(void)
     sender_addr = sender.u8[0] + (sender.u8[1] << 8);
     memcpy(&count, ((uint16_t *)(uip_appdata)), sizeof(count));   
     memcpy(&node_rank, ((uint16_t *)(uip_appdata+2)), sizeof(node_rank));  
-     uint8_t i = 0;
-      for ( i=0; i< NODE_MAX ;i++)
-       {
-         if(node_array[i].addr == 0xffff)
-         {
-           node_array[i].addr = sender_addr ;
-           node_array[i].upcount ++;
-           node_array[i].last_count = uip_htons(count);
-           break; 
-          }
-         else if (sender_addr == node_array[i].addr)
-         {
-            if(node_array[i].last_count!=uip_htons(count)){
-                node_array[i].upcount ++;
-                node_array[i].last_count = uip_htons(count);
-            }else{
-                 app_duplicate++;
-                 node_array[i].duplicate_count ++;
-               // printf("app_duplicate:%u\n", app_duplicate); 
-            }    
-            break; 
-         }       
-      } 
+    uint8_t i = 0;
+    for ( i=0; i< NODE_MAX ;i++)
+    {
+      if(node_array[i].addr == 0xffff)
+      {
+        node_array[i].addr = sender_addr ;
+        node_array[i].upcount ++;
+        node_array[i].last_count = uip_htons(count);
+        break; 
+      }
+      else if (sender_addr == node_array[i].addr)
+      {
+        if(node_array[i].last_count!=uip_htons(count)){
+        node_array[i].upcount ++;
+        node_array[i].last_count = uip_htons(count);
+        }else{
+        app_duplicate++;
+        node_array[i].duplicate_count ++;
+        // printf("app_duplicate:%u\n", app_duplicate); 
+      }    
+        break; 
+      }       
+    } 
+    memcpy(&rssi,((int *)(uip_appdata+4)),sizeof(rssi));
+    printf("addr :%2x, rssi: %d \n",node_array[i].addr,rssi);
       // printf("totle app_duplicate:%u\n", app_duplicate);  
-      printf("addr :%2x, send count: %u ,receive count: %u,duplicate count: %u\n",
-      node_array[i].addr, uip_htons(count), node_array[i].upcount,node_array[i].duplicate_count);
-     
+      // printf("addr :%2x, send count: %u ,receive count: %u,duplicate count: %u\n",
+      // node_array[i].addr, uip_htons(count), node_array[i].upcount,node_array[i].duplicate_count);
+      #if DEBUG
+      leds_toggle(LEDS_RED);
       // printf("addr :%2x, node rank: %u\n",node_array[i].addr,node_rank);
-
+      #endif
 #if SERVER_REPLY
     PRINTF("DATA sending reply\n");
     uip_ipaddr_copy(&server_conn->ripaddr, &UIP_IP_BUF->srcipaddr);
@@ -201,7 +205,7 @@ PROCESS_THREAD(udp_server_process, ev, data)
 
   /* The data sink runs with a 100% duty cycle in order to ensure high 
      packet reception rates. */
- // NETSTACK_MAC.off(1);
+  NETSTACK_MAC.off(1);
   server_conn = udp_new(NULL, UIP_HTONS(UDP_CLIENT_PORT), NULL);
   if(server_conn == NULL) {
     PRINTF("No UDP connection available, exiting the process!\n");

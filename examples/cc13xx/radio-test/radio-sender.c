@@ -1,7 +1,9 @@
 #include "contiki.h"
 #include "net/netstack.h"
+#include "net/packetbuf.h"
 #include "bat-voltage.h"
 #include "lib/random.h"
+#include "dev/leds.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -31,6 +33,7 @@ PROCESS_THREAD(radio_sender_process,ev,data)
 		    NETSTACK_RADIO.send(buf,sizeof(buf));
 			printf("send %s\n",sender);
 			// printf("hello-world\n");
+			leds_toggle(LEDS_RED);
 		}
 	}
 	

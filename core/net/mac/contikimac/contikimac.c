@@ -41,13 +41,14 @@
 
 #include "contiki-conf.h"
 #include "dev/radio.h"
+#include "dev/leds.h"
 #include "dev/watchdog.h"
 #include "lib/random.h"
 #include "net/mac/mac-sequence.h"
 #include "net/mac/contikimac/contikimac.h"
 #include "net/netstack.h"
 #include "net/rime/rime.h"
-//#include "sys/compower.h"
+
 #include "sys/pt.h"
 #include "sys/rtimer.h"
 #include "clock.h"
@@ -761,12 +762,12 @@ send_packet(mac_callback_t mac_callback, void *mac_callback_ptr,
 #endif
 
 // inactive don't send packet ,just return mac_tx_ok ;
-#if CC1310_CONF_LOWPOWER 
- if(get_active_flag()== 0 ||get_idle_time()<= 10){  //if debug contiki,please comment out
-   // printf("my mac ok\n");
-   return MAC_TX_OK;
- }
-#endif
+// #if CC1310_CONF_LOWPOWER 
+//  if(get_active_flag()== 0 ||get_idle_time()<= 10){  //if debug contiki,please comment out
+//    // printf("my mac ok\n");
+//    return MAC_TX_OK;
+//  }
+// #endif
   
   /* Exit if RDC and radio were explicitly turned off */
    if(!contikimac_is_on && !contikimac_keep_radio_on) {

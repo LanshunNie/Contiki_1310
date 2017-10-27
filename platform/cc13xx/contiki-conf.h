@@ -561,7 +561,7 @@ typedef uint32_t rtimer_clock_t;
 // #define MYSERVER  0
 #define CHANGERREU 1 //change contikimac frequence
 #define CHANGEETIMER 1 //inactive shutdown etimer,active open etimer
-#define HEAT_METER 1 // baud rate 2400
+#define HEAT_METER 0 // baud rate 2400
 #endif
 /*------------------------------------------------*/
 

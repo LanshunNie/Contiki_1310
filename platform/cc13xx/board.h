@@ -84,6 +84,7 @@
  * Those values are not meant to be modified by the user
  * @{
  */
+#define BOARD_IOID_LOGIC            IOID_29
 #define BOARD_IOID_RED_LED          IOID_17
 #define BOARD_RED_LED              (1 << BOARD_IOID_RED_LED)
 #define BOARD_LED_ALL             (BOARD_IOID_RED_LED)
@@ -196,7 +197,7 @@
 #define BOARD_IOID_DIO24           IOID_24
 #define BOARD_IOID_DIO25           IOID_25
 #define BOARD_IOID_DIO26           IOID_26
-#define BOARD_IOID_DIO29           IOID_29
+#define BOARD_IOID_DIO29           IOID_30
 
 
 #define BOARD_UNUSED_PINS { \
